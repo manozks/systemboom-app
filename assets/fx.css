@@ -1,0 +1,71 @@
+/* SYSTEMBOOM shared motion layer: glows, shine sweeps, icon float/ring, entrance + press ripple. Loaded by every page. */
+
+/* ---------- keyframes ---------- */
+@keyframes fxSweep{0%,55%{background-position:160% 0}100%{background-position:-60% 0}}
+@keyframes fxGlow{0%,100%{filter:brightness(.95) saturate(1)}50%{filter:brightness(1.22) saturate(1.12)}}
+@keyframes fxFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(calc(-5*var(--u,1px)))}}
+@keyframes fxRing{0%,70%,100%{transform:rotate(0)}74%{transform:rotate(16deg)}78%{transform:rotate(-14deg)}82%{transform:rotate(10deg)}86%{transform:rotate(-7deg)}90%{transform:rotate(3deg)}}
+@keyframes fxPing{0%{transform:scale(.82);opacity:.9}100%{transform:scale(1.35);opacity:0}}
+@keyframes fxBeat{0%,82%,100%{transform:scale(1)}88%{transform:scale(1.18)}94%{transform:scale(.97)}}
+@keyframes fxDot{0%,100%{box-shadow:0 0 calc(6*var(--u,1px)) currentColor}50%{box-shadow:0 0 calc(16*var(--u,1px)) currentColor,0 0 calc(4*var(--u,1px)) #fff inset}}
+@keyframes fxRise{from{opacity:0;transform:translate3d(0,calc(26*var(--u,1px)),0) scale(.97)}to{opacity:1;transform:none}}
+@keyframes fxRip{from{transform:translate(-50%,-50%) scale(0);opacity:.6}to{transform:translate(-50%,-50%) scale(1);opacity:0}}
+@keyframes fxSpin{to{transform:rotate(360deg)}}
+@keyframes fxBreath{0%,100%{box-shadow:0 0 calc(18*var(--u,1px)) rgba(255,122,26,.55)}50%{box-shadow:0 0 calc(40*var(--u,1px)) rgba(255,140,40,.95)}}
+
+/* ---------- shine sweep on primary buttons / active tabs ---------- */
+.tabs button.on::before,.seg button.on::before,.bt.pri::before,.bt.dan::before,.bt.soft::before,.mbtn::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:0;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.6) 50%,transparent 62%) 160% 0/250% 100% no-repeat;
+  animation:fxSweep 4.2s ease-in-out infinite;mix-blend-mode:soft-light}
+.tabs button.on,.bt.pri,.seg button.on{animation:fxGlow 3.6s ease-in-out infinite}
+.cb,.pg,.ibtn{animation:fxGlow 4s ease-in-out infinite}
+.orb,.mbtn{animation-name:fxGlow;animation-duration:3.6s;animation-iteration-count:infinite;animation-timing-function:ease-in-out}
+
+/* ---------- icons ---------- */
+.bell svg{transform-origin:50% 12%;animation:fxRing 6s ease-in-out infinite}
+.ib:hover svg,.ibtn:hover svg{transform:translateX(calc(-3*var(--u,1px)))}
+.ib svg,.ibtn svg,.cb svg,.pg svg,.chev{transition:transform .25s}
+.cb:hover svg,.pg:hover svg{transform:scale(1.18) rotate(-8deg)}
+.panel .row:hover .chev{transform:translateX(calc(5*var(--u,1px)))}
+.ph .em,.panel .ib2,.note>svg,.fb>svg{animation:fxFloat 4.2s ease-in-out infinite}
+.panel .row:nth-child(2n) .ib2,.pc:nth-child(2n) .em{animation-delay:-1.6s}
+.panel .row:nth-child(3n) .ib2{animation-delay:-2.8s}
+.pill i,.av .dot,.od{animation:fxDot 2.4s ease-in-out infinite}
+.pk i{animation:fxDot 2.6s ease-in-out infinite}
+.bd,.cnt,nav .nb,.badge{animation:fxBeat 4.5s ease-in-out infinite}
+.avwrap,.mav{animation:fxBreath 4.5s ease-in-out infinite}
+.avwrap{animation-name:fxBreath}
+.chip3d::after{animation:fxSweepX 5s ease-in-out infinite}
+@keyframes fxSweepX{0%,60%{left:-40%}100%{left:130%}}
+.ph::after{animation:fxSweepX 6s ease-in-out infinite}
+.spin{animation:fxSpin .8s linear infinite}
+
+/* ---------- dock: ping ring on the Calls orb, hover/press feedback on tabs ---------- */
+nav a[aria-label="Calls"]::after{content:"";position:absolute;inset:6%;border-radius:50%;border:calc(3*var(--k,1px)) solid rgba(255,140,40,.9);pointer-events:none;animation:fxPing 2.6s ease-out infinite}
+nav a[aria-label="Calls"]::before{content:"";position:absolute;inset:-4%;border-radius:50%;pointer-events:none;box-shadow:0 0 calc(30*var(--k,1px)) rgba(255,120,20,.7);animation:fxGlow 3s ease-in-out infinite}
+nav a{transition:transform .18s}
+nav a:active{transform:translateY(calc(3*var(--k,1px))) scale(.96)}
+nav a.on::before{animation:fxGlow 4.5s ease-in-out infinite}
+nav .lab{transition:transform .2s,color .2s}
+
+/* ---------- entrance ---------- */
+.panel .row,.pc,.dcard,.th,.note,.me,.swb,.fb,.seg,.sec{animation-name:fxRise;animation-duration:.55s;animation-timing-function:cubic-bezier(.2,.8,.2,1);animation-fill-mode:backwards;animation-delay:calc(var(--i,0) * 55ms)}
+
+/* row/card keep their float + entrance: entrance owns transform only until it ends */
+
+/* ---------- press ripple (added by fx.js) ---------- */
+.fx-rip{position:absolute;left:0;top:0;width:220%;aspect-ratio:1;border-radius:50%;pointer-events:none;z-index:3;
+  background:radial-gradient(circle,rgba(255,255,255,.65),rgba(255,190,110,.35) 40%,transparent 70%);animation:fxRip .6s ease-out forwards}
+.bt,.tabs button,.seg button,.mbtn,.cb,.ibtn,.ib,.tg,.th,.pg{overflow:hidden}
+
+/* ---------- home page extras ---------- */
+.feature{position:relative}
+.feature::after{content:"";position:absolute;inset:4%;border-radius:calc(30*var(--u,1px));pointer-events:none;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.2) 50%,transparent 60%) 160% 0/250% 100% no-repeat;animation:fxSweep 6s ease-in-out infinite}
+.feature:nth-of-type(2n)::after{animation-delay:-2s}
+.cta-go,.cfg-go,.calls-go{animation-name:fxBreath}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}

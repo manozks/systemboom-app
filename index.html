@@ -27,7 +27,7 @@
 html,body{margin:0;min-height:100%;background:#07090c;}
 body{display:flex;justify-content:center;align-items:flex-start;overflow-x:hidden;
   font-family:"Figtree","Segoe UI",Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent;}
-.stage{width:min(100vw,430px);aspect-ratio:941/1735;container-type:inline-size;position:relative;}
+.stage{width:min(100vw,430px);aspect-ratio:941/2145;container-type:inline-size;position:relative;}
 .shell{--u:calc(100cqw / 941);position:absolute;inset:0;overflow:hidden;
   border-radius:calc(70*var(--u));isolation:isolate;}
 .abs{position:absolute !important;left:calc(var(--x)*var(--u));top:calc(var(--y)*var(--u));
@@ -490,6 +490,19 @@ body.editing .avatar-hint{opacity:.55;}
 .feature:hover{transform:translateY(-2px);filter:brightness(1.12) saturate(1.05);}
 
 
+.card-badge{width:calc(40*var(--u));height:calc(40*var(--u));border-radius:50%;display:grid;place-items:center;font-weight:800;line-height:1;
+  font-size:clamp(11px,calc(27*var(--u)),15px);z-index:3;pointer-events:none;text-shadow:none;}
+body.editing .card-badge{pointer-events:auto;}
+
+.ds-card{box-sizing:border-box;border:calc(51*var(--u)) solid transparent;border-image:url("assets/card-blank.png?v=2") 50 fill stretch;}
+.ds-card>*{margin:calc(-51*var(--u));}
+.ds-ico{left:calc(58*var(--u));top:calc(27*var(--u));width:calc(96*var(--u));height:calc(96*var(--u));border-radius:calc(22*var(--u));box-sizing:border-box;
+  background:linear-gradient(180deg,#1f4a63,#0d2433);border:calc(3*var(--u)) solid #2fb6dc;display:grid;place-items:center;
+  box-shadow:0 0 calc(14*var(--u)) rgba(47,182,220,.7),inset 0 0 calc(12*var(--u)) rgba(47,182,220,.25);}
+.ds-ico svg{width:calc(54*var(--u));height:calc(54*var(--u));filter:drop-shadow(0 0 calc(5*var(--u)) rgba(63,210,242,.9));}
+.ds-dash{display:flex;gap:calc(10*var(--u));}
+.ds-dash i{display:block;width:calc(34*var(--u));height:calc(6*var(--u));border-radius:calc(3*var(--u));}
+
 /* ---------- AI + NAV (art-based) ---------- */
 .cfg-text{background:linear-gradient(180deg,#ffffff,#e4ecff 55%,#b6c9f5);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700;pointer-events:none;
   filter:drop-shadow(0 calc(2*var(--u)) 0 #06102e) drop-shadow(0 0 calc(8*var(--u)) rgba(130,180,255,.9));}
@@ -538,6 +551,7 @@ body.editing .nav-lab{pointer-events:auto;}
   .spark{opacity:.6}
 }
 </style>
+<link rel="stylesheet" href="assets/fx.css?v=2">
 </head>
 <body class="bg-black">
 <!-- shared metallic gradients for icon strokes -->
@@ -586,7 +600,7 @@ body.editing .nav-lab{pointer-events:auto;}
   <section class="abs" style="--x:21;--y:99;--w:861;--h:355;transform:scale(1.038);transform-origin:0 0" aria-label="SYSTEMBOOM header">
     <div class="absolute inset-0" style="filter:drop-shadow(0 calc(8*var(--u)) calc(12*var(--u)) rgba(0,0,0,.7)) drop-shadow(0 0 calc(14*var(--u)) rgba(255,120,20,.3))"><img src="assets/hero-clean.png" alt="" class="w-full h-full" style="object-fit:fill;display:block;clip-path:polygon(0.3% 15.5%,17% 15.5%,24% 0.3%,76% 0.3%,83% 15.5%,99.7% 15.5%,99.7% 83%,94.5% 99.7%,5.5% 99.7%,0.3% 83%)"></div>
     <!-- SYSTEMBOOM wordmark: live text (crisp at any size, editable) styled as brushed steel over the hero art whose baked wordmark was removed -->
-    <h1 data-edit="brand" class="wm-metal absolute m-0 whitespace-nowrap" style="left:calc(312*var(--u));top:calc(99*var(--u));z-index:3">SYSTEMBOOM</h1>
+    <h1 class="absolute m-0" style="left:calc(318*var(--u));top:calc(92*var(--u));width:calc(420*var(--u));z-index:3;line-height:0" aria-label="SYSTEMBOOM"><img src="assets/wordmark-3d.png" alt="SYSTEMBOOM" style="display:block;width:100%;height:auto;-webkit-mask:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent),linear-gradient(180deg,transparent,#000 10%,#000 90%,transparent);-webkit-mask-composite:source-in;mask:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent),linear-gradient(180deg,transparent,#000 10%,#000 90%,transparent);mask-composite:intersect;filter:drop-shadow(0 calc(6*var(--u)) calc(6*var(--u)) rgba(0,0,0,.7)) drop-shadow(0 0 calc(10*var(--u)) rgba(255,130,30,.3))"></h1>
 
     <!-- pulsing glow over the platform + wordmark warm reflection -->
     <div class="absolute pointer-events-none" style="left:27%;width:46%;top:66%;height:24%;border-radius:50%;background:radial-gradient(ellipse at center,rgba(255,170,60,.55),rgba(255,120,20,.2) 50%,transparent 72%);mix-blend-mode:screen;animation:pulse 5s ease-in-out infinite" aria-hidden="true"></div>
@@ -633,25 +647,51 @@ body.editing .nav-lab{pointer-events:auto;}
   <!-- ===================== EXPLORE ===================== -->
   <div data-edit="explore" class="abs engraved font-bold tracking-[.06em]" style="--x:37;--y:918;--w:300;--h:40;font-size:clamp(13px,calc(30*var(--u)),18px)">EXPLORE</div>
 
-  <!-- Explore cards: art = assets/card-market.png + assets/card-anon.png (supplied design; baked text removed so titles stay editable;
-       the neon icon blocks and the red notification dot are part of the art). The whole card is the click target. -->
-  <div role="button" tabindex="0" data-action="marketplace" class="feature abs" style="--x:26;--y:965;--w:429;--h:220" aria-label="Marketplace — direct and group">
+  <!-- Explore cards (2x2): Chats + Calls use the supplied art (chat/phone icon blocks); Marketplace + Anonymous reuse the same frame
+       (assets/card-mk.png / card-an.png) with live SVG icons. Whole card is the click target; titles, subtitles and badge counts are editable. -->
+  <div role="button" tabindex="0" data-action="chats" class="feature abs" style="--x:26;--y:965;--w:429;--h:220" aria-label="Chats — direct and group">
     <img src="assets/card-market.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(70,130,255,.25))">
-    <span data-edit="mkTitle" class="title absolute" style="left:calc(40*var(--u));top:calc(125*var(--u));line-height:1">Marketplace</span>
-    <span data-edit="mkSub" class="sub absolute" style="left:calc(41*var(--u));top:calc(166*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Direct &amp; group</span>
+    <span data-edit="chatsBadge" class="card-badge absolute" style="left:calc(357*var(--u));top:calc(28*var(--u));background:transparent;color:#fff;box-shadow:0 0 calc(12*var(--u)) transparent,inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.45);font-size:clamp(11px,calc(27*var(--u)),15px);">10</span>
+    <span data-edit="chatsTitle" class="title absolute" style="left:calc(40*var(--u));top:calc(125*var(--u));line-height:1">Chats</span>
+    <span data-edit="chatsSub" class="sub absolute" style="left:calc(41*var(--u));top:calc(166*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Direct &amp; group</span>
   </div>
 
-  <div role="button" tabindex="0" data-action="anonymous" class="feature abs" style="--x:475;--y:965;--w:429;--h:220" aria-label="Anonymous — voice and video">
+  <div role="button" tabindex="0" data-action="calls" class="feature abs" style="--x:475;--y:965;--w:429;--h:220" aria-label="Calls — voice and video">
     <img src="assets/card-anon.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(255,170,70,.25))">
+    <span data-edit="callsTitle" class="title absolute" style="left:calc(40*var(--u));top:calc(125*var(--u));line-height:1">Calls</span>
+    <span data-edit="callsSub" class="sub absolute" style="left:calc(41*var(--u));top:calc(166*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Voice &amp; video</span>
+  </div>
+
+  <div role="button" tabindex="0" data-action="marketplace" class="feature abs" style="--x:26;--y:1205;--w:429;--h:220" aria-label="Marketplace — shop in chat">
+    <img src="assets/card-mk.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(255,170,70,.25))">
+    <svg class="card-ico absolute" viewBox="0 0 24 24" fill="none" stroke="#ffc15a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="left:calc(52*var(--u));top:calc(45*var(--u));width:calc(58*var(--u));height:calc(58*var(--u));filter:drop-shadow(0 0 calc(6*var(--u)) rgba(255,160,40,.9))"><path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5c0 1.4 1.1 2.5 2.5 2.5S9 10.9 9 9.5c0 1.4 1.1 2.5 2.5 2.5h1c1.4 0 2.5-1.1 2.5-2.5 0 1.4 1.1 2.5 2.5 2.5S20 10.9 20 9.5"/><path d="M5.5 12v8h13v-8"/><path d="M10 20v-4.5h4V20"/></svg>
+    <span data-edit="mkBadge" class="card-badge absolute" style="left:calc(357*var(--u));top:calc(28*var(--u));background:radial-gradient(circle at 35% 30%,#ffd37a,#e09a1c);color:#2a1700;box-shadow:0 0 calc(12*var(--u)) rgba(255,170,40,.8),inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.45);">1</span>
+    <span data-edit="mkTitle" class="title absolute" style="left:calc(40*var(--u));top:calc(125*var(--u));line-height:1">Marketplace</span>
+    <span data-edit="mkSub" class="sub absolute" style="left:calc(41*var(--u));top:calc(166*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Shop in chat</span>
+  </div>
+
+  <div role="button" tabindex="0" data-action="anonymous" class="feature abs" style="--x:475;--y:1205;--w:429;--h:220" aria-label="Anonymous — speak freely">
+    <img src="assets/card-an.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(60,230,215,.25))">
+    <svg class="card-ico absolute" viewBox="0 0 24 24" fill="none" stroke="#4ff0e0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="left:calc(52*var(--u));top:calc(45*var(--u));width:calc(58*var(--u));height:calc(58*var(--u));filter:drop-shadow(0 0 calc(6*var(--u)) rgba(40,230,215,.9))"><path d="M3 8.5c0-1 .8-1.7 1.8-1.5 2.4.5 4.6.7 7.2.7s4.8-.2 7.2-.7c1-.2 1.8.5 1.8 1.5v3c0 4-2.8 7.5-9 7.5s-9-3.5-9-7.5z"/><path d="M6.5 11.2c1-.7 2.8-.7 3.8.4M13.7 11.6c1-1.1 2.8-1.1 3.8-.4"/></svg>
+    <span data-edit="anBadge" class="card-badge absolute" style="left:calc(357*var(--u));top:calc(28*var(--u));background:radial-gradient(circle at 35% 30%,#7cfff0,#12bfb0);color:#032a27;box-shadow:0 0 calc(12*var(--u)) rgba(40,230,215,.8),inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.45);">3</span>
     <span data-edit="anTitle" class="title absolute" style="left:calc(40*var(--u));top:calc(125*var(--u));line-height:1">Anonymous</span>
-    <span data-edit="anSub" class="sub absolute" style="left:calc(41*var(--u));top:calc(166*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Voice &amp; video</span>
+    <span data-edit="anSub" class="sub absolute" style="left:calc(41*var(--u));top:calc(166*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Speak freely</span>
+  </div>
+
+  <!-- Design System row: metal frame = assets/card-blank.png via border-image (corners stay crisp at any width) -->
+  <div role="button" tabindex="0" data-action="design-system" class="feature abs ds-card" style="--x:26;--y:1445;--w:878;--h:150" aria-label="Design System — foundation tokens and components">
+    <span class="ds-ico absolute"><svg viewBox="0 0 24 24" fill="none" stroke="#3fd2f2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.9 1.8-1.8 0-.5-.2-.9-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4C21 6.4 16.9 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7.2" r="1"/><circle cx="14.5" cy="7.2" r="1"/></svg></span>
+    <span data-edit="dsTitle" class="title absolute" style="left:calc(185*var(--u));top:calc(34*var(--u));line-height:1">Design System</span>
+    <span data-edit="dsSub" class="sub absolute" style="left:calc(185*var(--u));top:calc(80*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Foundation tokens &amp; components</span>
+    <span class="ds-dash absolute" style="left:calc(185*var(--u));top:calc(122*var(--u))"><i style="background:#2fd3e6;box-shadow:0 0 calc(6*var(--u)) #2fd3e6"></i><i style="background:#e8a838;box-shadow:0 0 calc(6*var(--u)) #e8a838"></i><i style="background:#25c9b5;box-shadow:0 0 calc(6*var(--u)) #25c9b5"></i><i style="background:#7a5cf0;box-shadow:0 0 calc(6*var(--u)) #7a5cf0"></i><i style="background:#e8643c;box-shadow:0 0 calc(6*var(--u)) #e8643c"></i></span>
+    <svg class="absolute" viewBox="0 0 24 24" fill="none" stroke="#9fb2c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="right:calc(50*var(--u));top:calc(55*var(--u));width:calc(40*var(--u));height:calc(40*var(--u))"><path d="m9 6 6 6-6 6"/></svg>
   </div>
 
   <!-- ===================== AI COMPANION + BOTTOM NAV ===================== -->
   <!-- One piece of art: assets/ai-nav.png (896x515, supplied design with all text removed so it stays editable).
        The avatar, neon button frame + gear, dock icons and the glowing Calls button are part of the art.
        Live layers: editable text, transparent click targets, glow pulses, active-tab glow. -->
-  <section class="abs" style="--x:0;--y:1200;--w:896;--h:515;transform:scale(1.0502);transform-origin:0 0" aria-label="AI companion and navigation">
+  <section class="abs" style="--x:0;--y:1610;--w:896;--h:515;transform:scale(1.0502);transform-origin:0 0" aria-label="AI companion and navigation">
     <img src="assets/ai-nav.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.6))">
 
     <!-- AI companion text -->
@@ -722,10 +762,10 @@ document.querySelectorAll('.nav-hit[data-nav]').forEach(function(btn){
              del:function(k){try{localStorage.removeItem(NS+k);}catch(e){}}};
 
   /* ---- ROUTES: put a URL (or '#hash') here to navigate on tap; null shows a toast only ---- */
-  var ROUTES={home:null,chats:null,market:null,profile:null,calls:null,notifications:null,
-              'start-chat':null,marketplace:null,anonymous:null,'configure-avatar':null};
+  var ROUTES={home:null,chats:'chats.html',market:'market.html',profile:'profile.html',calls:'calls.html',notifications:null,
+              'start-chat':'chats.html',marketplace:'market.html',anonymous:null,'configure-avatar':null,'design-system':'design.html'};
   var LABELS={home:'Home',chats:'Chats',market:'Market',profile:'Profile',calls:'Calls',notifications:'Notifications',
-              'start-chat':'Starting a conversation','marketplace':'Marketplace','anonymous':'Anonymous calls','configure-avatar':'Configure Avatar'};
+              'start-chat':'Starting a conversation','marketplace':'Marketplace','anonymous':'Anonymous calls','configure-avatar':'Configure Avatar','design-system':'Design System'};
 
   var toastEl=document.getElementById('toast'),tt;
   function toast(msg){toastEl.textContent=msg;toastEl.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){toastEl.classList.remove('show');},1800);}
@@ -795,5 +835,6 @@ document.querySelectorAll('.nav-hit[data-nav]').forEach(function(btn){
   });
 })();
 </script>
+<script src="assets/fx.js?v=1"></script>
 </body>
 </html>
