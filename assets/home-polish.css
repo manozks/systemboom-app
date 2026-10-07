@@ -1,0 +1,89 @@
+/* Home page polish: cleaner glossy 3D metal, brighter icons (matches the reference render) */
+
+/* brighter, punchier panel art */
+.feature>img{filter:brightness(1.14) saturate(1.22) contrast(1.05) drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.6)) drop-shadow(0 0 calc(12*var(--u)) rgba(255,150,60,.3)) !important}
+section.abs>img:first-child{filter:brightness(1.1) saturate(1.15) contrast(1.04) drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.6)) !important}
+
+/* glossy sheen across the big panels */
+.gloss::after{content:"";position:absolute;left:2.2%;right:2.2%;top:4%;height:46%;border-radius:calc(26*var(--u)) calc(26*var(--u)) 50% 50% / calc(26*var(--u)) calc(26*var(--u)) 22% 22%;pointer-events:none;z-index:2;
+  background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.05) 55%,rgba(255,255,255,0))}
+
+/* explore cards: clean white titles, glowing icon blocks */
+.feature .title{color:#fff !important;text-shadow:0 calc(2*var(--u)) 0 #0a1018,0 calc(4*var(--u)) calc(4*var(--u)) rgba(0,0,0,.75) !important}
+.feature .sub{color:#e6edf6 !important}
+.feature::before{content:"";position:absolute;left:calc(34*var(--u));top:calc(29*var(--u));width:calc(94*var(--u));height:calc(91*var(--u));border-radius:calc(22*var(--u));pointer-events:none;z-index:1;
+  box-shadow:0 0 calc(22*var(--u)) var(--ig,rgba(255,170,60,.55)),inset 0 0 calc(14*var(--u)) var(--ig,rgba(255,170,60,.25));animation:iconGlow 3.4s ease-in-out infinite}
+.feature[data-action=chats]{--ig:rgba(255,80,90,.7)}
+.feature[data-action=calls]{--ig:rgba(255,190,80,.75)}
+.feature[data-action=marketplace]{--ig:rgba(255,175,50,.8)}
+.feature[data-action=anonymous]{--ig:rgba(40,235,215,.8)}
+@keyframes iconGlow{0%,100%{opacity:.7}50%{opacity:1}}
+.card-ico{stroke-width:2 !important;stroke:#ffe6b0 !important;filter:drop-shadow(0 calc(2*var(--u)) 0 rgba(60,30,0,.7)) drop-shadow(0 0 calc(9*var(--u)) rgba(255,180,60,1)) drop-shadow(0 0 calc(18*var(--u)) rgba(255,150,40,.7)) !important}
+[data-action=anonymous] .card-ico{stroke:#b6fff4 !important;filter:drop-shadow(0 calc(2*var(--u)) 0 rgba(0,40,40,.7)) drop-shadow(0 0 calc(9*var(--u)) rgba(60,255,235,1)) drop-shadow(0 0 calc(18*var(--u)) rgba(30,220,200,.7)) !important}
+.card-badge{box-shadow:0 0 calc(14*var(--u)) currentColor,inset 0 calc(3*var(--u)) calc(2*var(--u)) rgba(255,255,255,.6) !important}
+
+/* design system row: brighter icon */
+.ds-ico{box-shadow:0 0 calc(20*var(--u)) rgba(63,210,242,.9),inset 0 0 calc(14*var(--u)) rgba(63,210,242,.35) !important}
+.ds-ico svg{stroke:#bff3ff !important;filter:drop-shadow(0 0 calc(8*var(--u)) rgba(63,210,242,1)) !important}
+
+/* bottom nav icons: whiter, bolder, glowing */
+.nvi{stroke:#f6f9fc !important;stroke-width:2.15 !important;
+  filter:drop-shadow(0 calc(2*var(--u)) 0 #000) drop-shadow(0 calc(-1*var(--u)) 0 rgba(255,255,255,.55)) drop-shadow(0 0 calc(7*var(--u)) rgba(255,255,255,.4)) !important}
+.nav-hit.active>.nvi{stroke:#ffd9a6 !important;filter:drop-shadow(0 calc(2*var(--u)) 0 #3b1a04) drop-shadow(0 0 calc(10*var(--u)) rgba(255,140,40,1)) drop-shadow(0 0 calc(22*var(--u)) rgba(255,110,20,.75)) !important}
+.nav-lab{color:#fff !important;font-weight:700 !important}.nav-lab.active{color:#ffd9a6 !important}
+
+/* chats icon colour + cleaner type */
+[data-action=chats] .card-ico{stroke:#ff7684 !important;filter:drop-shadow(0 calc(2*var(--u)) 0 rgba(60,0,10,.7)) drop-shadow(0 0 calc(9*var(--u)) rgba(255,90,110,1)) drop-shadow(0 0 calc(18*var(--u)) rgba(255,70,90,.7)) !important}
+.feature .title{font-weight:800 !important;letter-spacing:.005em !important;text-shadow:0 calc(1.5*var(--u)) calc(2*var(--u)) rgba(0,0,0,.7) !important}
+.feature .sub{font-weight:500 !important;color:#eef3f9 !important;text-shadow:0 calc(1.5*var(--u)) calc(2*var(--u)) rgba(0,0,0,.7) !important}
+.nav-lab{font-weight:600 !important;letter-spacing:.01em;text-shadow:0 calc(1.5*var(--u)) calc(2*var(--u)) rgba(0,0,0,.8) !important}
+.nav-lab.active{color:#ffdcae !important;text-shadow:0 0 calc(8*var(--u)) rgba(255,130,30,.7),0 calc(1.5*var(--u)) calc(2*var(--u)) rgba(0,0,0,.8) !important}
+
+/* nav icons: one clean bright stroke + a single soft glow */
+.nvi{stroke:#ffffff !important;stroke-width:1.9 !important;
+  filter:drop-shadow(0 calc(1.5*var(--u)) calc(1.5*var(--u)) rgba(0,0,0,.85)) drop-shadow(0 0 calc(6*var(--u)) rgba(255,255,255,.55)) !important}
+.nav-hit.active>.nvi{stroke:#ffe2bd !important;filter:drop-shadow(0 calc(1.5*var(--u)) calc(1.5*var(--u)) rgba(60,20,0,.8)) drop-shadow(0 0 calc(9*var(--u)) rgba(255,150,50,1)) !important}
+
+/* ---- bottom nav matched to the reference: uniform chrome outline icons, no orange tab highlight ---- */
+.nav-hit.active::before,.nav-hit:hover::before{background:none !important;animation:none !important}
+.nvi{fill:none;stroke:none !important;stroke-width:1 !important;filter:drop-shadow(0 calc(2*var(--u)) calc(2*var(--u)) rgba(0,0,0,.7)) !important}
+.nvi .nb-b{stroke:#0d1217;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.nvi .nb-f{stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.nav-hit:hover>.nvi,.nav-hit.active>.nvi{filter:drop-shadow(0 calc(2*var(--u)) calc(2*var(--u)) rgba(0,0,0,.7)) drop-shadow(0 0 calc(8*var(--u)) rgba(255,255,255,.55)) !important}
+.nav-lab,.nav-lab.active{color:#f1f4f7 !important;font-weight:600 !important}
+.nav-lab.calls-lab{color:#ffe9d0 !important;text-shadow:0 0 calc(8*var(--u)) rgba(255,120,20,.8),0 calc(1.5*var(--u)) calc(2*var(--u)) rgba(0,0,0,.8) !important}
+
+/* 3D icon tiles from the reference images */
+.ico3d{z-index:2;border-radius:calc(22*var(--u));object-fit:fill;pointer-events:none;filter:drop-shadow(0 calc(5*var(--u)) calc(6*var(--u)) rgba(0,0,0,.65))}
+.feature::before{display:none !important}
+
+/* spacing like the reference: smaller icon tile, clear gap before the title */
+.feature .ico3d{left:calc(36*var(--u)) !important;top:calc(28*var(--u)) !important;height:calc(84*var(--u)) !important}
+[data-action=chats] .ico3d{width:calc(100*var(--u)) !important}
+[data-action=calls] .ico3d,[data-action=marketplace] .ico3d,[data-action=anonymous] .ico3d{width:calc(89*var(--u)) !important}
+[data-action=chats] .card-ico,[data-action=calls] .card-ico,[data-action=marketplace] .card-ico,[data-action=anonymous] .card-ico{left:calc(55*var(--u)) !important;top:calc(45*var(--u)) !important;width:calc(52*var(--u)) !important;height:calc(52*var(--u)) !important}
+[data-action=chats] .title,[data-action=calls] .title,[data-action=marketplace] .title,[data-action=anonymous] .title{top:calc(127*var(--u)) !important}
+[data-action=chats] .sub,[data-action=calls] .sub,[data-action=marketplace] .sub,[data-action=anonymous] .sub{top:calc(170*var(--u)) !important}
+
+/* final spacing pass: clear gap icon -> title -> subtitle */
+.feature .ico3d{top:calc(24*var(--u)) !important;height:calc(80*var(--u)) !important}
+[data-action=chats] .ico3d{width:calc(95*var(--u)) !important}
+[data-action=calls] .ico3d,[data-action=marketplace] .ico3d,[data-action=anonymous] .ico3d{width:calc(85*var(--u)) !important}
+[data-action=chats] .card-ico,[data-action=calls] .card-ico,[data-action=marketplace] .card-ico,[data-action=anonymous] .card-ico{top:calc(40*var(--u)) !important;width:calc(48*var(--u)) !important;height:calc(48*var(--u)) !important;left:calc(54*var(--u)) !important}
+[data-action=chats] .title,[data-action=calls] .title,[data-action=marketplace] .title,[data-action=anonymous] .title{top:calc(129*var(--u)) !important;line-height:1.1 !important}
+[data-action=chats] .sub,[data-action=calls] .sub,[data-action=marketplace] .sub,[data-action=anonymous] .sub{top:calc(177*var(--u)) !important}
+
+/* Design System row keeps its own layout */
+.ds-card .title{top:calc(34*var(--u)) !important}
+.ds-card .sub{top:calc(80*var(--u)) !important}
+
+/* spacing v3: more room above the icon tile, text tucked closer beneath it */
+.feature .ico3d{top:calc(38*var(--u)) !important}
+[data-action=chats] .card-ico,[data-action=calls] .card-ico,[data-action=marketplace] .card-ico,[data-action=anonymous] .card-ico{top:calc(54*var(--u)) !important}
+[data-action=chats] .title,[data-action=calls] .title,[data-action=marketplace] .title,[data-action=anonymous] .title{top:calc(127*var(--u)) !important}
+[data-action=chats] .sub,[data-action=calls] .sub,[data-action=marketplace] .sub,[data-action=anonymous] .sub{top:calc(170*var(--u)) !important}
+
+/* Design System icon = same 3D glossy tile as Chats/Calls (blue) */
+.ds-ico{background:none !important;border:0 !important;box-shadow:none !important;border-radius:0 !important;width:calc(100*var(--u)) !important;height:calc(94*var(--u)) !important;left:calc(52*var(--u)) !important;top:calc(28*var(--u)) !important;display:block;filter:drop-shadow(0 calc(5*var(--u)) calc(6*var(--u)) rgba(0,0,0,.65))}
+.ds-ico img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;border-radius:calc(22*var(--u));display:block}
+.ds-ico svg{position:absolute !important;left:50%;top:50%;width:calc(52*var(--u)) !important;height:calc(52*var(--u)) !important;transform:translate(-50%,-50%);stroke:#c9f6ff !important;filter:drop-shadow(0 0 calc(7*var(--u)) rgba(63,210,242,1)) drop-shadow(0 0 calc(14*var(--u)) rgba(40,170,255,.7)) !important}

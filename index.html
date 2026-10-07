@@ -552,6 +552,7 @@ body.editing .nav-lab{pointer-events:auto;}
 }
 </style>
 <link rel="stylesheet" href="assets/fx.css?v=3">
+<link rel="stylesheet" href="assets/home-polish.css?v=12">
 </head>
 <body class="bg-black">
 <!-- shared metallic gradients for icon strokes -->
@@ -592,7 +593,7 @@ body.editing .nav-lab{pointer-events:auto;}
   <!-- ===================== GREETING ===================== -->
   <!-- Panel art: assets/greeting.png (865x202, supplied design with the baked text removed so the name/greeting stay editable).
        Live layers: photo button (tap to change), editable GOOD MORNING + name, breathing ring glow. -->
-  <section class="abs" style="--x:21;--y:411;--w:865;--h:202;transform:scale(1.025);transform-origin:0 0" aria-label="Greeting">
+  <section class="abs gloss" style="--x:21;--y:411;--w:865;--h:202;transform:scale(1.025);transform-origin:0 0" aria-label="Greeting">
     <img src="assets/greeting.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65))">
     <!-- breathing orange glow around the segmented ring -->
     <div class="absolute pointer-events-none rounded-full" style="left:calc(46*var(--u));top:calc(0*var(--u));width:calc(204*var(--u));height:calc(200*var(--u));box-shadow:0 0 calc(26*var(--u)) rgba(255,122,26,.65),inset 0 0 calc(20*var(--u)) rgba(255,122,26,.25);animation:breathe 4.5s ease-in-out infinite" aria-hidden="true"></div>
@@ -611,7 +612,7 @@ body.editing .nav-lab{pointer-events:auto;}
   <!-- ===================== CTA ===================== -->
   <!-- Panel art: assets/cta.png (856x215, supplied design with the baked text removed so it stays editable; the glowing
        orange button is part of the art). Live layers: editable title/body, transparent button hit-area with hover/press/pulse. -->
-  <section class="abs" style="--x:24;--y:621;--w:856;--h:215;transform:scale(1.026);transform-origin:0 0" aria-label="Start a conversation">
+  <section class="abs gloss" style="--x:24;--y:621;--w:856;--h:215;transform:scale(1.026);transform-origin:0 0" aria-label="Start a conversation">
     <img src="assets/cta.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65))">
     <div class="absolute" style="left:calc(56*var(--u));top:calc(40*var(--u));width:calc(600*var(--u))">
       <h3 data-edit="ctaTitle" class="title-orange m-0 font-bold leading-tight" style="font-size:clamp(18px,calc(46*var(--u)),27px)">Start a conversation</h3>
@@ -626,29 +627,33 @@ body.editing .nav-lab{pointer-events:auto;}
   <!-- Explore cards (2x2): Chats + Calls use the supplied art (chat/phone icon blocks); Marketplace + Anonymous reuse the same frame
        (assets/card-mk.png / card-an.png) with live SVG icons. Whole card is the click target; titles, subtitles and badge counts are editable. -->
   <div role="button" tabindex="0" data-action="chats" class="feature abs" style="--x:26;--y:895;--w:429;--h:220" aria-label="Chats — direct and group">
-    <img src="assets/card-market.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(70,130,255,.25))">
+    <img src="assets/card-base-blue.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(70,130,255,.25))">
+    <img class="ico3d absolute" src="assets/ico-chat-ref.png" alt="" style="left:calc(22.6*var(--u));top:calc(24*var(--u));width:calc(116.8*var(--u));height:calc(98*var(--u))">
     <span data-edit="chatsBadge" class="card-badge absolute" style="left:calc(357*var(--u));top:calc(28*var(--u));background:transparent;color:#fff;box-shadow:0 0 calc(12*var(--u)) transparent,inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.45);font-size:clamp(11px,calc(27*var(--u)),15px);">10</span>
     <span data-edit="chatsTitle" class="title absolute" style="left:calc(40*var(--u));top:calc(125*var(--u));line-height:1">Chats</span>
     <span data-edit="chatsSub" class="sub absolute" style="left:calc(41*var(--u));top:calc(166*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Direct &amp; group</span>
   </div>
 
   <div role="button" tabindex="0" data-action="calls" class="feature abs" style="--x:475;--y:895;--w:429;--h:220" aria-label="Calls — voice and video">
-    <img src="assets/card-anon.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(255,170,70,.25))">
+    <img src="assets/card-base-dark.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(255,170,70,.25))">
+    <img class="ico3d absolute" src="assets/ico-call-ref.png" alt="" style="left:calc(28.9*var(--u));top:calc(24*var(--u));width:calc(104.3*var(--u));height:calc(98*var(--u))">
     <span data-edit="callsTitle" class="title absolute" style="left:calc(40*var(--u));top:calc(125*var(--u));line-height:1">Calls</span>
     <span data-edit="callsSub" class="sub absolute" style="left:calc(41*var(--u));top:calc(166*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Voice &amp; video</span>
   </div>
 
   <div role="button" tabindex="0" data-action="marketplace" class="feature abs" style="--x:26;--y:1135;--w:429;--h:220" aria-label="Marketplace — shop in chat">
-    <img src="assets/card-mk.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(255,170,70,.25))">
-    <svg class="card-ico absolute" viewBox="0 0 24 24" fill="none" stroke="#ffc15a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="left:calc(52*var(--u));top:calc(45*var(--u));width:calc(58*var(--u));height:calc(58*var(--u));filter:drop-shadow(0 0 calc(6*var(--u)) rgba(255,160,40,.9))"><path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5c0 1.4 1.1 2.5 2.5 2.5S9 10.9 9 9.5c0 1.4 1.1 2.5 2.5 2.5h1c1.4 0 2.5-1.1 2.5-2.5 0 1.4 1.1 2.5 2.5 2.5S20 10.9 20 9.5"/><path d="M5.5 12v8h13v-8"/><path d="M10 20v-4.5h4V20"/></svg>
+    <img src="assets/card-base-dark.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(255,170,70,.25))">
+    <img class="ico3d absolute" src="assets/ico-mk.png" alt="" style="left:calc(28.9*var(--u));top:calc(24*var(--u));width:calc(104.3*var(--u));height:calc(98*var(--u))">
+    <svg class="card-ico absolute" viewBox="0 0 24 24" fill="none" stroke="#ffe6b0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="left:calc(52*var(--u));top:calc(41*var(--u));width:calc(58*var(--u));height:calc(58*var(--u));z-index:2"><path d="M4 9.5 5.5 4h13L20 9.5M4 9.5c0 1.4 1.1 2.5 2.5 2.5S9 10.9 9 9.5c0 1.4 1.1 2.5 2.5 2.5h1c1.4 0 2.5-1.1 2.5-2.5 0 1.4 1.1 2.5 2.5 2.5S20 10.9 20 9.5M5.5 12v8h13v-8M10 20v-4.5h4V20"/></svg>
     <span data-edit="mkBadge" class="card-badge absolute" style="left:calc(357*var(--u));top:calc(28*var(--u));background:radial-gradient(circle at 35% 30%,#ffd37a,#e09a1c);color:#2a1700;box-shadow:0 0 calc(12*var(--u)) rgba(255,170,40,.8),inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.45);">1</span>
     <span data-edit="mkTitle" class="title absolute" style="left:calc(40*var(--u));top:calc(125*var(--u));line-height:1">Marketplace</span>
     <span data-edit="mkSub" class="sub absolute" style="left:calc(41*var(--u));top:calc(166*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Shop in chat</span>
   </div>
 
   <div role="button" tabindex="0" data-action="anonymous" class="feature abs" style="--x:475;--y:1135;--w:429;--h:220" aria-label="Anonymous — speak freely">
-    <img src="assets/card-an.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(60,230,215,.25))">
-    <svg class="card-ico absolute" viewBox="0 0 24 24" fill="none" stroke="#4ff0e0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="left:calc(52*var(--u));top:calc(45*var(--u));width:calc(58*var(--u));height:calc(58*var(--u));filter:drop-shadow(0 0 calc(6*var(--u)) rgba(40,230,215,.9))"><path d="M3 8.5c0-1 .8-1.7 1.8-1.5 2.4.5 4.6.7 7.2.7s4.8-.2 7.2-.7c1-.2 1.8.5 1.8 1.5v3c0 4-2.8 7.5-9 7.5s-9-3.5-9-7.5z"/><path d="M6.5 11.2c1-.7 2.8-.7 3.8.4M13.7 11.6c1-1.1 2.8-1.1 3.8-.4"/></svg>
+    <img src="assets/card-base-dark.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(60,230,215,.25))">
+    <img class="ico3d absolute" src="assets/ico-an.png" alt="" style="left:calc(28.9*var(--u));top:calc(24*var(--u));width:calc(104.3*var(--u));height:calc(98*var(--u))">
+    <svg class="card-ico absolute" viewBox="0 0 24 24" fill="none" stroke="#b6fff4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="left:calc(52*var(--u));top:calc(41*var(--u));width:calc(58*var(--u));height:calc(58*var(--u));z-index:2"><path d="M3 8.5c0-1 .8-1.7 1.8-1.5 2.4.5 4.6.7 7.2.7s4.8-.2 7.2-.7c1-.2 1.8.5 1.8 1.5v3c0 4-2.8 7.5-9 7.5s-9-3.5-9-7.5z"/><path d="M6.5 11.2c1-.7 2.8-.7 3.8.4M13.7 11.6c1-.7 2.8-.7 3.8-.4"/></svg>
     <span data-edit="anBadge" class="card-badge absolute" style="left:calc(357*var(--u));top:calc(28*var(--u));background:radial-gradient(circle at 35% 30%,#7cfff0,#12bfb0);color:#032a27;box-shadow:0 0 calc(12*var(--u)) rgba(40,230,215,.8),inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.45);">3</span>
     <span data-edit="anTitle" class="title absolute" style="left:calc(40*var(--u));top:calc(125*var(--u));line-height:1">Anonymous</span>
     <span data-edit="anSub" class="sub absolute" style="left:calc(41*var(--u));top:calc(166*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Speak freely</span>
@@ -656,7 +661,7 @@ body.editing .nav-lab{pointer-events:auto;}
 
   <!-- Design System row: metal frame = assets/card-blank.png via border-image (corners stay crisp at any width) -->
   <div role="button" tabindex="0" data-action="design-system" class="feature abs ds-card" style="--x:26;--y:1375;--w:878;--h:150" aria-label="Design System — foundation tokens and components">
-    <span class="ds-ico absolute"><svg viewBox="0 0 24 24" fill="none" stroke="#3fd2f2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.9 1.8-1.8 0-.5-.2-.9-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4C21 6.4 16.9 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7.2" r="1"/><circle cx="14.5" cy="7.2" r="1"/></svg></span>
+    <span class="ds-ico absolute"><img src="assets/ico-ds.png" alt=""><svg viewBox="0 0 24 24" fill="none" stroke="#bff3ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.9 1.8-1.8 0-.5-.2-.9-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4C21 6.4 16.9 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7.2" r="1"/><circle cx="14.5" cy="7.2" r="1"/></svg></span>
     <span data-edit="dsTitle" class="title absolute" style="left:calc(185*var(--u));top:calc(34*var(--u));line-height:1">Design System</span>
     <span data-edit="dsSub" class="sub absolute" style="left:calc(185*var(--u));top:calc(80*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Foundation tokens &amp; components</span>
     <span class="ds-dash absolute" style="left:calc(185*var(--u));top:calc(122*var(--u))"><i style="background:#2fd3e6;box-shadow:0 0 calc(6*var(--u)) #2fd3e6"></i><i style="background:#e8a838;box-shadow:0 0 calc(6*var(--u)) #e8a838"></i><i style="background:#25c9b5;box-shadow:0 0 calc(6*var(--u)) #25c9b5"></i><i style="background:#7a5cf0;box-shadow:0 0 calc(6*var(--u)) #7a5cf0"></i><i style="background:#e8643c;box-shadow:0 0 calc(6*var(--u)) #e8643c"></i></span>
@@ -811,6 +816,6 @@ document.querySelectorAll('.nav-hit[data-nav]').forEach(function(btn){
   });
 })();
 </script>
-<script src="assets/fx.js?v=2"></script>
+<script src="assets/fx.js?v=3"></script>
 </body>
 </html>
