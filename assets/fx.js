@@ -18,3 +18,22 @@
     m.forEach(function(x){[].forEach.call(x.addedNodes,function(n){if(n.nodeType===1)stagger(n.parentNode);});});
   }).observe(document.body,{childList:true,subtree:true});
 })();
+
+/* animated nav icons: drawn live in the dock art's outline style, placed over the cleared spots in dock.png / ai-nav.png */
+(function(){
+  var P={
+    home:['h','<path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/>',47,43],
+    chats:['c','<path d="M4 5h16v11H9l-5 4z"/>',53,36],
+    market:['m','<path d="M4 9.5 5.5 4h13L20 9.5M4 9.5c0 1.4 1.1 2.5 2.5 2.5S9 10.9 9 9.5c0 1.4 1.1 2.5 2.5 2.5h1c1.4 0 2.5-1.1 2.5-2.5 0 1.4 1.1 2.5 2.5 2.5S20 10.9 20 9.5M5.5 12v8h13v-8M10 20v-4.5h4V20"/>',53,40],
+    profile:['p','<circle cx="12" cy="8.5" r="3.6"/><path d="M5 20c.8-4 3.6-5.8 7-5.8s6.2 1.8 7 5.8"/>',48,36]
+  };
+  function add(el,key){
+    var d=P[key];if(!d||el.querySelector('.nvi'))return;
+    var s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    s.setAttribute('viewBox','0 0 24 24');s.setAttribute('class','nvi '+d[0]);s.setAttribute('aria-hidden','true');
+    s.style.left='calc('+(d[2]-31)+' * var(--nu))';s.style.top='calc('+(d[3]-31)+' * var(--nu))';
+    s.innerHTML=d[1];el.appendChild(s);
+  }
+  [].forEach.call(document.querySelectorAll('nav a[aria-label]'),function(a){add(a,a.getAttribute('aria-label').toLowerCase());});
+  [].forEach.call(document.querySelectorAll('.nav-hit[data-action]'),function(a){add(a,a.dataset.action);});
+})();

@@ -69,3 +69,22 @@ nav .lab{transition:transform .2s,color .2s}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
+
+/* ---------- animated bottom-nav icons (injected by fx.js; the baked icons were removed from dock.png / ai-nav.png) ---------- */
+.nvi{--nu:var(--k,var(--u,1px));position:absolute;width:calc(62*var(--nu));height:calc(62*var(--nu));pointer-events:none;z-index:2;display:block;
+  fill:none;stroke:#d9e0e7;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;overflow:visible;
+  filter:drop-shadow(0 calc(2*var(--nu)) 0 #000) drop-shadow(0 calc(-1*var(--nu)) 0 rgba(255,255,255,.35)) drop-shadow(0 0 calc(4*var(--nu)) rgba(255,255,255,.18));
+  transition:stroke .25s,filter .25s;transform-origin:50% 60%}
+a.on>.nvi,.nav-hit.active>.nvi{stroke:#ffc58a;filter:drop-shadow(0 calc(2*var(--nu)) 0 #3b1a04) drop-shadow(0 0 calc(9*var(--nu)) rgba(255,130,30,.95)) drop-shadow(0 0 calc(18*var(--nu)) rgba(255,110,20,.6));animation-play-state:running}
+a:hover>.nvi,.nav-hit:hover>.nvi{stroke:#fff1dc;filter:drop-shadow(0 calc(2*var(--nu)) 0 #000) drop-shadow(0 0 calc(10*var(--nu)) rgba(255,160,70,.9))}
+@keyframes nvHome{0%,84%,100%{transform:translateY(0)}88%{transform:translateY(calc(-9*var(--nu))) scale(1.08)}92%{transform:translateY(0) scale(.96)}96%{transform:translateY(calc(-3*var(--nu)))}}
+@keyframes nvChat{0%,80%,100%{transform:scale(1)}85%{transform:scale(1.22) rotate(-8deg)}90%{transform:scale(.94) rotate(5deg)}95%{transform:scale(1.06)}}
+@keyframes nvShop{0%,78%,100%{transform:rotate(0)}82%{transform:rotate(11deg)}86%{transform:rotate(-9deg)}90%{transform:rotate(6deg)}94%{transform:rotate(-3deg)}}
+@keyframes nvUser{0%,82%,100%{transform:translateY(0) rotate(0)}86%{transform:translateY(calc(3*var(--nu))) rotate(-7deg)}91%{transform:translateY(calc(-3*var(--nu))) rotate(6deg)}95%{transform:translateY(0)}}
+@keyframes nvBob{0%,100%{translate:0 0}50%{translate:0 calc(-3*var(--nu))}}
+.nvi{animation:nvBob 3.6s ease-in-out infinite}
+.nvi.h{animation:nvBob 3.6s ease-in-out infinite,nvHome 6.5s ease-in-out infinite}
+.nvi.c{animation:nvBob 3.6s ease-in-out -.9s infinite,nvChat 7s ease-in-out -2s infinite}
+.nvi.m{animation:nvBob 3.6s ease-in-out -1.8s infinite,nvShop 7.5s ease-in-out -3.5s infinite;transform-origin:50% 20%}
+.nvi.p{animation:nvBob 3.6s ease-in-out -2.7s infinite,nvUser 8s ease-in-out -5s infinite}
+a:active>.nvi,.nav-hit:active>.nvi{animation:none;transform:scale(.86);transition:transform .1s}

@@ -27,7 +27,7 @@
 html,body{margin:0;min-height:100%;background:#07090c;}
 body{display:flex;justify-content:center;align-items:flex-start;overflow-x:hidden;
   font-family:"Figtree","Segoe UI",Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent;}
-.stage{width:min(100vw,430px);aspect-ratio:941/2145;container-type:inline-size;position:relative;}
+.stage{width:min(100vw,430px);aspect-ratio:941/2075;container-type:inline-size;position:relative;}
 .shell{--u:calc(100cqw / 941);position:absolute;inset:0;overflow:hidden;
   border-radius:calc(70*var(--u));isolation:isolate;}
 .abs{position:absolute !important;left:calc(var(--x)*var(--u));top:calc(var(--y)*var(--u));
@@ -551,7 +551,7 @@ body.editing .nav-lab{pointer-events:auto;}
   .spark{opacity:.6}
 }
 </style>
-<link rel="stylesheet" href="assets/fx.css?v=2">
+<link rel="stylesheet" href="assets/fx.css?v=3">
 </head>
 <body class="bg-black">
 <!-- shared metallic gradients for icon strokes -->
@@ -569,35 +569,11 @@ body.editing .nav-lab{pointer-events:auto;}
   <div class="device-frame"></div>
 
   <!-- ===================== STATUS ===================== -->
-  <header class="abs" style="--x:0;--y:0;--w:941;--h:100" aria-label="Status bar">
-    <span class="status-text abs" style="--x:122;--y:36;--w:140;--h:50;font-size:clamp(14px,calc(40*var(--u)),20px);">08:35</span>
-    <!-- camera punch hole: chrome bezel + dark gap + coated lens -->
-    <svg class="abs" style="--x:430;--y:20;--w:74;--h:74" viewBox="0 0 74 74" aria-label="Front camera" role="img">
-      <defs>
-        <linearGradient id="cRim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".35" stop-color="#6a737c"/><stop offset=".6" stop-color="#14181c"/><stop offset="1" stop-color="#b9c1c8"/></linearGradient>
-        <radialGradient id="cLens" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#6c7bff"/><stop offset=".25" stop-color="#2a2f9a"/><stop offset=".6" stop-color="#0a0b2c"/><stop offset="1" stop-color="#000"/></radialGradient>
-      </defs>
-      <circle cx="37" cy="37" r="35" fill="url(#cRim)"/><circle cx="37" cy="37" r="30" fill="#050607"/>
-      <circle cx="37" cy="37" r="25" fill="url(#cLens)"/><circle cx="37" cy="37" r="14" fill="#04051a" stroke="#4b57d8" stroke-opacity=".7" stroke-width="2"/>
-      <ellipse cx="29" cy="27" rx="8" ry="4" fill="#fff" opacity=".35" transform="rotate(-35 29 27)"/><circle cx="43" cy="44" r="3" fill="#8a6bff" opacity=".7"/>
-    </svg>
-    <!-- edit-mode controls: pencil toggles text editing, rotate-arrow resets saved edits -->
-    <button type="button" id="editToggle" class="edit-btn abs" aria-pressed="false" aria-label="Edit text" style="--x:526;--y:30;--w:64;--h:64">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1-4L16.5 4.5a2 2 0 0 1 3 0l0 0a2 2 0 0 1 0 3L8 19z"/><path d="M14 7l3 3"/></svg>
-    </button>
-    <button type="button" id="editReset" class="edit-btn abs" aria-label="Reset all edits" hidden style="--x:598;--y:30;--w:64;--h:64">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>
-    </button>
-    <!-- signal / wifi / battery: white glossy glyphs with a dark drop -->
-    <svg class="abs" style="--x:668;--y:40;--w:50;--h:44;filter:drop-shadow(0 calc(2*var(--u)) calc(2*var(--u)) #000)" viewBox="0 0 50 44" fill="#fff" aria-label="Signal"><rect x="0" y="30" width="8" height="14" rx="2"/><rect x="14" y="21" width="8" height="23" rx="2"/><rect x="28" y="11" width="8" height="33" rx="2"/><rect x="42" y="0" width="8" height="44" rx="2"/></svg>
-    <svg class="abs" style="--x:730;--y:40;--w:50;--h:44;filter:drop-shadow(0 calc(2*var(--u)) calc(2*var(--u)) #000)" viewBox="0 0 50 44" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" aria-label="Wi-Fi"><path d="M3 14c12-11 32-11 44 0"/><path d="M11 24c8-7 20-7 28 0"/><circle cx="25" cy="36" r="3" fill="#fff"/></svg>
-    <svg class="abs" style="--x:786;--y:40;--w:68;--h:38;filter:drop-shadow(0 calc(2*var(--u)) calc(2*var(--u)) #000)" viewBox="0 0 68 38" aria-label="Battery"><rect x="1.5" y="3" width="57" height="32" rx="9" fill="none" stroke="#fff" stroke-width="3"/><rect x="61" y="13" width="5" height="12" rx="2.5" fill="#fff"/><path d="M8 9h22v20H8a4 4 0 0 1-4-4V13a4 4 0 0 1 4-4z" fill="#fff"/></svg>
-  </header>
 
   <!-- ===================== HERO ===================== -->
   <!-- Hero artwork: assets/hero.png (878x362, supplied design: panel, bomb mascot, wordmark, bell, badge, platform).
        Live layers on top: accessible h1, bell button, animated sparks + pulsing platform glow. -->
-  <section class="abs" style="--x:21;--y:99;--w:861;--h:355;transform:scale(1.038);transform-origin:0 0" aria-label="SYSTEMBOOM header">
+  <section class="abs" style="--x:21;--y:29;--w:861;--h:355;transform:scale(1.038);transform-origin:0 0" aria-label="SYSTEMBOOM header">
     <div class="absolute inset-0" style="filter:drop-shadow(0 calc(8*var(--u)) calc(12*var(--u)) rgba(0,0,0,.7)) drop-shadow(0 0 calc(14*var(--u)) rgba(255,120,20,.3))"><img src="assets/hero-nobomb.png" alt="" class="w-full h-full" style="object-fit:fill;display:block;clip-path:polygon(0.3% 15.5%,17% 15.5%,24% 0.3%,76% 0.3%,83% 15.5%,99.7% 15.5%,99.7% 83%,94.5% 99.7%,5.5% 99.7%,0.3% 83%)"></div>
     <!-- SYSTEMBOOM wordmark: live text (crisp at any size, editable) styled as brushed steel over the hero art whose baked wordmark was removed -->
     <h1 class="absolute m-0" style="left:calc(78*var(--u));top:calc(62*var(--u));width:calc(600*var(--u));z-index:3;line-height:0" aria-label="SYSTEMBOOM"><img src="assets/logo-lockup.png" alt="SYSTEMBOOM" style="display:block;width:100%;height:auto;-webkit-mask:linear-gradient(90deg,transparent,#000 1.5%,#000 95%,transparent),linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent);-webkit-mask-composite:source-in;mask:linear-gradient(90deg,transparent,#000 1.5%,#000 95%,transparent),linear-gradient(180deg,transparent,#000 8%,#000 92%,transparent);mask-composite:intersect;filter:drop-shadow(0 calc(6*var(--u)) calc(6*var(--u)) rgba(0,0,0,.7)) drop-shadow(0 0 calc(10*var(--u)) rgba(255,130,30,.3))"></h1>
@@ -616,7 +592,7 @@ body.editing .nav-lab{pointer-events:auto;}
   <!-- ===================== GREETING ===================== -->
   <!-- Panel art: assets/greeting.png (865x202, supplied design with the baked text removed so the name/greeting stay editable).
        Live layers: photo button (tap to change), editable GOOD MORNING + name, breathing ring glow. -->
-  <section class="abs" style="--x:21;--y:481;--w:865;--h:202;transform:scale(1.025);transform-origin:0 0" aria-label="Greeting">
+  <section class="abs" style="--x:21;--y:411;--w:865;--h:202;transform:scale(1.025);transform-origin:0 0" aria-label="Greeting">
     <img src="assets/greeting.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65))">
     <!-- breathing orange glow around the segmented ring -->
     <div class="absolute pointer-events-none rounded-full" style="left:calc(46*var(--u));top:calc(0*var(--u));width:calc(204*var(--u));height:calc(200*var(--u));box-shadow:0 0 calc(26*var(--u)) rgba(255,122,26,.65),inset 0 0 calc(20*var(--u)) rgba(255,122,26,.25);animation:breathe 4.5s ease-in-out infinite" aria-hidden="true"></div>
@@ -635,7 +611,7 @@ body.editing .nav-lab{pointer-events:auto;}
   <!-- ===================== CTA ===================== -->
   <!-- Panel art: assets/cta.png (856x215, supplied design with the baked text removed so it stays editable; the glowing
        orange button is part of the art). Live layers: editable title/body, transparent button hit-area with hover/press/pulse. -->
-  <section class="abs" style="--x:24;--y:691;--w:856;--h:215;transform:scale(1.026);transform-origin:0 0" aria-label="Start a conversation">
+  <section class="abs" style="--x:24;--y:621;--w:856;--h:215;transform:scale(1.026);transform-origin:0 0" aria-label="Start a conversation">
     <img src="assets/cta.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65))">
     <div class="absolute" style="left:calc(56*var(--u));top:calc(40*var(--u));width:calc(600*var(--u))">
       <h3 data-edit="ctaTitle" class="title-orange m-0 font-bold leading-tight" style="font-size:clamp(18px,calc(46*var(--u)),27px)">Start a conversation</h3>
@@ -645,24 +621,24 @@ body.editing .nav-lab{pointer-events:auto;}
   </section>
 
   <!-- ===================== EXPLORE ===================== -->
-  <div data-edit="explore" class="abs engraved font-bold tracking-[.06em]" style="--x:37;--y:918;--w:300;--h:40;font-size:clamp(13px,calc(30*var(--u)),18px)">EXPLORE</div>
+  <div data-edit="explore" class="abs engraved font-bold tracking-[.06em]" style="--x:37;--y:848;--w:300;--h:40;font-size:clamp(13px,calc(30*var(--u)),18px)">EXPLORE</div>
 
   <!-- Explore cards (2x2): Chats + Calls use the supplied art (chat/phone icon blocks); Marketplace + Anonymous reuse the same frame
        (assets/card-mk.png / card-an.png) with live SVG icons. Whole card is the click target; titles, subtitles and badge counts are editable. -->
-  <div role="button" tabindex="0" data-action="chats" class="feature abs" style="--x:26;--y:965;--w:429;--h:220" aria-label="Chats — direct and group">
+  <div role="button" tabindex="0" data-action="chats" class="feature abs" style="--x:26;--y:895;--w:429;--h:220" aria-label="Chats — direct and group">
     <img src="assets/card-market.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(70,130,255,.25))">
     <span data-edit="chatsBadge" class="card-badge absolute" style="left:calc(357*var(--u));top:calc(28*var(--u));background:transparent;color:#fff;box-shadow:0 0 calc(12*var(--u)) transparent,inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.45);font-size:clamp(11px,calc(27*var(--u)),15px);">10</span>
     <span data-edit="chatsTitle" class="title absolute" style="left:calc(40*var(--u));top:calc(125*var(--u));line-height:1">Chats</span>
     <span data-edit="chatsSub" class="sub absolute" style="left:calc(41*var(--u));top:calc(166*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Direct &amp; group</span>
   </div>
 
-  <div role="button" tabindex="0" data-action="calls" class="feature abs" style="--x:475;--y:965;--w:429;--h:220" aria-label="Calls — voice and video">
+  <div role="button" tabindex="0" data-action="calls" class="feature abs" style="--x:475;--y:895;--w:429;--h:220" aria-label="Calls — voice and video">
     <img src="assets/card-anon.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(255,170,70,.25))">
     <span data-edit="callsTitle" class="title absolute" style="left:calc(40*var(--u));top:calc(125*var(--u));line-height:1">Calls</span>
     <span data-edit="callsSub" class="sub absolute" style="left:calc(41*var(--u));top:calc(166*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Voice &amp; video</span>
   </div>
 
-  <div role="button" tabindex="0" data-action="marketplace" class="feature abs" style="--x:26;--y:1205;--w:429;--h:220" aria-label="Marketplace — shop in chat">
+  <div role="button" tabindex="0" data-action="marketplace" class="feature abs" style="--x:26;--y:1135;--w:429;--h:220" aria-label="Marketplace — shop in chat">
     <img src="assets/card-mk.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(255,170,70,.25))">
     <svg class="card-ico absolute" viewBox="0 0 24 24" fill="none" stroke="#ffc15a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="left:calc(52*var(--u));top:calc(45*var(--u));width:calc(58*var(--u));height:calc(58*var(--u));filter:drop-shadow(0 0 calc(6*var(--u)) rgba(255,160,40,.9))"><path d="M4 9.5 5.5 4h13L20 9.5"/><path d="M4 9.5c0 1.4 1.1 2.5 2.5 2.5S9 10.9 9 9.5c0 1.4 1.1 2.5 2.5 2.5h1c1.4 0 2.5-1.1 2.5-2.5 0 1.4 1.1 2.5 2.5 2.5S20 10.9 20 9.5"/><path d="M5.5 12v8h13v-8"/><path d="M10 20v-4.5h4V20"/></svg>
     <span data-edit="mkBadge" class="card-badge absolute" style="left:calc(357*var(--u));top:calc(28*var(--u));background:radial-gradient(circle at 35% 30%,#ffd37a,#e09a1c);color:#2a1700;box-shadow:0 0 calc(12*var(--u)) rgba(255,170,40,.8),inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.45);">1</span>
@@ -670,7 +646,7 @@ body.editing .nav-lab{pointer-events:auto;}
     <span data-edit="mkSub" class="sub absolute" style="left:calc(41*var(--u));top:calc(166*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Shop in chat</span>
   </div>
 
-  <div role="button" tabindex="0" data-action="anonymous" class="feature abs" style="--x:475;--y:1205;--w:429;--h:220" aria-label="Anonymous — speak freely">
+  <div role="button" tabindex="0" data-action="anonymous" class="feature abs" style="--x:475;--y:1135;--w:429;--h:220" aria-label="Anonymous — speak freely">
     <img src="assets/card-an.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.65)) drop-shadow(0 0 calc(12*var(--u)) rgba(60,230,215,.25))">
     <svg class="card-ico absolute" viewBox="0 0 24 24" fill="none" stroke="#4ff0e0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="left:calc(52*var(--u));top:calc(45*var(--u));width:calc(58*var(--u));height:calc(58*var(--u));filter:drop-shadow(0 0 calc(6*var(--u)) rgba(40,230,215,.9))"><path d="M3 8.5c0-1 .8-1.7 1.8-1.5 2.4.5 4.6.7 7.2.7s4.8-.2 7.2-.7c1-.2 1.8.5 1.8 1.5v3c0 4-2.8 7.5-9 7.5s-9-3.5-9-7.5z"/><path d="M6.5 11.2c1-.7 2.8-.7 3.8.4M13.7 11.6c1-1.1 2.8-1.1 3.8-.4"/></svg>
     <span data-edit="anBadge" class="card-badge absolute" style="left:calc(357*var(--u));top:calc(28*var(--u));background:radial-gradient(circle at 35% 30%,#7cfff0,#12bfb0);color:#032a27;box-shadow:0 0 calc(12*var(--u)) rgba(40,230,215,.8),inset 0 calc(2*var(--u)) 0 rgba(255,255,255,.45);">3</span>
@@ -679,7 +655,7 @@ body.editing .nav-lab{pointer-events:auto;}
   </div>
 
   <!-- Design System row: metal frame = assets/card-blank.png via border-image (corners stay crisp at any width) -->
-  <div role="button" tabindex="0" data-action="design-system" class="feature abs ds-card" style="--x:26;--y:1445;--w:878;--h:150" aria-label="Design System — foundation tokens and components">
+  <div role="button" tabindex="0" data-action="design-system" class="feature abs ds-card" style="--x:26;--y:1375;--w:878;--h:150" aria-label="Design System — foundation tokens and components">
     <span class="ds-ico absolute"><svg viewBox="0 0 24 24" fill="none" stroke="#3fd2f2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.9 1.8-1.8 0-.5-.2-.9-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4C21 6.4 16.9 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7.2" r="1"/><circle cx="14.5" cy="7.2" r="1"/></svg></span>
     <span data-edit="dsTitle" class="title absolute" style="left:calc(185*var(--u));top:calc(34*var(--u));line-height:1">Design System</span>
     <span data-edit="dsSub" class="sub absolute" style="left:calc(185*var(--u));top:calc(80*var(--u));font-size:clamp(12px,calc(31*var(--u)),17px);line-height:1">Foundation tokens &amp; components</span>
@@ -691,7 +667,7 @@ body.editing .nav-lab{pointer-events:auto;}
   <!-- One piece of art: assets/ai-nav.png (896x515, supplied design with all text removed so it stays editable).
        The avatar, neon button frame + gear, dock icons and the glowing Calls button are part of the art.
        Live layers: editable text, transparent click targets, glow pulses, active-tab glow. -->
-  <section class="abs" style="--x:0;--y:1610;--w:896;--h:515;transform:scale(1.0502);transform-origin:0 0" aria-label="AI companion and navigation">
+  <section class="abs" style="--x:0;--y:1540;--w:896;--h:515;transform:scale(1.0502);transform-origin:0 0" aria-label="AI companion and navigation">
     <img src="assets/ai-nav.png" alt="" class="absolute inset-0 w-full h-full" style="object-fit:fill;filter:drop-shadow(0 calc(8*var(--u)) calc(10*var(--u)) rgba(0,0,0,.6))">
 
     <!-- AI companion text -->
@@ -762,8 +738,8 @@ document.querySelectorAll('.nav-hit[data-nav]').forEach(function(btn){
              del:function(k){try{localStorage.removeItem(NS+k);}catch(e){}}};
 
   /* ---- ROUTES: put a URL (or '#hash') here to navigate on tap; null shows a toast only ---- */
-  var ROUTES={home:null,chats:'chats.html',market:'market.html',profile:'profile.html',calls:'calls.html',notifications:null,
-              'start-chat':'chats.html',marketplace:'market.html',anonymous:null,'configure-avatar':null,'design-system':'design.html'};
+  var ROUTES={home:null,chats:null,market:null,profile:null,calls:null,notifications:null,
+              'start-chat':null,marketplace:null,anonymous:null,'configure-avatar':null,'design-system':null};
   var LABELS={home:'Home',chats:'Chats',market:'Market',profile:'Profile',calls:'Calls',notifications:'Notifications',
               'start-chat':'Starting a conversation','marketplace':'Marketplace','anonymous':'Anonymous calls','configure-avatar':'Configure Avatar','design-system':'Design System'};
 
@@ -775,7 +751,7 @@ document.querySelectorAll('.nav-hit[data-nav]').forEach(function(btn){
   edits.forEach(function(el){var v=store.get('t.'+el.dataset.edit);if(v!==null)el.textContent=v;});
 
   /* ---- edit mode ---- */
-  var toggle=document.getElementById('editToggle'),reset=document.getElementById('editReset');
+  var toggle=document.getElementById('editToggle')||document.createElement('button'),reset=document.getElementById('editReset')||document.createElement('button');  /* status-bar controls removed from the page; detached stand-ins keep the edit code safe */
   function setEditing(on){
     document.body.classList.toggle('editing',on);
     toggle.setAttribute('aria-pressed',on);toggle.setAttribute('aria-label',on?'Finish editing':'Edit text');reset.hidden=!on;
@@ -835,6 +811,6 @@ document.querySelectorAll('.nav-hit[data-nav]').forEach(function(btn){
   });
 })();
 </script>
-<script src="assets/fx.js?v=1"></script>
+<script src="assets/fx.js?v=2"></script>
 </body>
 </html>
