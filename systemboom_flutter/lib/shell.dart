@@ -448,7 +448,7 @@ class CarbonBg extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: const Color(0xFF070A0E),
-        image: DecorationImage(image: const AssetImage('assets/images/carbon-tile.png'), repeat: ImageRepeat.repeat, scale: 68 / (18 * u), filterQuality: FilterQuality.medium),
+        image: DecorationImage(image: const AssetImage('assets/images/carbon-tile.webp'), repeat: ImageRepeat.repeat, scale: 68 / (18 * u), filterQuality: FilterQuality.medium),
       ),
       child: DecoratedBox(
         decoration: BoxDecoration(

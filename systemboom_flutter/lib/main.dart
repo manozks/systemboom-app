@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     for (final n in const [
       'hero-nobomb.webp', 'logo-lockup.webp', 'greeting.webp', 'cta.webp', 'card-base-blue.webp', 'card-base-dark.webp',
       'ico-chat-ref.webp', 'ico-call-ref.webp', 'ico-mk.webp', 'ico-an.webp', 'ico-ds.webp', 'cta-blank-wide.webp', 'ai-nav.webp',
-      'nav-calls.webp', 'hero-header.webp', 'dock.webp', 'hdr-calls.webp', 'brand-colors.webp', 'typography.webp', 'cta-new.webp', 'greeting-new.webp', 'buttons-panel.webp', 'icons-panel.webp', 'icon-key.webp', 'search-bar.webp', 'tabs-base.webp', 'tabs-key.webp', 'carbon-tile.png', 'profile.jpg',
+      'nav-calls.webp', 'hero-header.webp', 'dock.webp', 'hdr-calls.webp', 'brand-colors.webp', 'typography.webp', 'cta-new.webp', 'greeting-new.webp', 'buttons-panel.webp', 'icons-panel.webp', 'icon-key.webp', 'search-bar.webp', 'tabs-base.webp', 'tabs-key.webp', 'carbon-tile.webp', 'profile.webp',
     ]) {
       precacheImage(AssetImage('assets/images/$n'), context);
     }
@@ -793,7 +793,7 @@ class _Background extends StatelessWidget {
           decoration: BoxDecoration(
             color: const Color(0xFF070A0E),
             image: DecorationImage(
-              image: const AssetImage('assets/images/carbon-tile.png'),
+              image: const AssetImage('assets/images/carbon-tile.webp'),
               repeat: ImageRepeat.repeat,
               scale: 68 / (18 * u),
               filterQuality: FilterQuality.medium,

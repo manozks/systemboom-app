@@ -67,7 +67,7 @@ class _DesignPageState extends State<DesignPage> {
                 left: (22 + i * 114.0) * k,
                 top: 60 * k,
                 width: 114 * k,
-                height: 160 * k,
+                height: 126 * k,
                 child: Press(
                   u: u,
                   radius: 20,
@@ -76,9 +76,9 @@ class _DesignPageState extends State<DesignPage> {
                   shine: false,
                   onTap: () => showToast(context, '${_brand[i].$1} ${_brand[i].$2}'),
                   builder: (context, g, s) => Column(children: [
-                    SizedBox(height: 88 * k),
-                    FittedBox(fit: BoxFit.scaleDown, child: Text(_brand[i].$1, maxLines: 1, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white, decoration: TextDecoration.none))),
-                    FittedBox(fit: BoxFit.scaleDown, child: Text(_brand[i].$2, maxLines: 1, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: _brand[i].$3, decoration: TextDecoration.none))),
+                    SizedBox(height: 84 * k),
+                    FittedBox(fit: BoxFit.scaleDown, child: Text(_brand[i].$1, maxLines: 1, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: Colors.white, decoration: TextDecoration.none))),
+                    FittedBox(fit: BoxFit.scaleDown, child: Text(_brand[i].$2, maxLines: 1, style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: _brand[i].$3, decoration: TextDecoration.none))),
                   ]),
                 ),
               ),
