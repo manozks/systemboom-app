@@ -1,30 +1,52 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { conversationTitle, isE2EE, latestMessage, useConversationList, useStore } from '@/lib/data/store';
+import { listTime } from '@/lib/data/format';
+import type { Message } from '@/lib/data/types';
 import { ChevronRight, MessageCircle, Mic, Users } from 'lucide-react';
 import { PageShell } from '@/components/PageShell';
 import { ListHeading, SearchBar, SegTabs } from '@/components/Controls';
 import { Art, At, K, Press, img, useToast } from '@/lib/ui';
 
-type Chat = { name: string; initials: string; preview: string; time: string; unread: number; online?: boolean; photo?: string; group?: boolean; mic?: boolean; logo?: string };
+type Chat = { id: string; name: string; initials: string; preview: string; time: string; unread: number; online?: boolean; group?: boolean; mic?: boolean };
 
-const CHATS: Chat[] = [
-  { name: 'Priya Singh', initials: 'PS', preview: 'Hey! Are we still on for the meeting?', time: '08:28 AM', unread: 3, online: true, photo: 'cf1' },
-  { name: 'Rohit Verma', initials: 'RV', preview: 'Shared a photo', time: '08:12 AM', unread: 1, online: true, photo: 'cf2' },
-  { name: 'Project Team', initials: '', preview: 'Amit: Updated the file', time: '07:45 AM', unread: 12, group: true },
-  { name: 'Neha Kapoor', initials: 'NK', preview: 'Thanks!', time: 'Yesterday', unread: 0, photo: 'cf4' },
-  { name: 'Karan Mehta', initials: 'KM', preview: 'Voice message', time: 'Yesterday', unread: 0, photo: 'cf5', mic: true },
-  { name: 'System Updates', initials: 'S', preview: 'New features are coming soon!', time: 'Yesterday', unread: 0, logo: 'S' },
-  { name: 'Anjali Rao', initials: 'AR', preview: 'Let’s connect tomorrow.', time: 'Mon', unread: 0 },
-];
+const preview = (m?: Message) => {
+  if (!m) return 'No messages yet';
+  if (m.deleted) return 'Message deleted';
+  switch (m.type) {
+    case 'text': return m.text ?? '';
+    case 'image': return '📷 ' + (m.image?.caption ?? 'Photo');
+    case 'video': return '🎬 Video';
+    case 'voice': return 'Voice message';
+    case 'document': return '📄 ' + (m.document?.name ?? 'Document');
+    case 'contact': return '👤 Contact';
+    case 'location': return '📍 Location';
+    case 'product': return '🛍 ' + (m.product?.title ?? 'Product');
+    case 'link': return '🔗 ' + (m.link?.title ?? 'Link');
+    case 'offer': return '💬 Offer';
+    case 'order': return '📦 Order update';
+    default: return m.text ?? '';
+  }
+};
 
 export default function ChatsPage() {
   const toast = useToast();
+  const router = useRouter();
+  const { state } = useStore();
+  const list = useConversationList();
   const [q, setQ] = useState('');
   const [tab, setTab] = useState(0);
+  const CHATS: Chat[] = useMemo(() => list.map((c) => {
+    const name = conversationTitle(c, state.users);
+    const last = latestMessage(c, state.messages);
+    const u = c.userId ? state.users[c.userId] : undefined;
+    return { id: c.id, name, initials: name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase(), preview: (isE2EE(c) ? '🔒 ' : '') + preview(last), time: last ? listTime(last.createdAt) : '', unread: c.unread, online: u?.presence === 'online', group: c.kind === 'group', mic: last?.type === 'voice' };
+  }), [list, state.users, state.messages]);
   const items = useMemo(
-    () => CHATS.filter((c) => (tab === 1 ? c.unread > 0 : tab === 2 ? c.group : true) && `${c.name} ${c.preview}`.toLowerCase().includes(q.toLowerCase())),
-    [q, tab],
+    () => CHATS.filter((c) => (tab === 1 ? c.unread > 0 : tab === 2 ? !!c.group : true) && `${c.name} ${c.preview}`.toLowerCase().includes(q.toLowerCase())),
+    [q, tab, CHATS],
   );
 
   return (
@@ -34,7 +56,7 @@ export default function ChatsPage() {
       <SegTabs index={tab} onChange={setTab} items={[{ label: 'All' }, { label: 'Unread' }, { label: 'Groups' }]} />
       <div style={{ height: 'calc(26 * var(--u))' }} />
 
-      <Press onClick={() => toast('New chat')} style={{ borderRadius: 'calc(34 * var(--u))' }}>
+      <Press onClick={() => router.push('/new-chat/')} style={{ borderRadius: 'calc(34 * var(--u))' }}>
         <Art w={856} h={215} src="cta" style={{ filter: 'drop-shadow(0 10px 12px rgba(0,0,0,.7)) drop-shadow(0 0 16px rgba(255,120,30,.35))' }}>
           <At x={40} y={24} w={168} h={168}>
             <div className="chrome-ring ring-spin" style={{ width: '100%', height: '100%', padding: K(9), boxShadow: `0 0 ${K(26)} rgba(255,122,26,.6)` }}>
@@ -52,18 +74,16 @@ export default function ChatsPage() {
         </Art>
       </Press>
 
-      <ListHeading title="RECENT CHATS" onAction={() => toast('See all chats')} />
+      <ListHeading title="RECENT CHATS" onAction={() => toast(`${CHATS.length} conversations`)} />
       {items.map((c) => (
-        <Press key={c.name} onClick={() => toast(`Opening ${c.name}`)} style={{ marginBottom: 'calc(14 * var(--u))', borderRadius: 'calc(34 * var(--u))' }}>
+        <Press key={c.id} onClick={() => router.push(`/chat/?id=${c.id}`)} style={{ marginBottom: 'calc(14 * var(--u))', borderRadius: 'calc(34 * var(--u))' }}>
           <Art w={856} h={150} src="cta-blank-wide" style={{ filter: 'drop-shadow(0 8px 10px rgba(0,0,0,.65)) drop-shadow(0 0 14px rgba(255,140,50,.28))' }}>
             <At x={44} y={20} w={110} h={110}>
-              <div className="gold-ring" style={{ width: '100%', height: '100%', padding: K(5), boxShadow: `0 0 ${K(c.photo ? 8 : 14)} rgba(255,122,26,${c.photo ? 0.35 : 0.75})` }}>
+              <div className="gold-ring" style={{ width: '100%', height: '100%', padding: K(5), boxShadow: `0 0 ${K(14)} rgba(255,122,26,0.6)` }}>
                 <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#0a0604', padding: K(3), overflow: 'hidden' }}>
-                  {c.photo ? (
-                    <img src={img(c.photo)} alt={c.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-                  ) : (
-                    <div style={{ width: '100%', height: '100%', borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'radial-gradient(circle at 50% 30%,#4a2a10,#0e0804)', color: '#ffe2b8', fontWeight: 900, fontSize: K(c.logo ? 60 : 34), textShadow: `0 0 ${K(8)} #ff8c28` }}>
-                      {c.group ? <Users style={{ width: '54%', height: '54%' }} strokeWidth={1.8} /> : c.logo ?? c.initials}
+                  {(
+                    <div style={{ width: '100%', height: '100%', borderRadius: '50%', display: 'grid', placeItems: 'center', background: 'radial-gradient(circle at 50% 30%,#4a2a10,#0e0804)', color: '#ffe2b8', fontWeight: 900, fontSize: K(34), textShadow: `0 0 ${K(8)} #ff8c28` }}>
+                      {c.group ? <Users style={{ width: '54%', height: '54%' }} strokeWidth={1.8} /> : c.initials}
                     </div>
                   )}
                 </div>

@@ -20,7 +20,7 @@ export function ChromeBtn({ children, onClick, gold = false, badge, label }: { c
 }
 
 /** Shared page frame: metal header (back arrow, title, bell), scrolling body and the bottom dock. */
-export function PageShell({ title, active, right, children }: { title: string; active: Tab; right?: ReactNode; children: ReactNode }) {
+export function PageShell({ title, active, right, children, dock = true, footer, bottomPad }: { title: string; active: Tab; right?: ReactNode; children: ReactNode; dock?: boolean; footer?: ReactNode; bottomPad?: number }) {
   const router = useRouter();
   const toast = useToast();
   return (
@@ -32,20 +32,21 @@ export function PageShell({ title, active, right, children }: { title: string; a
               <ChevronLeft style={{ width: '58%', height: '58%' }} strokeWidth={2.2} />
             </ChromeBtn>
           </At>
-          <At x={0} y={104} w={854} style={{ textAlign: 'center', transform: 'translateY(-50%)', fontSize: K(68), fontWeight: 900, lineHeight: 1, pointerEvents: 'none' }}>
+          <At x={0} y={104} w={854} style={{ textAlign: 'center', transform: 'translateY(-50%)', fontSize: K(title.length > 22 ? 40 : title.length > 14 ? 50 : 68), fontWeight: 900, padding: `0 ${K(150)}`, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1, pointerEvents: 'none' }}>
             <span className="silver-text">{title}</span>
           </At>
           <At x={724} y={52} w={92} h={92}>
             {right ?? (
-              <ChromeBtn label="Notifications" gold badge="14" onClick={() => toast('Notifications')}>
+              <ChromeBtn label="Notifications" gold badge="14" onClick={() => router.push('/notifications/')}>
                 <Bell style={{ width: '54%', height: '54%' }} strokeWidth={1.8} />
               </ChromeBtn>
             )}
           </At>
         </Art>
       </header>
-      <main className="page-pad" style={{ padding: `${U(10)} ${U(26)} 0`, paddingBottom: U(340) }}>{children}</main>
-      <Dock active={active} />
+      <main className="page-pad" style={{ padding: `${U(10)} ${U(26)} 0`, paddingBottom: U(bottomPad ?? (dock ? 340 : footer ? 260 : 80)) }}>{children}</main>
+      {footer}
+      {dock && <Dock active={active} />}
     </div>
   );
 }

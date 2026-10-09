@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { ArrowDownLeft, ArrowUpRight, Clock, MoreVertical, Phone, PhoneMissed, Star, Video } from 'lucide-react';
 import { PageShell } from '@/components/PageShell';
 import { ListHeading, SearchBar, SegTabs } from '@/components/Controls';
+import { useRouter } from 'next/navigation';
 import { Art, At, K, Press, img, useToast } from '@/lib/ui';
 
 type Kind = 'incoming' | 'missed' | 'outgoing' | 'video';
@@ -24,6 +25,8 @@ const DIR: Record<Kind, { Icon: typeof Phone; color: string; ring: string }> = {
 
 export default function CallsPage() {
   const toast = useToast();
+  const router = useRouter();
+  const go = (name: string, video = false, photo?: string) => router.push(`/call/?name=${encodeURIComponent(name)}${video ? '&video=1' : ''}${photo ? `&photo=${photo}` : ''}`);
   const [q, setQ] = useState('');
   const [tab, setTab] = useState(0);
   const items = useMemo(
@@ -47,7 +50,7 @@ export default function CallsPage() {
       <div style={{ height: 'calc(26 * var(--u))' }} />
 
       {/* Make a Call */}
-      <Press onClick={() => toast('Make a call')} style={{ borderRadius: 'calc(34 * var(--u))' }}>
+      <Press onClick={() => go('New call')} style={{ borderRadius: 'calc(34 * var(--u))' }}>
         <Art w={852} h={222} src="makecall-bg" style={{ filter: 'drop-shadow(0 10px 12px rgba(0,0,0,.7)) drop-shadow(0 0 16px rgba(255,120,30,.35))' }}>
           <At x={34} y={16} w={192} h={192}><img className="ring-spin" src={img('makecall-ring')} alt="" draggable={false} style={{ width: '100%', height: '100%' }} /></At>
           <At x={300} y={50} r={176} style={{ left: K(300) }}>
@@ -63,7 +66,7 @@ export default function CallsPage() {
         const d = DIR[c.kind];
         const video = c.kind === 'video';
         return (
-          <Press key={c.name} onClick={() => toast(`Calling ${c.name}`)} style={{ marginBottom: 'calc(14 * var(--u))', borderRadius: 'calc(34 * var(--u))' }}>
+          <Press key={c.name} onClick={() => go(c.name, c.kind === 'video', c.photo)} style={{ marginBottom: 'calc(14 * var(--u))', borderRadius: 'calc(34 * var(--u))' }}>
             <Art w={856} h={150} src="cta-blank-wide" style={{ filter: 'drop-shadow(0 8px 10px rgba(0,0,0,.65)) drop-shadow(0 0 14px rgba(255,140,50,.28))' }}>
               <At x={44} y={22} w={106} h={106}>
                 <div className="gold-ring" style={{ width: '100%', height: '100%', padding: K(5), boxShadow: `0 0 ${K(12)} ${d.ring}` }}>
@@ -81,7 +84,7 @@ export default function CallsPage() {
               </At>
               {c.duration && <At x={0} y={0} h={150} style={{ right: K(190), left: 'auto', display: 'flex', alignItems: 'center', fontSize: K(31), fontWeight: 600 }}>{c.duration}</At>}
               <At x={0} y={26} w={98} h={98} style={{ right: K(76), left: 'auto' }}>
-                <Press pop shine={false} onClick={() => toast(`${video ? 'Video call' : 'Calling'} · ${c.name}`)} style={{ width: '100%', height: '100%', borderRadius: '50%', display: 'grid', placeItems: 'center', border: `${K(5)} solid ${video ? '#4a5cff' : '#ff9a3a'}`, background: video ? 'radial-gradient(circle at 35% 25%,#16206a,#080c30)' : 'radial-gradient(circle at 35% 25%,#3a2410,#0a0604)', boxShadow: `0 0 ${K(14)} ${video ? '#4a5cff' : '#ff9a3a'}, inset 0 0 ${K(12)} ${video ? 'rgba(74,92,255,.5)' : 'rgba(255,154,58,.5)'}` }}>
+                <Press pop shine={false} onClick={() => go(c.name, video, c.photo)} style={{ width: '100%', height: '100%', borderRadius: '50%', display: 'grid', placeItems: 'center', border: `${K(5)} solid ${video ? '#4a5cff' : '#ff9a3a'}`, background: video ? 'radial-gradient(circle at 35% 25%,#16206a,#080c30)' : 'radial-gradient(circle at 35% 25%,#3a2410,#0a0604)', boxShadow: `0 0 ${K(14)} ${video ? '#4a5cff' : '#ff9a3a'}, inset 0 0 ${K(12)} ${video ? 'rgba(74,92,255,.5)' : 'rgba(255,154,58,.5)'}` }}>
                   {video ? <Video style={{ width: '54%', height: '54%' }} strokeWidth={1.8} /> : <Phone style={{ width: '50%', height: '50%', color: '#ffc978', fill: '#ffc978' }} strokeWidth={1.6} />}
                 </Press>
               </At>
