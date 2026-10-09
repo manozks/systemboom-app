@@ -2,7 +2,10 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../kit.dart' show pushScreen;
 import '../shell.dart';
+import 'call_page.dart';
+import 'chat_page.dart' show NotificationsLazy;
 import '../ui.dart';
 
 enum CallKind { incoming, missed, outgoing, video }
@@ -53,7 +56,7 @@ class _CallsPageState extends State<CallsPage> {
       title: 'Calls',
       headerArt: 'hdr-calls',
       active: 'calls',
-      right: ChromeBtn(u: u, gold: true, badge: '14', onTap: () => showToast(context, 'Notifications'), child: Icon(Icons.notifications_none_rounded, size: 46 * u, color: const Color(0xFFFFD27A))),
+      right: ChromeBtn(u: u, gold: true, badge: '14', onTap: () => pushScreen(context, const NotificationsLazy()), child: Icon(Icons.notifications_none_rounded, size: 46 * u, color: const Color(0xFFFFD27A))),
       children: [
         _search(u),
         SizedBox(height: 22 * u),
@@ -192,7 +195,7 @@ class _CallsPageState extends State<CallsPage> {
           u: u,
           radius: 34,
           lift: 3,
-          onTap: () => showToast(context, 'Make a call'),
+          onTap: () => pushScreen(context, const CallPage('New call')),
           builder: (context, g, s) => Stack(clipBehavior: Clip.none, children: [
             Positioned.fill(child: Image.asset('assets/images/makecall-bg.webp', fit: BoxFit.fill)),
             Positioned(
@@ -244,7 +247,7 @@ class _CallsPageState extends State<CallsPage> {
     return RowCard(
       u: u,
       minHeight: 118,
-      onTap: () => showToast(context, 'Calling ${c.name}'),
+      onTap: () => pushScreen(context, CallPage(c.name, video: c.kind == CallKind.video, photo: c.photo)),
       leading: _Face(u: u, photo: c.photo, initials: c.initials, color: c.color, ring: ring),
       title: c.name,
       subtitle: Row(children: [
@@ -255,7 +258,7 @@ class _CallsPageState extends State<CallsPage> {
       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
         if (c.duration != null) Text(c.duration!, style: TextStyle(fontSize: (31 * u).clamp(11, 15), fontWeight: FontWeight.w600, color: Colors.white, decoration: TextDecoration.none)),
         SizedBox(width: 14 * u),
-        _CallBtn(u: u, video: video, onTap: () => showToast(context, '${video ? 'Video call' : 'Calling'} · ${c.name}')),
+        _CallBtn(u: u, video: video, onTap: () => pushScreen(context, CallPage(c.name, video: video, photo: c.photo))),
         SizedBox(width: 4 * u),
         Press(
           u: u,

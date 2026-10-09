@@ -2,11 +2,16 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../data.dart' as d;
+import '../kit.dart' show pushScreen;
 import '../shell.dart';
+import 'chat_page.dart';
+import 'more_pages.dart';
 import '../ui.dart';
 
 class _Chat {
-  const _Chat(this.name, this.initials, this.color, this.preview, this.time, this.unread, {this.online = false, this.photo, this.group = false, this.mic = false, this.logo});
+  const _Chat(this.id, this.name, this.initials, this.color, this.preview, this.time, this.unread, {this.online = false, this.photo, this.group = false, this.mic = false, this.logo});
+  final String id;
   final String name;
   final String initials;
   final Color color;
@@ -20,15 +25,22 @@ class _Chat {
   final String? logo;
 }
 
-const _chats = <_Chat>[
-  _Chat('Priya Singh', 'PS', Color(0xFFC03A8A), 'Hey! Are we still on for the meeting?', '08:28 AM', 3, online: true, photo: 'cf1'),
-  _Chat('Rohit Verma', 'RV', Color(0xFF2F6A8A), 'Shared a photo', '08:12 AM', 1, online: true, photo: 'cf2'),
-  _Chat('Project Team', '', Color(0xFFC9801F), 'Amit: Updated the file', '07:45 AM', 12, group: true),
-  _Chat('Neha Kapoor', 'NK', Color(0xFF6A4FC8), 'Thanks!', 'Yesterday', 0, photo: 'cf4'),
-  _Chat('Karan Mehta', 'KM', Color(0xFF2F8A6A), 'Voice message', 'Yesterday', 0, photo: 'cf5', mic: true),
-  _Chat('System Updates', 'S', Color(0xFFC9801F), 'New features are coming soon!', 'Yesterday', 0, logo: 'S'),
-  _Chat('Anjali Rao', 'AR', Color(0xFFC03A8A), 'Let’s connect tomorrow.', 'Mon', 0),
-];
+List<_Chat> get _chats => [
+      for (final c in d.Store.i.chats)
+        () {
+          final peer = c.userId == null ? null : d.people[c.userId];
+          final last = d.Store.i.last(c.id);
+          final txt = last == null ? '' : switch (last.type) {
+                d.MType.voice => 'Voice message',
+                d.MType.document => '📄 ${last.extra?['name']}',
+                d.MType.product => '🛍 Product',
+                d.MType.offer => '💬 Offer',
+                d.MType.order => '📦 Order update',
+                _ => last.text ?? '',
+              };
+          return _Chat(c.id, c.title, peer?.initials ?? '', const Color(0xFFC9801F), txt, last?.time ?? '', c.unread, online: peer?.online ?? false, photo: peer?.photo, group: c.group, mic: last?.type == d.MType.voice);
+        }(),
+    ];
 
 class ChatsPage extends StatefulWidget {
   const ChatsPage({super.key});
@@ -55,7 +67,7 @@ class _ChatsPageState extends State<ChatsPage> {
       title: 'Chats',
       headerArt: 'hdr-calls',
       active: 'chats',
-      right: ChromeBtn(u: u, gold: true, badge: '14', onTap: () => showToast(context, 'Notifications'), child: Icon(Icons.notifications_none_rounded, size: 46 * u, color: const Color(0xFFFFD27A))),
+      right: ChromeBtn(u: u, gold: true, badge: '14', onTap: () => pushScreen(context, const NotificationsLazy()), child: Icon(Icons.notifications_none_rounded, size: 46 * u, color: const Color(0xFFFFD27A))),
       children: [
         _search(u),
         SizedBox(height: 22 * u),
@@ -98,7 +110,7 @@ class _ChatsPageState extends State<ChatsPage> {
           u: u,
           radius: 34,
           lift: 3,
-          onTap: () => showToast(context, 'New chat'),
+          onTap: () => pushScreen(context, const NewChatPage()).then((_) => setState(() {})),
           builder: (context, g, s) => Stack(clipBehavior: Clip.none, children: [
             Positioned.fill(child: Image.asset('assets/images/cta.webp', fit: BoxFit.fill)),
             Positioned(
@@ -240,7 +252,7 @@ class _ChatsPageState extends State<ChatsPage> {
     return RowCard(
       u: u,
       minHeight: 126,
-      onTap: () => showToast(context, 'Opening ${c.name}'),
+      onTap: () => pushScreen(context, ConversationPage(c.id)).then((_) => setState(() {})),
       leading: _ChatFace(u: u, chat: c),
       title: c.name,
       titleColors: const [Color(0xFFFFFFFF), Color(0xFFFFF2DC), Color(0xFFE8C99A)],

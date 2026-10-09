@@ -119,6 +119,11 @@ class PageShell extends StatefulWidget {
     this.showDock = true,
     this.titleSize = 66,
     this.headerArt,
+    this.footer,
+    this.bottomPad,
+    this.controller,
+    this.headerExtra,
+    this.hideTitle = false,
   });
 
   final String title;
@@ -134,6 +139,11 @@ class PageShell extends StatefulWidget {
   final bool showDock;
   final double titleSize;
   final String? headerArt; // optional full header artwork (title baked in), 854x209
+  final Widget? footer;
+  final double? bottomPad;
+  final ScrollController? controller;
+  final Widget Function(BuildContext, double u, double w, double h)? headerExtra;
+  final bool hideTitle;
 
   @override
   State<PageShell> createState() => _PageShellState();
@@ -169,8 +179,9 @@ class _PageShellState extends State<PageShell> with SingleTickerProviderStateMix
                   blendMode: BlendMode.dstIn,
                   shaderCallback: (r) => const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0x00000000), Color(0xFF000000)], stops: [0, .03]).createShader(r),
                   child: ListView(
+                    controller: widget.controller,
                     physics: const BouncingScrollPhysics(),
-                    padding: EdgeInsets.fromLTRB(26 * u, 16 * u, 26 * u, (widget.showDock ? 330 : 60) * u),
+                    padding: EdgeInsets.fromLTRB(26 * u, 16 * u, 26 * u, (widget.bottomPad ?? (widget.showDock ? 330 : 60)) * u),
                     children: widget.children,
                   ),
                 ),
@@ -178,6 +189,7 @@ class _PageShellState extends State<PageShell> with SingleTickerProviderStateMix
             ]),
             if (widget.showDock)
               Positioned(left: 0, right: 0, bottom: 0, child: Dock(active: widget.active, loop: _loop)),
+            if (widget.footer != null) Positioned(left: 0, right: 0, bottom: 0, child: widget.footer!),
             // device rim + vignette
             Positioned.fill(
               child: IgnorePointer(
@@ -217,7 +229,7 @@ class _PageShellState extends State<PageShell> with SingleTickerProviderStateMix
                 )),
           ),
         ),
-        if (art != null) Positioned(left: 0, right: 0, top: h * .47, child: FractionalTranslation(translation: const Offset(0, -.5), child: Center(child: Embossed(widget.title, fontSize: (widget.titleSize * u * 1.05).clamp(22, 34), u: u)))),
+        if (art != null && !widget.hideTitle) Positioned(left: 0, right: 0, top: h * .47, child: FractionalTranslation(translation: const Offset(0, -.5), child: Center(child: Embossed(widget.title, fontSize: (widget.titleSize * u * 1.05).clamp(22, 34), u: u)))),
         if (art == null) Positioned(
           left: 0,
           right: 0,
@@ -244,6 +256,7 @@ class _PageShellState extends State<PageShell> with SingleTickerProviderStateMix
             child: Icon(Icons.chevron_left_rounded, size: 52 * u, color: const Color(0xFFDFE6EE)),
           ),
         ),
+        if (widget.headerExtra != null) Positioned.fill(child: widget.headerExtra!(context, u, math.min(MediaQuery.sizeOf(context).width, kMaxW), h)),
         if (widget.right != null)
           Positioned(left: (art != null ? 790 * (kk * 878 / 854) : 796 * kk) - 45 * u, top: (art != null ? h * .47 : 98 * kk) - 45 * u, width: 90 * u, height: 90 * u, child: widget.right!),
       ]),

@@ -2,7 +2,11 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../kit.dart' show pushScreen;
 import '../shell.dart';
+import 'more_pages.dart';
+import 'order_page.dart';
+import 'chat_page.dart' show NotificationsLazy;
 import '../ui.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -15,7 +19,7 @@ class ProfilePage extends StatelessWidget {
       title: 'Profile',
       headerArt: 'hdr-calls',
       active: 'profile',
-      right: ChromeBtn(u: u, gold: true, onTap: () => showToast(context, 'Settings'), child: Icon(Icons.settings_outlined, size: 46 * u, color: const Color(0xFFFFD27A))),
+      right: ChromeBtn(u: u, gold: true, onTap: () => pushScreen(context, const SettingsPage()), child: Icon(Icons.settings_outlined, size: 46 * u, color: const Color(0xFFFFD27A))),
       children: [
         _hero(context, u),
         SizedBox(height: 18 * u),
@@ -101,7 +105,7 @@ class ProfilePage extends StatelessWidget {
               top: 204 * k,
               width: 318 * k,
               height: 66 * k,
-              child: Press(u: u, radius: 999, scaleUp: 1.04, lift: 2, onTap: () => showToast(context, 'Edit profile'), child: const SizedBox.expand()),
+              child: Press(u: u, radius: 999, scaleUp: 1.04, lift: 2, onTap: () => pushScreen(context, const SettingsPage(section: 'profile')), child: const SizedBox.expand()),
             ),
           ]),
         ),
@@ -141,7 +145,7 @@ class ProfilePage extends StatelessWidget {
                 lift: 2,
                 scaleUp: 1.05,
                 shine: false,
-                onTap: () => showToast(context, data[i].$3),
+                onTap: () => _open(context, data[i].$3 == 'Purchases' ? 'My Orders' : data[i].$3),
                 builder: (context, g, st) => Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Transform.translate(offset: Offset(0, -6 * k * math.sin(st * math.pi)), child: Icon(data[i].$1, size: 50 * k, color: Colors.white)),
                   SizedBox(height: 2 * k),
@@ -168,7 +172,7 @@ class ProfilePage extends StatelessWidget {
           radius: 34,
           lift: 2,
           scaleUp: 1.0,
-          onTap: () => showToast(context, title),
+          onTap: () => _open(context, title),
           builder: (context, g, s) => Stack(clipBehavior: Clip.none, children: [
             Positioned.fill(
               child: DecoratedBox(
@@ -209,5 +213,24 @@ class ProfilePage extends StatelessWidget {
         ),
       );
     });
+  }
+}
+
+
+void _open(BuildContext context, String title) {
+  switch (title) {
+    case 'My Orders':
+    case 'Payments & Wallet':
+      pushScreen(context, const OrdersPage());
+    case 'Notifications':
+      pushScreen(context, const NotificationsLazy());
+    case 'Account Settings':
+      pushScreen(context, const SettingsPage());
+    case 'Help & Support':
+      pushScreen(context, const SettingsPage(section: 'help'));
+    case 'My Addresses':
+      pushScreen(context, const SettingsPage(section: 'privacy'));
+    default:
+      showToast(context, title);
   }
 }

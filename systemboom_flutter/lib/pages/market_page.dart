@@ -1,12 +1,18 @@
-import 'dart:math' as math;
+﻿import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../data.dart' as d;
+import '../kit.dart' show pushScreen;
 import '../shell.dart';
+import 'order_page.dart';
+import 'product_page.dart';
 import '../ui.dart';
 
 class _Item {
-  const _Item(this.title, this.kind, this.cat, this.place, this.price, this.photo);
+  const _Item(this.id, this.title, this.kind, this.cat, this.place, this.price, this.photo, this.tint);
+  final String id;
+  final int tint;
   final String title;
   final String kind;
   final String cat;
@@ -15,20 +21,17 @@ class _Item {
   final String photo;
 }
 
-const _items = <_Item>[
-  _Item('iPhone 14 Pro', 'Mobile Phone', 'Electronics', 'Kathmandu', 'Rs. 145,000', 'prod1'),
-  _Item('Toyota Land Cruiser', 'Car', 'Vehicles', 'Kathmandu', 'Rs. 1,75,00,000', 'prod2'),
-  _Item('Modern House', 'Property', 'Property', 'Lalitpur', 'Rs. 3,50,00,000', 'prod3'),
-  _Item('MacBook Pro', 'Laptop', 'Electronics', 'Kathmandu', 'Rs. 2,40,000', 'prod4'),
+final _items = <_Item>[
+  for (final p in d.products) _Item(p.id, p.title, p.cat, p.cat, 'Boom Store', d.money(p.price), p.photo ?? '', p.tint),
 ];
 
 const _cats = <(String, IconData)>[
   ('All', Icons.grid_view_rounded),
-  ('Electronics', Icons.desktop_windows_outlined),
-  ('Vehicles', Icons.directions_car_filled_outlined),
-  ('Property', Icons.home_outlined),
-  ('Services', Icons.build_outlined),
-  ('Jobs', Icons.work_outline_rounded),
+  ('Home', Icons.home_outlined),
+  ('Tech', Icons.desktop_windows_outlined),
+  ('Apparel', Icons.work_outline_rounded),
+  ('Craft', Icons.build_outlined),
+  ('Custom', Icons.directions_car_filled_outlined),
 ];
 
 class MarketPage extends StatefulWidget {
@@ -62,7 +65,7 @@ class _MarketPageState extends State<MarketPage> {
       titleSize: 56,
       headerArt: 'hdr-calls',
       active: 'market',
-      right: ChromeBtn(u: u, gold: true, onTap: () => showToast(context, 'Orders'), child: Icon(Icons.view_in_ar_outlined, size: 46 * u, color: const Color(0xFFFFD27A))),
+      right: ChromeBtn(u: u, gold: true, onTap: () => pushScreen(context, const OrdersPage()), child: Icon(Icons.view_in_ar_outlined, size: 46 * u, color: const Color(0xFFFFD27A))),
       children: [
         _search(u),
         SizedBox(height: 22 * u),
@@ -76,7 +79,7 @@ class _MarketPageState extends State<MarketPage> {
     );
   }
 
-  // ───────── search (same art as Calls)
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€ search (same art as Calls)
   Widget _search(double u) {
     return LayoutBuilder(builder: (context, c) {
       final k = c.maxWidth / 851;
@@ -106,7 +109,7 @@ class _MarketPageState extends State<MarketPage> {
     });
   }
 
-  // ───────── category keys: the reference art (six glass keys) with a glowing orange key that slides to the selection
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€ category keys: the reference art (six glass keys) with a glowing orange key that slides to the selection
   Widget _catRow(double u) {
     const slots = <(double, double)>[(4, 150), (154, 292), (298, 436), (442, 580), (585, 724), (728, 864)];
     return LayoutBuilder(builder: (context, c) {
@@ -158,7 +161,7 @@ class _MarketPageState extends State<MarketPage> {
     });
   }
 
-  // ───────── Location / Sort by / Price Range / filters: reference art with live icons + labels
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€ Location / Sort by / Price Range / filters: reference art with live icons + labels
   Widget _filterBar(BuildContext context, double u) {
     return LayoutBuilder(builder: (context, c) {
       final k = c.maxWidth / 858;
@@ -218,7 +221,7 @@ class _MarketPageState extends State<MarketPage> {
     });
   }
 
-  // ───────── listing card (reference layout: photo | details | heart + menu + glowing Buy Now)
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€ listing card (reference layout: photo | details | heart + menu + glowing Buy Now)
   Widget _card(BuildContext context, double u, _Item p) {
     final idx = _items.indexOf(p);
     final fav = liked.contains(idx);
@@ -238,7 +241,7 @@ class _MarketPageState extends State<MarketPage> {
             u: u,
             radius: 34,
             lift: 3,
-            onTap: () => showToast(context, p.title),
+            onTap: () => pushScreen(context, ProductPage(p.id)),
             builder: (context, g, s) => Stack(clipBehavior: Clip.none, children: [
               Positioned.fill(
                 child: DecoratedBox(
@@ -265,7 +268,7 @@ class _MarketPageState extends State<MarketPage> {
                     gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFFFFE2A8), Color(0xFFD98A2E), Color(0xFF5A3510), Color(0xFFFFD58A)]),
                     boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .8), blurRadius: 7 * k, offset: Offset(0, 5 * k)), BoxShadow(color: const Color(0xFFFF7A1A).withValues(alpha: .4), blurRadius: 12 * k)],
                   ),
-                  child: ClipRRect(borderRadius: BorderRadius.circular(19 * k), child: Image.asset('assets/images/${p.photo}.webp', fit: BoxFit.cover)),
+                  child: ClipRRect(borderRadius: BorderRadius.circular(19 * k), child: p.photo.isNotEmpty ? Image.asset('assets/images/${p.photo}.webp', fit: BoxFit.cover) : DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(p.tint), const Color(0xFF10151C)])), child: const Center(child: Icon(Icons.inventory_2_outlined, color: Colors.white70, size: 36)))),
                 ),
               ),
               Positioned(
@@ -322,7 +325,7 @@ class _MarketPageState extends State<MarketPage> {
                   lift: 2,
                   scaleUp: 1.06,
                   shine: false,
-                  onTap: () => showToast(context, 'Chatting with the seller about ${p.title}'),
+                  onTap: () => pushScreen(context, ProductPage(p.id)),
                   child: Image.asset('assets/images/buy-btn.webp', fit: BoxFit.fill),
                 ),
               ),
