@@ -234,17 +234,11 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             width: u * 941,
             child: Stack(children: [
               const Positioned.fill(child: CarbonBg()),
-              Positioned.fill(child: Padding(padding: EdgeInsets.all(10 * u), child: Nine('splash-bg', px: const Size(855, 236), slice: 62, u: u * .62))),
               Center(
                 child: AnimatedBuilder(
                   animation: _c,
                   builder: (_, child) => Opacity(opacity: .8 + .2 * _c.value, child: child),
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    SizedBox(width: u * 941 * .76, child: FittedBox(fit: BoxFit.scaleDown, child: ShaderMask(
-                      shaderCallback: (r) => const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFFFFFFF), Color(0xFFDDE3EA), Color(0xFFA3ACB6)]).createShader(r),
-                      child: Text('SYSTEMBOOM', style: TextStyle(color: Colors.white, fontSize: 132 * u, fontWeight: FontWeight.w900, letterSpacing: 132 * u * .04, decoration: TextDecoration.none, shadows: [Shadow(color: Colors.black.withValues(alpha: .85), blurRadius: 8 * u, offset: Offset(0, 5 * u))])),
-                    ))),
-                    SizedBox(height: 70 * u),
                     SizedBox(width: 84 * u, height: 84 * u, child: DecoratedBox(decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: const Color(0xFFFF780F).withValues(alpha: .5), blurRadius: 22 * u)]), child: CircularProgressIndicator(strokeWidth: 10 * u, color: const Color(0xFFFF8A2A), backgroundColor: const Color(0x38FFFFFF)))),
                   ]),
                 ),
