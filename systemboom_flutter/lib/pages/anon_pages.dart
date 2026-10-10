@@ -233,12 +233,12 @@ class AnonQrPage extends StatelessWidget {
       right: bellBtn(context, u),
       bottomPad: 80,
       children: [
-        SteelPlate(u: u, pad: EdgeInsets.all(40 * u), child: Column(children: [
+        SteelPlate(u: u, pad: EdgeInsets.all(40 * u), child: SizedBox(width: double.infinity, child: Column(children: [
           Text(me.name, style: ts(u, 42, w: FontWeight.w800)),
           Text(me.session, style: ts(u, 30, c: const Color(0xFF9DB4E0), w: FontWeight.w400, sh: const [])),
           SizedBox(height: 24 * u),
           Container(width: 560 * u, height: 560 * u, padding: EdgeInsets.all(22 * u), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(28 * u), boxShadow: [BoxShadow(color: const Color(0xFF28E6D7).withValues(alpha: .5), blurRadius: 28)]), child: CustomPaint(painter: _QrPainter(me.key))),
-        ])),
+        ]))),
         OLabel('Public key', u: u),
         SteelPlate(u: u, child: Text(me.key, style: ts(u, 25, c: const Color(0xFFB6FFF4), w: FontWeight.w400, sh: const []))),
         OLabel('Fingerprint', u: u),

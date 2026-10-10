@@ -83721,7 +83721,7 @@ return q},
 $S:109}
 A.HB.prototype={
 H(a){var s=null,r=Math.min(A.b0(a,B.W,t.w).w.a.a,430)/941,q=$.br().gVD(),p=A.hH(a,r),o=40*r,n=A.K(q.b,s,s,s,A.af(r,42,B.f,s,s,s,B.x),s,s),m=A.K(q.c,s,s,s,A.af(r,30,B.bz,s,s,B.Y,B.m),s,s),l=A.V(s,24*r,s),k=560*r,j=22*r,i=A.bi(28*r),h=A.a([new A.ag(0,B.r,B.eI.aq(0.5),B.h,28)],t.V),g=q.d,f=t.p,e=20*r
-return A.ei("home",80,A.a([A.i7(A.bK(A.a([n,m,l,A.bb(s,A.hP(s,s,s,new A.Tm(g,s),B.J),B.k,s,s,new A.aa(B.f,s,s,i,h,s,B.u),s,k,s,new A.L(j,j,j,j),s,s,k)],f),B.p,B.n,B.q),132,s,new A.L(o,o,o,o),r),new A.dL("Public key",r,s),A.i7(A.K(g,s,s,s,A.af(r,25,B.hb,s,s,B.Y,B.m),s,s),132,s,s,r),new A.dL("Fingerprint",r,s),A.i7(A.K(q.gak7(),s,s,s,A.af(r,28,B.oQ,s,s,B.Y,B.m),s,s),132,s,s,r),A.V(s,e,s),A.axn(r,"Copy public key",B.pL,new A.Yq(q,a),!0),A.V(s,e,s),A.asS(r,"Only share this with people you want to talk to. Your private key never leaves this device.")],f),s,s,"hdr-calls",s,!1,s,p,s,!1,"My QR",66)}}
+return A.ei("home",80,A.a([A.i7(A.V(A.bK(A.a([n,m,l,A.bb(s,A.hP(s,s,s,new A.Tm(g,s),B.J),B.k,s,s,new A.aa(B.f,s,s,i,h,s,B.u),s,k,s,new A.L(j,j,j,j),s,s,k)],f),B.p,B.n,B.q),s,1/0),132,s,new A.L(o,o,o,o),r),new A.dL("Public key",r,s),A.i7(A.K(g,s,s,s,A.af(r,25,B.hb,s,s,B.Y,B.m),s,s),132,s,s,r),new A.dL("Fingerprint",r,s),A.i7(A.K(q.gak7(),s,s,s,A.af(r,28,B.oQ,s,s,B.Y,B.m),s,s),132,s,s,r),A.V(s,e,s),A.axn(r,"Copy public key",B.pL,new A.Yq(q,a),!0),A.V(s,e,s),A.asS(r,"Only share this with people you want to talk to. Your private key never leaves this device.")],f),s,s,"hdr-calls",s,!1,s,p,s,!1,"My QR",66)}}
 A.Yq.prototype={
 $0(){A.rC(new A.md(this.a.d))
 A.eJ(this.b,"Public key copied")},
