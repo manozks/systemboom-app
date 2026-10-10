@@ -268,30 +268,32 @@ class _PageShellState extends State<PageShell> with SingleTickerProviderStateMix
 
   Widget _search(double u) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(34 * u, 8 * u, 34 * u, 0),
-      child: Well(
-        u: u,
-        height: 112,
-        child: Row(children: [
-          SizedBox(width: 34 * u),
-          Icon(Icons.search_rounded, size: 46 * u, color: const Color(0xFFFFB866), shadows: [Shadow(color: const Color(0xCCFF821E), blurRadius: 8 * u)]),
-          SizedBox(width: 14 * u),
-          Expanded(
-            child: TextField(
-              onChanged: widget.onSearch,
-              cursorColor: const Color(0xFFFFB866),
-              style: TextStyle(color: const Color(0xFFEEF2F6), fontSize: (34 * u).clamp(13, 16)),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                isCollapsed: true,
-                hintText: widget.searchHint,
-                hintStyle: TextStyle(color: const Color(0xFF8896A6), fontSize: (34 * u).clamp(13, 16)),
-              ),
+      padding: EdgeInsets.fromLTRB(34 * u, 8 * u, 34 * u, 12 * u),
+      child: LayoutBuilder(builder: (context, c) {
+        final k = c.maxWidth / 851;
+        return SizedBox(
+          height: 83 * k,
+          child: Stack(clipBehavior: Clip.none, children: [
+            Positioned.fill(child: Image.asset('assets/images/search-bar.webp', fit: BoxFit.fill)),
+            Positioned.fill(
+              child: Row(children: [
+                SizedBox(width: 34 * k),
+                Icon(Icons.search_rounded, size: 40 * k, color: Colors.white),
+                SizedBox(width: 16 * k),
+                Expanded(
+                  child: TextField(
+                    onChanged: widget.onSearch,
+                    cursorColor: const Color(0xFFFFB866),
+                    style: TextStyle(color: Colors.white, fontSize: (27 * k).clamp(12, 17)),
+                    decoration: InputDecoration(border: InputBorder.none, isCollapsed: true, hintText: widget.searchHint, hintStyle: TextStyle(color: const Color(0xFFD3DBE4), fontSize: (27 * k).clamp(11, 16))),
+                  ),
+                ),
+                SizedBox(width: 34 * k),
+              ]),
             ),
-          ),
-          SizedBox(width: 20 * u),
-        ]),
-      ),
+          ]),
+        );
+      }),
     );
   }
 
