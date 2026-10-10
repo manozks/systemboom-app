@@ -320,11 +320,11 @@ class _ConversationPageState extends State<ConversationPage> {
           if (m.text != null)
             Padding(
               padding: EdgeInsets.only(top: 14 * u),
-              child: ArtBtn(u: u, label: 'Copy', icon: Icons.copy_rounded, minH: 100, fontPx: 34, expand: false, onTap: () {
+              child: Center(child: SizedBox(width: 460 * u, child: ArtBtn(u: u, label: 'Copy', icon: Icons.copy_rounded, minH: 150, fontPx: 40, onTap: () {
                 Navigator.pop(c);
                 Clipboard.setData(ClipboardData(text: m.text!));
                 showToast(context, 'Copied');
-              }),
+              }))),
             ),
         ]),
       );
