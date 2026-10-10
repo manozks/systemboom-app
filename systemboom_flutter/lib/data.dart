@@ -160,6 +160,7 @@ class Store extends ChangeNotifier {
   final orders = <Order>[];
   final notifs = <Notif>[];
   final typing = <String, bool>{};
+  bool offline = false;
   final identities = <AnonId>[AnonId('anon-primary', 'Amber Falcon 4821', 'SB-${_hex('amber-falcon-4821sid', 6)}', _hex('amber-falcon-4821', 64))];
   String activeAnon = 'anon-primary';
   AnonId get me => identities.firstWhere((a) => a.id == activeAnon);
@@ -168,9 +169,9 @@ class Store extends ChangeNotifier {
   static const _adj = ['Crimson', 'Violet', 'Silent', 'Midnight', 'Amber', 'Cobalt', 'Ember', 'Shadow', 'Lunar', 'Ivory'];
   static const _ani = ['Fox', 'Heron', 'Falcon', 'Otter', 'Wolf', 'Cipher', 'Raven', 'Lynx', 'Moth', 'Owl'];
 
-  AnonId createIdentity() {
+  AnonId createIdentity({String? name}) {
     final k = _n++;
-    final a = AnonId('anon-$k', '${_adj[k % _adj.length]} ${_ani[(k * 7) % _ani.length]} ${1000 + (k * 37) % 9000}', 'SB-${_hex('sid$k', 6)}', _hex('key$k', 64));
+    final a = AnonId('anon-$k', (name != null && name.trim().isNotEmpty) ? name.trim() : '${_adj[k % _adj.length]} ${_ani[(k * 7) % _ani.length]} ${1000 + (k * 37) % 9000}', 'SB-${_hex('sid$k', 6)}', _hex('key$k', 64));
     identities.add(a);
     activeAnon = a.id;
     notifyListeners();
@@ -279,15 +280,29 @@ class Store extends ChangeNotifier {
   static const _replies = ['Got it 👍', 'Sounds good!', 'Thanks for letting me know.', 'Perfect, that works for me.', 'Let me check and get back to you.', '😄 agreed'];
 
   void send(String chat, MType t, {String? text, Map<String, Object?>? x, String? replyTo}) {
-    final msg = Msg(id(), chat, 'me', t, 'Now', text: text, status: 'sent', extra: x);
+    final msg = Msg(id(), chat, 'me', t, 'Now', text: text, status: offline ? 'failed' : 'sent', extra: x);
     msgs.add(msg);
     notifyListeners();
+    if (!offline) _deliver(msg);
+  }
+
+  /// Retry a failed message. Returns false while still offline.
+  bool retry(Msg m) {
+    if (offline) return false;
+    m.status = 'sent';
+    notifyListeners();
+    _deliver(m);
+    return true;
+  }
+
+  void _deliver(Msg msg) {
+    final chat = msg.chat;
     Timer(const Duration(milliseconds: 700), () {
       msg.status = 'delivered';
       notifyListeners();
     });
     final c = this.chat(chat);
-    if (t == MType.text && c.userId != null) {
+    if (msg.type == MType.text && c.userId != null) {
       Timer(const Duration(milliseconds: 1200), () {
         typing[chat] = true;
         notifyListeners();

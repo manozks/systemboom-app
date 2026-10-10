@@ -66,6 +66,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   final Map<String, bool> _on = {};
+  final _devices = <(String, String)>[('This phone', 'Active now · Kathmandu'), ('Chrome on Windows', 'Active 2h ago · Pokhara'), ('iPad', 'Active 3d ago · Kathmandu')];
 
   static const _sections = [
     ('profile', 'Profile', 'Name, about, phone', Icons.person_outline_rounded),
@@ -101,6 +102,12 @@ class _SettingsPageState extends State<SettingsPage> {
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(s.$2, style: ts(u, 42, w: FontWeight.w800)), Text(s.$3, style: ts(u, 31, c: const Color(0xFF9DB4E0), w: FontWeight.w400, sh: const []))])),
               Icon(Icons.chevron_right_rounded, size: 52 * u, color: const Color(0xFFE8EDF1)),
             ])),
+          SteelPlate(u: u, child: Row(children: [
+            GoldIcon(Icons.wifi_off_rounded, u: u),
+            SizedBox(width: 26 * u),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Simulate offline', style: ts(u, 42, w: FontWeight.w800)), Text('Messages fail until you go back online', style: ts(u, 31, c: const Color(0xFF9DB4E0), w: FontWeight.w400, sh: const []))])),
+            MetalSwitch(u: u, on: Store.i.offline, onChanged: (v) => setState(() => Store.i.offline = v)),
+          ])),
           SizedBox(height: 14 * u),
           CtaBtn(u: u, label: 'Log out', icon: Icons.logout_rounded, red: true, onTap: () async {
             if (await confirmDialog(context, title: 'Log out?', text: 'You can sign back in anytime.', confirm: 'Log out') && context.mounted) pushScreen(context, const WelcomePage());
@@ -132,8 +139,18 @@ class _SettingsPageState extends State<SettingsPage> {
           SizedBox(height: 24 * u),
           ArtBtn(u: u, label: 'Save changes', orange: true, minH: 150, onTap: () => showToast(context, 'Profile saved')),
         ],
-        if (sec == 'devices' || sec == 'help')
-          SteelPlate(u: u, child: Text(sec == 'devices' ? 'This phone · Active now · Kathmandu' : 'support@systemboom.app', style: ts(u, 38, w: FontWeight.w400, sh: const []))),
+        if (sec == 'devices')
+          for (final d in _devices)
+            SteelPlate(u: u, child: Row(children: [
+              GoldIcon(d.$1 == 'This phone' ? Icons.smartphone_rounded : Icons.laptop_outlined, u: u),
+              SizedBox(width: 24 * u),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(d.$1, style: ts(u, 42, w: FontWeight.w800)), Text(d.$2, style: ts(u, 31, c: const Color(0xFF9DB4E0), w: FontWeight.w400, sh: const []))])),
+              if (d.$1 != 'This phone') Tap(onTap: () async {
+                if (await confirmDialog(context, title: 'Remove ${d.$1}?', text: 'It will be signed out.', confirm: 'Remove') && mounted) setState(() => _devices.remove(d));
+              }, child: Icon(Icons.close_rounded, size: 56 * u, color: const Color(0xFFFF6A5A))),
+            ])),
+        if (sec == 'help')
+          SteelPlate(u: u, child: Text('support@systemboom.app', style: ts(u, 38, w: FontWeight.w400, sh: const []))),
       ],
     );
   }

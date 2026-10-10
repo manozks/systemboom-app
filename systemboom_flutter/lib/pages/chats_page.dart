@@ -11,7 +11,7 @@ import '../kit.dart' show showActions, ActItem, confirmDialog, SteelPlate, GoldI
 import '../ui.dart';
 
 class _Chat {
-  const _Chat(this.id, this.name, this.initials, this.color, this.preview, this.time, this.unread, {this.online = false, this.photo, this.group = false, this.mic = false, this.logo});
+  const _Chat(this.id, this.name, this.initials, this.color, this.preview, this.time, this.unread, {this.pinned = false, this.muted = false, this.online = false, this.photo, this.group = false, this.mic = false, this.logo});
   final String id;
   final String name;
   final String initials;
@@ -19,6 +19,8 @@ class _Chat {
   final String preview;
   final String time;
   final int unread;
+  final bool pinned;
+  final bool muted;
   final bool online;
   final String? photo;
   final bool group;
@@ -39,7 +41,7 @@ List<_Chat> _chatsFor({required bool archived, String query = ''}) => [
                 d.MType.order => '📦 Order update',
                 _ => last.text ?? '',
               };
-          return _Chat(c.id, c.title, peer?.initials ?? '', const Color(0xFFC9801F), txt, last?.time ?? '', c.unread, online: peer?.online ?? false, photo: peer?.photo, group: c.group, mic: last?.type == d.MType.voice);
+          return _Chat(c.id, c.title, peer?.initials ?? '', const Color(0xFFC9801F), txt, last?.time ?? '', c.unread, pinned: c.pinned, muted: c.muted, online: peer?.online ?? false, photo: peer?.photo, group: c.group, mic: last?.type == d.MType.voice);
         }(),
     ];
 
@@ -331,7 +333,11 @@ class _ChatsPageState extends State<ChatsPage> {
       ]),
       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
         Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.end, children: [
-          Text(c.time, style: TextStyle(fontSize: (29 * u).clamp(10, 14), fontWeight: FontWeight.w500, color: const Color(0xFFE9EEF3), decoration: TextDecoration.none)),
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            if (c.pinned) Padding(padding: EdgeInsets.only(right: 6 * u), child: Icon(Icons.push_pin_outlined, size: 30 * u, color: const Color(0xFFFFB866))),
+            if (c.muted) Padding(padding: EdgeInsets.only(right: 6 * u), child: Icon(Icons.notifications_off_outlined, size: 30 * u, color: const Color(0xFFB9C4D0))),
+            Text(c.time, style: TextStyle(fontSize: (29 * u).clamp(10, 14), fontWeight: FontWeight.w500, color: const Color(0xFFE9EEF3), decoration: TextDecoration.none)),
+          ]),
           if (c.unread > 0) ...[SizedBox(height: 8 * u), RedBadge(text: '${c.unread}', size: 50 * u)],
         ]),
         SizedBox(width: 10 * u),

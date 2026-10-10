@@ -169,11 +169,14 @@ class _ConversationPageState extends State<ConversationPage> {
       child: Row(mainAxisSize: MainAxisSize.min, mainAxisAlignment: mine ? MainAxisAlignment.end : MainAxisAlignment.start, children: [
         if (m.pinned) Icon(Icons.push_pin_outlined, size: 24 * u, color: const Color(0xFFFF8A2A)),
         Text(m.time, style: ts(u, 26, c: const Color(0xFFD9DFE6), w: FontWeight.w400, sh: const [])),
-        if (mine) ...[SizedBox(width: 8 * u), Icon(Icons.done_all_rounded, size: 32 * u, color: const Color(0xFFFF6A1A))],
+        if (mine && m.status == 'failed') ...[SizedBox(width: 8 * u), Icon(Icons.error_outline_rounded, size: 32 * u, color: const Color(0xFFFF6A5A)), SizedBox(width: 6 * u), Text('Failed · tap to retry', style: ts(u, 26, c: const Color(0xFFFF9A8F), w: FontWeight.w700, sh: const []))]
+        else if (mine) ...[SizedBox(width: 8 * u), Icon(m.status == 'sent' ? Icons.done_rounded : Icons.done_all_rounded, size: 32 * u, color: m.status == 'read' ? const Color(0xFFFF6A1A) : const Color(0xFFC9D1DA))],
       ]),
     );
     final content = Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [body, meta]);
-    final bubble = Flexible(child: GestureDetector(onTap: m.deleted ? null : () => _actions(context, m, mine), child: _bubble(u, mine, content)));
+    final bubble = Flexible(child: GestureDetector(onTap: m.deleted ? null : (mine && m.status == 'failed') ? () {
+          if (!s.retry(m)) showToast(context, 'Still offline — check your connection');
+        } : () => _actions(context, m, mine), child: _bubble(u, mine, content)));
     return Padding(
       padding: EdgeInsets.only(bottom: 8 * u),
       child: Column(crossAxisAlignment: mine ? CrossAxisAlignment.end : CrossAxisAlignment.start, children: [
@@ -258,6 +261,15 @@ class _ConversationPageState extends State<ConversationPage> {
 
   // ───────────────────────── composer
   Widget _composer(BuildContext context, double u) {
+    final chat0 = s.chat(widget.chatId);
+    final locked = chat0.group && chat0.announcement && !chat0.members.any((m) => m.$1 == 'me' && m.$2 != 'member');
+    if (locked) {
+      return FootBar(u: u, child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 30 * u, vertical: 34 * u),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(34 * u), color: const Color(0xFF10161E), border: Border.all(color: const Color(0xFFAAB3BB), width: 4 * u)),
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.lock_outline_rounded, size: 46 * u, color: const Color(0xFFFFB866)), SizedBox(width: 18 * u), Flexible(child: Text('Only admins can send messages', style: ts(u, 36, c: const Color(0xFFD3DBE4), w: FontWeight.w600, sh: const [])))]),
+      ));
+    }
     final w = u * 941;
     final k = w / 910;
     Widget at(double x, double y, double ww, double hh, Widget c) => Positioned(left: x * k, top: y * k, width: ww * k, height: hh * k, child: c);

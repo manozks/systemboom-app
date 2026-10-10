@@ -145,6 +145,26 @@ class AnonIdentitiesPage extends StatefulWidget {
 
 class _AnonIdentitiesPageState extends State<AnonIdentitiesPage> {
   Store get s => Store.i;
+
+  Future<void> _create() async {
+    final u = context.u;
+    final ctl = TextEditingController();
+    final name = await showArtSheet<String>(context, (c) => Container(
+          margin: EdgeInsets.all(12 * u),
+          padding: EdgeInsets.all(30 * u),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(44 * u), gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF232A33), Color(0xFF0A0D11)]), border: Border.all(color: const Color(0xFFC3CBD2), width: 6 * u), boxShadow: [BoxShadow(color: const Color(0xFF28E6D7).withValues(alpha: .35), blurRadius: 30 * u)]),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Text('New identity', style: ts(u, 46, w: FontWeight.w800)),
+            SizedBox(height: 8 * u),
+            Text('Give it a temporary name, or leave blank for a random one.', textAlign: TextAlign.center, style: ts(u, 31, c: const Color(0xFF9DB4E0), w: FontWeight.w400, sh: const [])),
+            SizedBox(height: 22 * u),
+            GlassWell(u: u, child: TextField(controller: ctl, autofocus: true, cursorColor: const Color(0xFF4FF0E0), style: TextStyle(color: Colors.white, fontSize: 38 * u), decoration: InputDecoration(border: InputBorder.none, isCollapsed: true, hintText: 'e.g. Quiet Otter', hintStyle: TextStyle(color: const Color(0xFF8896A6), fontSize: 38 * u)))),
+            SizedBox(height: 22 * u),
+            _tealBtn(u, 'Create identity', Icons.add_rounded, () => Navigator.pop(c, ctl.text)),
+          ]),
+        ));
+    if (name != null) setState(() => s.createIdentity(name: name));
+  }
   @override
   Widget build(BuildContext context) {
     final u = context.u;
@@ -155,7 +175,7 @@ class _AnonIdentitiesPageState extends State<AnonIdentitiesPage> {
       headerArt: 'hdr-calls',
       right: bellBtn(context, u),
       bottomPad: 330,
-      footer: FootBar(u: u, child: _tealBtn(u, 'New identity', Icons.add_rounded, () => setState(s.createIdentity))),
+      footer: FootBar(u: u, child: _tealBtn(u, 'New identity', Icons.add_rounded, _create)),
       children: [
         _banner(u, 'Each identity has its own temporary name, session ID and key pair. Switch anytime — contacts only know the identity you used with them.'),
         OLabel('Your identities', u: u),
@@ -270,6 +290,8 @@ class AnonScanPage extends StatefulWidget {
 class _AnonScanPageState extends State<AnonScanPage> with SingleTickerProviderStateMixin {
   late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(reverse: true);
   bool busy = false;
+  bool found = false;
+  String? error;
   final _key = TextEditingController();
 
   @override
@@ -279,13 +301,28 @@ class _AnonScanPageState extends State<AnonScanPage> with SingleTickerProviderSt
     super.dispose();
   }
 
-  void _pair() {
-    setState(() => busy = true);
+  void _scan({bool paste = false}) {
+    if (paste && !RegExp(r'^[0-9a-fA-F]{16,}$').hasMatch(_key.text.trim())) {
+      setState(() => error = 'That doesn’t look like a valid public key. Keys are hexadecimal.');
+      return;
+    }
+    setState(() {
+      busy = true;
+      error = null;
+      found = false;
+    });
     Future.delayed(const Duration(milliseconds: 1400), () {
       if (!mounted) return;
-      final c = Store.i.pairViaQR();
-      Navigator.of(context).pushReplacement(PageRouteBuilder<void>(pageBuilder: (_, _, _) => ConversationPage(c.id), transitionDuration: const Duration(milliseconds: 600), transitionsBuilder: (_, a, _, ch) => FadeTransition(opacity: a, child: ch)));
+      setState(() {
+        busy = false;
+        found = true;
+      });
     });
+  }
+
+  void _pair() {
+    final c = Store.i.pairViaQR();
+    Navigator.of(context).pushReplacement(PageRouteBuilder<void>(pageBuilder: (_, _, _) => ConversationPage(c.id), transitionDuration: const Duration(milliseconds: 600), transitionsBuilder: (_, a, _, ch) => FadeTransition(opacity: a, child: ch)));
   }
 
   @override
@@ -320,11 +357,19 @@ class _AnonScanPageState extends State<AnonScanPage> with SingleTickerProviderSt
           ),
         ),
         SizedBox(height: 24 * u),
-        _tealBtn(u, busy ? 'Exchanging keys…' : 'Simulate scan', Icons.qr_code_scanner_rounded, _pair, enabled: !busy),
+        if (found)
+          SteelPlate(u: u, child: Row(children: [
+            GoldIcon(Icons.verified_user_outlined, u: u),
+            SizedBox(width: 24 * u),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Contact found', style: ts(u, 42, w: FontWeight.w800)), Text('Keys verified. Start an encrypted chat?', style: ts(u, 31, c: const Color(0xFF9DB4E0), w: FontWeight.w400, sh: const []))])),
+          ]))
+        else if (error != null)
+          Container(margin: EdgeInsets.only(bottom: 14 * u), padding: EdgeInsets.all(26 * u), decoration: BoxDecoration(borderRadius: BorderRadius.circular(28 * u), color: const Color(0xFF2E0F0C), border: Border.all(color: const Color(0xFFFF6A5A), width: 4 * u)), child: Row(children: [Icon(Icons.error_outline_rounded, size: 52 * u, color: const Color(0xFFFF8A7A)), SizedBox(width: 20 * u), Expanded(child: Text(error!, style: ts(u, 33, c: const Color(0xFFFFC2B8), w: FontWeight.w500, sh: const [])))])),
+        if (found) _tealBtn(u, 'Start encrypted chat', Icons.lock_outline_rounded, _pair) else _tealBtn(u, busy ? 'Exchanging keys…' : 'Simulate scan', Icons.qr_code_scanner_rounded, _scan, enabled: !busy),
         OLabel('Or paste a public key', u: u),
-        GlassWell(u: u, child: TextField(controller: _key, onChanged: (_) => setState(() {}), cursorColor: const Color(0xFF4FF0E0), style: TextStyle(color: Colors.white, fontSize: 36 * u), decoration: InputDecoration(border: InputBorder.none, isCollapsed: true, hintText: 'Public key (hex)', hintStyle: TextStyle(color: const Color(0xFF8896A6), fontSize: 36 * u)))),
+        GlassWell(u: u, child: TextField(controller: _key, onChanged: (_) => setState(() => error = null), cursorColor: const Color(0xFF4FF0E0), style: TextStyle(color: Colors.white, fontSize: 36 * u), decoration: InputDecoration(border: InputBorder.none, isCollapsed: true, hintText: 'Public key (hex)', hintStyle: TextStyle(color: const Color(0xFF8896A6), fontSize: 36 * u)))),
         SizedBox(height: 16 * u),
-        ArtBtn(u: u, label: 'Pair with key', minH: 120, fontPx: 38, enabled: _key.text.trim().length >= 16 && !busy, onTap: _pair),
+        ArtBtn(u: u, label: 'Pair with key', minH: 120, fontPx: 38, enabled: _key.text.trim().isNotEmpty && !busy, onTap: () => _scan(paste: true)),
         SizedBox(height: 24 * u),
         _banner(u, 'Pairing creates a new end-to-end encrypted conversation. You will see only a temporary name.'),
       ],

@@ -84,6 +84,11 @@ class _OfferPageState extends State<OfferPage> {
           SizedBox(width: 22 * u),
           Expanded(child: TextField(controller: _price, keyboardType: TextInputType.number, inputFormatters: [FilteringTextInputFormatter.digitsOnly], cursorColor: const Color(0xFFFFB02E), style: TextStyle(fontSize: 84 * u, fontWeight: FontWeight.w900, color: const Color(0xFFFFB53A)), decoration: const InputDecoration(border: InputBorder.none, isCollapsed: true))),
         ])),
+        SizedBox(height: 12 * u),
+        Row(children: [
+          for (final pr in [('List price', 1.0), ('-5%', .95), ('-10%', .9), ('-15%', .85)])
+            Expanded(child: Padding(padding: EdgeInsets.symmetric(horizontal: 5 * u), child: ArtBtn(u: u, label: pr.$1, minH: 96, fontPx: 30, onTap: () => setState(() => _price.text = '${(p.price * pr.$2).round()}')))),
+        ]),
         OLabel('Quantity', u: u),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           RoundBtn(u: u, icon: Icons.remove_rounded, onTap: () => setState(() => qty = qty > 1 ? qty - 1 : 1)),
