@@ -199,7 +199,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     super.didChangeDependencies();
     if (_pre) return;
     _pre = true;
-    for (final n in const ['logo-lockup.webp', 'carbon-tile.webp']) {
+    for (final n in const ['splash-plate.webp', 'carbon-tile.webp']) {
       precacheImage(AssetImage('assets/images/$n'), context);
     }
   }
@@ -238,19 +238,16 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                 child: AnimatedBuilder(
                   animation: _c,
                   builder: (_, child) => Opacity(opacity: .8 + .2 * _c.value, child: child),
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Container(
-                      width: u * 941 * .88,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(36 * u),
-                        border: Border.all(color: const Color(0xFFAAB3BB), width: 7 * u),
-                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .75), blurRadius: 14 * u, offset: Offset(0, 10 * u)), BoxShadow(color: const Color(0xFFFF821E).withValues(alpha: .5), blurRadius: 26 * u)],
-                      ),
-                      child: ClipRRect(borderRadius: BorderRadius.circular(29 * u), child: AspectRatio(aspectRatio: 863 / 193, child: Image.asset('assets/images/logo-lockup.webp', fit: BoxFit.fill))),
+                  child: SizedBox(
+                    width: u * 941 * .94,
+                    child: AspectRatio(
+                      aspectRatio: 855 / 236,
+                      child: Stack(alignment: Alignment.center, children: [
+                        Positioned.fill(child: Image.asset('assets/images/splash-plate.webp', fit: BoxFit.fill)),
+                        Align(alignment: const Alignment(0, .26), child: SizedBox(width: 84 * u, height: 84 * u, child: DecoratedBox(decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: const Color(0xFFFF780F).withValues(alpha: .5), blurRadius: 22 * u)]), child: CircularProgressIndicator(strokeWidth: 10 * u, color: const Color(0xFFFF8A2A), backgroundColor: const Color(0x38FFFFFF))))),
+                      ]),
                     ),
-                    SizedBox(height: 90 * u),
-                    SizedBox(width: 52 * u, height: 52 * u, child: const CircularProgressIndicator(strokeWidth: 3, color: Color(0xFFFF8A2A), backgroundColor: Color(0x2EFFFFFF))),
-                  ]),
+                  ),
                 ),
               ),
             ]),

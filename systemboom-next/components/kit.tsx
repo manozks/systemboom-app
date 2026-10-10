@@ -132,17 +132,22 @@ export type Act = { label: string; icon?: ReactNode; danger?: boolean; onSelect:
 
 /** Bottom action sheet: list of icon + label rows (prototype ActionSheet). */
 export function ActionSheet({ open, onClose, title, actions }: { open: boolean; onClose: () => void; title?: string; actions: Act[] }) {
+  if (!open) return null;
   return (
-    <Sheet open={open} onClose={onClose} title={title}>
-      <div className="stack" style={{ gap: U(10) }}>
-        {actions.map((a) => (
-          <button key={a.label} className={cx('actrow', a.danger && 'danger')} onClick={() => { onClose(); a.onSelect(); }}>
-            {a.icon && <span className="actico">{a.icon}</span>}
-            <span>{a.label}</span>
-          </button>
-        ))}
+    <>
+      <div className="scrim" onClick={onClose} />
+      <div className="sheet asheet" role="dialog" aria-label={title}>
+        <div className="apanel">
+          {title && <div className="atitle">{title}</div>}
+          {actions.map((a) => (
+            <button key={a.label} className={cx('arow2', a.danger && 'danger')} onClick={() => { onClose(); a.onSelect(); }}>
+              {a.icon && <span className="aico">{a.icon}</span>}
+              <span className="alab">{a.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
-    </Sheet>
+    </>
   );
 }
 
