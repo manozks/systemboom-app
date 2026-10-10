@@ -1,9 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Lock, QrCode, ScanLine, UserCog, Users, VenetianMask } from 'lucide-react';
+import { ArrowLeftRight, Lock, QrCode, ScanLine, UserCog, Users, VenetianMask } from 'lucide-react';
 import { PageShell } from '@/components/PageShell';
-import { Avatar, Banner, Empty, Label, LRow, Plate } from '@/components/kit';
+import { Avatar, Banner, Btn, Empty, Label, LRow, Plate } from '@/components/kit';
 import { conversationTitle, latestMessage, useActiveAnon, useConversationList, useStore } from '@/lib/data/store';
 import { listTime } from '@/lib/data/format';
 import { U } from '@/lib/ui';
@@ -33,13 +33,15 @@ export default function AnonymousPage() {
       </div>
       <div style={{ height: U(22) }} />
       <Banner tone="ok" icon={<Lock />}>Anonymous conversations are always end-to-end encrypted. Contacts see only a temporary name and your public key.</Banner>
-      <Label>Anonymous chats</Label>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}><Label>Anonymous chats</Label><Btn kind="ghost" size="sm" onClick={() => router.push('/anon-chats/')}>See all</Btn></div>
       {!list.length && <Empty icon={<VenetianMask />} title="No anonymous chats" sub="Scan a QR code to pair with someone." />}
       {list.map((c) => {
         const last = latestMessage(c, state.messages);
         const t = conversationTitle(c, state.users);
         return <LRow key={c.id} teal icon={<Avatar name={t} size={70} anon group={c.kind === 'group'} />} title={t} sub={last?.text ?? last?.type} right={<span className="t-mute" style={{ textAlign: 'right' }}>{last ? listTime(last.createdAt) : ''}{c.unread > 0 && <span className="badge" style={{ display: 'block', margin: `${U(6)} 0 0 auto`, width: U(44), height: U(44), fontSize: U(24) }}>{c.unread}</span>}</span>} onClick={() => router.push(`/chat/?id=${c.id}`)} />;
       })}
+      <div style={{ height: U(20) }} />
+      <Btn kind="ghost" block icon={<ArrowLeftRight />} onClick={() => router.push('/chats/')}>Switch to registered chats</Btn>
     </PageShell>
   );
 }

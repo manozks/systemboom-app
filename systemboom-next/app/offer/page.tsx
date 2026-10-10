@@ -60,6 +60,12 @@ function Offer() {
       <Label>Your price per unit (Rs)</Label>
       <div className="gwell big"><Tag /><input inputMode="numeric" value={priceStr} onChange={(e) => setPrice(e.target.value.replace(/\D/g, ''))} placeholder={String(product.price)} aria-label="Your price" /></div>
 
+      <div className="chips" style={{ justifyContent: 'center', flexWrap: 'wrap' }}>
+        {[['List price', product.price], ['-5%', Math.round(product.price * 0.95)], ['-10%', Math.round(product.price * 0.9)], ['-15%', Math.round(product.price * 0.85)]].map(([l, v]) => (
+          <button key={l as string} className={`chip${n === v ? ' on' : ''}`} onClick={() => setPrice(String(v))}>{l} · {money(v as number)}</button>
+        ))}
+      </div>
+
       <Label>Quantity</Label>
       <div className="qty">
         <button className="rbtn" aria-label="Less" onClick={() => setQty((q) => Math.max(1, q - 1))}><Minus /></button>

@@ -69,6 +69,8 @@ class Msg {
 class Chat {
   Chat(this.id, this.title, {this.userId, this.group = false, this.unread = 0, this.private = false, this.muted = false, this.pinned = false, this.archived = false, this.anon = false});
   final bool anon;
+  bool announcement = false;
+  List<(String, String)> members = const [];
   final String id;
   final String title;
   final String? userId;
@@ -210,7 +212,7 @@ class Store extends ChangeNotifier {
       Chat('c_sita', 'Sita Rai', userId: 'sita', unread: 2),
       Chat('c_boom', 'Boom Store', userId: 'boom', unread: 1),
       Chat('c_bibek', 'Bibek Thapa', userId: 'bibek'),
-      Chat('c_team', 'Design Team', group: true, unread: 3),
+      Chat('c_team', 'Design Team', group: true, unread: 3)..members = const [('me', 'owner'), ('sita', 'admin'), ('bibek', 'member'), ('maya', 'member')],
       Chat('c_anita', 'Anita Gurung', userId: 'anita'),
       Chat('ac_heron', 'Silent Heron 2290', userId: 'a_heron', unread: 1, anon: true),
       Chat('ac_cipher', 'Violet Cipher 7731', userId: 'a_cipher', anon: true),
@@ -316,6 +318,38 @@ class Store extends ChangeNotifier {
   }
 
   void touch() => notifyListeners();
+
+  void togglePinChat(Chat c) {
+    c.pinned = !c.pinned;
+    notifyListeners();
+  }
+
+  void toggleMuteChat(Chat c) {
+    c.muted = !c.muted;
+    notifyListeners();
+  }
+
+  void toggleArchiveChat(Chat c) {
+    c.archived = !c.archived;
+    notifyListeners();
+  }
+
+  void markUnread(Chat c) {
+    c.unread = 1;
+    notifyListeners();
+  }
+
+  void deleteChat(Chat c) {
+    chats.remove(c);
+    msgs.removeWhere((m) => m.chat == c.id);
+    notifyListeners();
+  }
+
+  void editMsg(Msg m, String text) {
+    m.text = text;
+    m.extra = {...?m.extra, 'edited': true};
+    notifyListeners();
+  }
 
   void sendOffer(String chat, Product p, int price, int qty, String note) {
     final msg = Msg(id(), chat, 'me', MType.offer, 'Now', status: 'sent', extra: {'pid': p.id, 'price': price, 'qty': qty, 'note': note, 'state': 'pending'});

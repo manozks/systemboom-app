@@ -620,3 +620,18 @@ button.lr:active { transform: scale(.985); }
 .chip { transition-duration: .5s; }
 
 .logoplate { border-radius: calc(36 * var(--u)); overflow: hidden; border: calc(7 * var(--u)) solid transparent; background: #000 padding-box, linear-gradient(160deg, #fff, #aab3bb 22%, #3a424a 48%, #8b949d 76%, #fff) border-box; box-shadow: 0 calc(10 * var(--u)) calc(14 * var(--u)) rgba(0,0,0,.75), 0 0 calc(26 * var(--u)) rgba(255,130,30,.5); }
+
+.actrow { display: flex; align-items: center; gap: calc(26 * var(--u)); width: 100%; padding: calc(22 * var(--u)) calc(30 * var(--u)); border-radius: calc(30 * var(--u)); border: calc(4 * var(--u)) solid transparent; text-align: left; font-size: calc(40 * var(--u)); font-weight: 700; color: #fff;
+  background: linear-gradient(180deg, rgba(255,255,255,.14), transparent 45%) padding-box, linear-gradient(180deg, #2b3a4d, #131c28 60%, #0a1018) padding-box, linear-gradient(160deg, #fff, #aab3bb 22%, #3a424a 48%, #8b949d 76%, #fff) border-box; box-shadow: 0 calc(5 * var(--u)) calc(8 * var(--u)) rgba(0,0,0,.7), inset 0 calc(3 * var(--u)) 0 rgba(255,255,255,.2); transition: filter .5s, transform .5s cubic-bezier(.22,.8,.3,1); }
+.actrow:hover { filter: brightness(1.2); transform: translateX(3px); }
+.actrow .actico { width: calc(76 * var(--u)); height: calc(76 * var(--u)); border-radius: 50%; display: grid; place-items: center; flex: none; color: #ffb866; background: radial-gradient(circle at 35% 25%, #3a2410, #0a0604); border: calc(4 * var(--u)) solid #b98a3a; box-shadow: 0 0 calc(10 * var(--u)) rgba(255,130,30,.5); }
+.actrow .actico svg { width: 52%; height: 52%; }
+.actrow.danger { color: #ff9a8f; }
+.actrow.danger .actico { color: #ff6a5a; border-color: #8a2a22; background: radial-gradient(circle at 35% 25%, #3a1210, #0a0404); box-shadow: 0 0 calc(10 * var(--u)) rgba(255,80,60,.5); }
+.cstat { font-size: calc(28 * var(--u)); color: #9db4e0; }
+.rowmenu { width: calc(70 * var(--u)); height: calc(70 * var(--u)); border-radius: 50%; display: grid; place-items: center; color: #e8edf1; flex: none; transition: background .4s; }
+.rowmenu:hover { background: rgba(255,255,255,.12); }
+
+.mp.dark.lr.picked { filter: brightness(1.2); box-shadow: 0 0 calc(24 * var(--u)) rgba(255,130,30,.55); }
+.radio { width: calc(52 * var(--u)); height: calc(52 * var(--u)); border-radius: 50%; border: calc(5 * var(--u)) solid #8b949d; flex: none; transition: .4s; }
+.radio.on { border-color: #ff9a3a; background: radial-gradient(circle, #ff9a3a 38%, transparent 42%); box-shadow: 0 0 calc(12 * var(--u)) rgba(255,130,30,.8); }

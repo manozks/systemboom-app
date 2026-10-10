@@ -126,3 +126,27 @@ export const gradFor = (k: string) => GRADS[k] ?? `linear-gradient(135deg, ${hue
 export function ProdImg({ k, size = 130, radius = 26, fill, children }: { k: string; size?: number; radius?: number; fill?: boolean; children?: ReactNode }) {
   return <div className="pimg" style={{ width: fill ? '100%' : U(size), height: fill ? '100%' : U(size), borderRadius: fill ? 0 : U(radius), border: fill ? 0 : undefined, background: gradFor(k) }}>{children ?? <Package style={{ width: '42%', height: '42%' }} />}</div>;
 }
+
+
+export type Act = { label: string; icon?: ReactNode; danger?: boolean; onSelect: () => void };
+
+/** Bottom action sheet: list of icon + label rows (prototype ActionSheet). */
+export function ActionSheet({ open, onClose, title, actions }: { open: boolean; onClose: () => void; title?: string; actions: Act[] }) {
+  return (
+    <Sheet open={open} onClose={onClose} title={title}>
+      <div className="stack" style={{ gap: U(10) }}>
+        {actions.map((a) => (
+          <button key={a.label} className={cx('actrow', a.danger && 'danger')} onClick={() => { onClose(); a.onSelect(); }}>
+            {a.icon && <span className="actico">{a.icon}</span>}
+            <span>{a.label}</span>
+          </button>
+        ))}
+      </div>
+    </Sheet>
+  );
+}
+
+/** Segmented control (options as buttons). */
+export function Seg<T extends string>({ value, onChange, options }: { value: T; onChange: (v: T) => void; options: { value: T; label: string }[] }) {
+  return <div className="chips">{options.map((o) => <button key={o.value} className={cx('chip', value === o.value && 'on')} onClick={() => onChange(o.value)}>{o.label}</button>)}</div>;
+}

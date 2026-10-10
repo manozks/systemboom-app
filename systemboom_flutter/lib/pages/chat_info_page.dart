@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../data.dart';
 import '../kit.dart';
 import '../shell.dart';
+import 'call_page.dart';
+import 'chat_extra_pages.dart';
 import 'chat_page.dart';
 
 class ChatInfoPage extends StatefulWidget {
@@ -78,11 +80,30 @@ class _ChatInfoPageState extends State<ChatInfoPage> {
         Center(child: Text(chat.title, style: ts(u, 76, w: FontWeight.w900))),
         Center(child: Text(chat.group ? '4 members' : (peer?.about ?? ''), style: ts(u, 36, c: const Color(0xFFB9C9EE), w: FontWeight.w400, sh: const []))),
         SizedBox(height: 14 * u),
+        Row(children: [
+          Expanded(child: ArtBtn(u: u, label: 'Audio', icon: Icons.call_rounded, minH: 120, fontPx: 34, onTap: () => pushScreen(context, CallPage(chat.title, photo: peer?.photo)))),
+          SizedBox(width: 8 * u),
+          Expanded(child: ArtBtn(u: u, label: 'Video', icon: Icons.videocam_rounded, minH: 120, fontPx: 34, onTap: () => pushScreen(context, CallPage(chat.title, video: true, photo: peer?.photo)))),
+          SizedBox(width: 8 * u),
+          Expanded(child: ArtBtn(u: u, label: 'Search', icon: Icons.search_rounded, minH: 120, fontPx: 34, onTap: () => pushScreen(context, ChatSearchPage(chat.id)))),
+        ]),
+        SizedBox(height: 14 * u),
         if (!chat.group && !chat.private && peer != null) CtaBtn(u: u, label: 'Continue privately', icon: Icons.lock_outline_rounded, onTap: () => pushScreen(context, ConversationPage(s.openOrCreate(peer.id, private: true).id))),
         OLabel('Settings', u: u),
         row('Mute notifications', Icons.notifications_off_outlined, chat.muted, () => chat.muted = !chat.muted),
         row('Pin conversation', Icons.push_pin_outlined, chat.pinned, () => chat.pinned = !chat.pinned),
         row('Archive', Icons.archive_outlined, chat.archived, () => chat.archived = !chat.archived),
+        if (chat.group) ...[
+          if (chat.members.any((m) => m.$1 == 'me' && m.$2 != 'member')) row('Announcement mode', Icons.campaign_outlined, chat.announcement, () => chat.announcement = !chat.announcement),
+          OLabel('Members ${chat.members.length}', u: u),
+          for (final m in chat.members)
+            SteelPlate(u: u, child: Row(children: [
+              Face(u: u, person: s.person(m.$1), size: 90, online: s.person(m.$1).online),
+              SizedBox(width: 22 * u),
+              Expanded(child: Text(m.$1 == 'me' ? 'You' : s.person(m.$1).name, style: ts(u, 40, w: FontWeight.w800))),
+              if (m.$2 != 'member') Text(m.$2 == 'owner' ? '👑 Owner' : 'Admin', style: ts(u, 30, w: FontWeight.w800, c: m.$2 == 'owner' ? const Color(0xFFFFB02E) : const Color(0xFF5AB8F2))),
+            ])),
+        ],
         OLabel('Shared', u: u),
         Row(children: [chip(0, 'Media $media'), chip(1, 'Pinned ${pinned.length}'), chip(2, 'Search')]),
         SizedBox(height: 20 * u),
@@ -90,6 +111,28 @@ class _ChatInfoPageState extends State<ChatInfoPage> {
         if (tab == 1 && pinned.isEmpty) _empty(u, Icons.push_pin_outlined, 'No pinned messages'),
         if (tab == 1) for (final m in pinned) SteelPlate(u: u, child: Text(m.text ?? m.type.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: ts(u, 38, w: FontWeight.w800))),
         if (tab == 2) _empty(u, Icons.search_rounded, 'Search messages in this chat'),
+        Row(children: [
+          Expanded(child: ArtBtn(u: u, label: 'Pinned', icon: Icons.push_pin_outlined, minH: 120, fontPx: 34, onTap: () => pushScreen(context, ChatPinnedPage(chat.id)))),
+          SizedBox(width: 8 * u),
+          Expanded(child: ArtBtn(u: u, label: 'Media & docs', icon: Icons.image_outlined, minH: 120, fontPx: 32, onTap: () => pushScreen(context, ChatMediaPage(chat.id)))),
+        ]),
+        SizedBox(height: 16 * u),
+        if (!chat.group && peer != null)
+          Row(children: [
+            Expanded(child: ArtBtn(u: u, label: 'Block', icon: Icons.block_rounded, minH: 120, fontPx: 34, onTap: () async {
+              if (await confirmDialog(context, title: 'Block ${peer.name.split(' ').first}?', text: 'They won’t be able to message or call you.', confirm: 'Block') && context.mounted) showToast(context, '${peer.name} blocked');
+            })),
+            SizedBox(width: 8 * u),
+            Expanded(child: ArtBtn(u: u, label: 'Report', icon: Icons.flag_outlined, minH: 120, fontPx: 34, onTap: () => showToast(context, 'Report submitted'))),
+          ])
+        else
+          ArtBtn(u: u, label: 'Leave group', icon: Icons.logout_rounded, minH: 120, fontPx: 38, onTap: () async {
+            final nav = Navigator.of(context);
+            if (await confirmDialog(context, title: 'Leave group?', text: 'You’ll stop receiving messages.', confirm: 'Leave')) {
+              s.deleteChat(chat);
+              nav.popUntil((r) => r.isFirst);
+            }
+          }),
         CtaBtn(
           u: u,
           label: 'Delete conversation',

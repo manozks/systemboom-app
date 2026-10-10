@@ -6,6 +6,7 @@ import '../kit.dart';
 import '../shell.dart';
 import 'call_page.dart';
 import 'chat_info_page.dart';
+import 'chat_extra_pages.dart';
 import 'notifications_page.dart';
 import 'offer_page.dart';
 import 'order_page.dart';
@@ -32,6 +33,7 @@ class _ConversationPageState extends State<ConversationPage> {
   final _scroll = ScrollController();
   final _input = TextEditingController();
   String? _quote;
+  Msg? _editing;
   int _lastCount = 0;
 
   Store get s => Store.i;
@@ -66,6 +68,12 @@ class _ConversationPageState extends State<ConversationPage> {
   void _send() {
     final t = _input.text.trim();
     if (t.isEmpty) return;
+    if (_editing != null) {
+      s.editMsg(_editing!, t);
+      _input.clear();
+      setState(() => _editing = null);
+      return;
+    }
     s.send(widget.chatId, MType.text, text: _quote == null ? t : '↩ $_quote\n$t');
     _input.clear();
     setState(() => _quote = null);
@@ -81,7 +89,7 @@ class _ConversationPageState extends State<ConversationPage> {
       _toBottom();
     }
     final peer = chat.userId == null ? null : s.person(chat.userId);
-    final status = chat.anon ? 'end-to-end encrypted' : chat.group ? '4 members' : (peer?.online ?? false) ? 'online now' : 'last seen recently';
+    final status = (s.typing[widget.chatId] ?? false) ? 'typing…' : chat.anon ? 'end-to-end encrypted' : chat.group ? '4 members' : (peer?.online ?? false) ? 'online now' : 'last seen recently';
 
     return PageShell(
       title: chat.title,
@@ -96,7 +104,7 @@ class _ConversationPageState extends State<ConversationPage> {
         Widget at(double x, double y, double ww, double hh, Widget ch) => Positioned(left: x * k, top: y * k, width: ww * k, height: hh * k, child: ch);
         Widget cb(String l, IconData ic, VoidCallback f, {bool gold = true}) => ChromeBtn(u: uu, gold: gold, onTap: f, child: Icon(ic, size: 40 * uu, color: gold ? const Color(0xFFFFD27A) : const Color(0xFFDFE6EE)));
         return Stack(clipBehavior: Clip.none, children: [
-          at(150, 46, 104, 104, Tap(onTap: () => pushScreen(context, ChatInfoPage(widget.chatId)), lift: 0, child: Face(u: uu * 1.0, person: peer ?? const Person('g', 'Team'), size: 114, online: peer?.online ?? false))),
+          at(150, 46, 104, 104, Tap(onTap: () => chat.anon ? (chat.userId != null ? pushScreen(context, AnonKeyPage(chat.userId!)) : null) : pushScreen(context, ChatInfoPage(widget.chatId)), lift: 0, child: Face(u: uu * 1.0, person: peer ?? const Person('g', 'Team'), size: 114, online: peer?.online ?? false))),
           at(278, 56, 250, 90, Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(chat.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: ts(uu, chat.title.length > 14 ? 30 : 38, w: FontWeight.w800)),
             SizedBox(height: 4 * uu),
@@ -104,7 +112,7 @@ class _ConversationPageState extends State<ConversationPage> {
           ])),
           at(536, 62, 80, 80, cb('Voice call', Icons.call_rounded, () => pushScreen(context, CallPage(chat.title, photo: peer?.photo)))),
           at(624, 62, 80, 80, cb('Video call', Icons.videocam_rounded, () => pushScreen(context, CallPage(chat.title, video: true, photo: peer?.photo)))),
-          at(712, 62, 80, 80, cb('More', Icons.more_vert_rounded, () => pushScreen(context, ChatInfoPage(widget.chatId)), gold: false)),
+          at(712, 62, 80, 80, cb('More', Icons.more_vert_rounded, _headerMenu, gold: false)),
         ]);
       },
       footer: _composer(context, u),
@@ -231,10 +239,7 @@ class _ConversationPageState extends State<ConversationPage> {
           SizedBox(height: 6 * u),
           Text(accepted ? '✓ Accepted' : '… Waiting for seller', style: ts(u, 28, w: FontWeight.w800, c: accepted ? const Color(0xFF8DFFB4) : const Color(0xFFFFE3B0))),
           if (accepted && mine && !exists)
-            Padding(padding: EdgeInsets.only(top: 10 * u), child: ArtBtn(u: u, label: 'Create order', orange: true, minH: 110, fontPx: 34, expand: false, onTap: () {
-              final o = s.createOrder(m.chat, p, m.extra!['price'] as int, m.extra!['qty'] as int);
-              pushScreen(context, OrderPage(o.id));
-            })),
+            Padding(padding: EdgeInsets.only(top: 10 * u), child: ArtBtn(u: u, label: 'Create order', orange: true, minH: 110, fontPx: 34, expand: false, onTap: () => pushScreen(context, CreateOrderPage(p.id, m.chat, price: m.extra!['price'] as int, qty: m.extra!['qty'] as int)))),
         ]);
       case MType.order:
         final o = s.orders.firstWhere((x) => x.id == m.extra?['oid']);
@@ -259,14 +264,18 @@ class _ConversationPageState extends State<ConversationPage> {
     return FootBar(
       u: u,
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        if (_quote != null)
+        if (_quote != null || _editing != null)
           Container(
             margin: EdgeInsets.only(bottom: 10 * u, left: 16 * u, right: 16 * u),
             padding: EdgeInsets.symmetric(horizontal: 24 * u, vertical: 14 * u),
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(26 * u), color: const Color(0xFF0E2236), border: Border.all(color: const Color(0x66A0C8F0), width: 2.5 * u)),
             child: Row(children: [
-              Expanded(child: Text('Replying to $_quote', maxLines: 1, overflow: TextOverflow.ellipsis, style: ts(u, 28, c: const Color(0xFFCFE6F7), w: FontWeight.w400))),
-              Tap(onTap: () => setState(() => _quote = null), child: Icon(Icons.close_rounded, size: 40 * u, color: Colors.white)),
+              Expanded(child: Text(_editing != null ? 'Editing message' : 'Replying to $_quote', maxLines: 1, overflow: TextOverflow.ellipsis, style: ts(u, 28, c: const Color(0xFFCFE6F7), w: FontWeight.w400))),
+              Tap(onTap: () => setState(() {
+                _quote = null;
+                if (_editing != null) _input.clear();
+                _editing = null;
+              }), child: Icon(Icons.close_rounded, size: 40 * u, color: Colors.white)),
             ]),
           ),
         SizedBox(
@@ -313,10 +322,27 @@ class _ConversationPageState extends State<ConversationPage> {
             act('Reply', Icons.sentiment_satisfied_alt_outlined, () => setState(() => _quote = (m.text ?? m.type.name).split('\n').last)),
             act(m.pinned ? 'Unpin' : 'Pin', Icons.push_pin_outlined, () => s.togglePin(m)),
             act('Star', Icons.star_border_rounded, () => showToast(context, 'Starred')),
-            if (mine) act('Delete', Icons.delete_outline_rounded, () async {
-              if (await confirmDialog(context, title: 'Delete message?', text: 'This removes it from the conversation.')) s.remove(m);
+            if (!m.deleted) act('Delete', Icons.delete_outline_rounded, () async {
+              if (await confirmDialog(context, title: 'Delete message?', text: mine ? 'Deletes the message for everyone in the chat.' : 'Removes the message from your view.')) s.remove(m);
             }, red: true),
           ]),
+          if (!m.deleted)
+            Padding(
+              padding: EdgeInsets.only(top: 14 * u),
+              child: Wrap(alignment: WrapAlignment.center, spacing: 14 * u, children: [
+                Tap(onTap: () {
+                  Navigator.pop(c);
+                  showToast(context, 'Forward opens a picker (prototype)');
+                }, child: _pillBtn(u, Icons.forward_rounded, 'Forward')),
+                if (mine && m.type == MType.text) Tap(onTap: () {
+                  Navigator.pop(c);
+                  setState(() {
+                    _editing = m;
+                    _input.text = m.text ?? '';
+                  });
+                }, child: _pillBtn(u, Icons.edit_outlined, 'Edit')),
+              ]),
+            ),
           if (m.text != null)
             Padding(
               padding: EdgeInsets.only(top: 14 * u),
@@ -329,6 +355,47 @@ class _ConversationPageState extends State<ConversationPage> {
         ]),
       );
     });
+  }
+
+  Widget _pillBtn(double u, IconData ic, String l) => Container(
+        padding: EdgeInsets.symmetric(horizontal: 34 * u, vertical: 16 * u),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(99), border: Border.all(color: const Color(0xFFAAB3BB), width: 4 * u), gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF2B3A4D), Color(0xFF0A1018)])),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(ic, size: 44 * u, color: Colors.white), SizedBox(width: 12 * u), Text(l, style: ts(u, 34, w: FontWeight.w700))]),
+      );
+
+  void _headerMenu() {
+    final chat = s.chat(widget.chatId);
+    if (chat.anon) {
+      showActions(context, title: chat.title, items: [
+        if (chat.userId != null) ActItem('View public key', Icons.key_rounded, () => pushScreen(context, AnonKeyPage(chat.userId!))),
+        ActItem('Report', Icons.flag_outlined, () => showToast(context, 'Report submitted')),
+        ActItem('Block', Icons.block_rounded, () {
+          showToast(context, 'Identity blocked');
+          Navigator.of(context).maybePop();
+        }, danger: true),
+        ActItem('Exit conversation', Icons.logout_rounded, () => Navigator.of(context).maybePop(), danger: true),
+      ]);
+      return;
+    }
+    showActions(context, title: chat.title, items: [
+      ActItem('View info', Icons.info_outline_rounded, () => pushScreen(context, ChatInfoPage(widget.chatId))),
+      if (!chat.group && !chat.private && chat.userId != null)
+        ActItem('Continue privately', Icons.lock_outline_rounded, () {
+          showToast(context, 'Continuing in your private conversation');
+          pushScreen(context, ConversationPage(s.openOrCreate(chat.userId!, private: true).id));
+        }),
+      ActItem('Search in chat', Icons.search_rounded, () => pushScreen(context, ChatSearchPage(widget.chatId))),
+      ActItem(chat.muted ? 'Unmute' : 'Mute', chat.muted ? Icons.notifications_none_rounded : Icons.notifications_off_outlined, () {
+        s.toggleMuteChat(chat);
+        showToast(context, chat.muted ? 'Muted' : 'Unmuted');
+      }),
+      ActItem('Delete conversation', Icons.delete_outline_rounded, () async {
+        if (await confirmDialog(context, title: 'Delete conversation?', text: chat.group ? 'Removes the group from your list only.' : 'Removes it from your chat list only.') && mounted) {
+          s.deleteChat(chat);
+          Navigator.of(context).maybePop();
+        }
+      }, danger: true),
+    ]);
   }
 
   void _share(BuildContext context) {

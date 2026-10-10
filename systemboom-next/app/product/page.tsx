@@ -20,11 +20,8 @@ function Product() {
   if (!p) return <PageShell title="Product" active="market" dock={false}><div className="empty">Product not found.</div></PageShell>;
   const seller = store.state.users[p.sellerId];
   const chat = () => store.openOrCreatePrivate(p.sellerId);
-  const buy = () => {
-    const cid = chat();
-    const oid = store.createOrder({ conversationId: cid, sellerId: p.sellerId, items: [{ productId: p.id, title: p.title, image: p.image, unitPrice: p.price, qty: 1 }], deliveryFee: 150, address: 'Baneshwor, Kathmandu' });
-    router.push(`/order/?id=${oid}`);
-  };
+  const chatWithSeller = () => { const cid = chat(); store.shareProduct(cid, p.id); router.push(`/chat/?id=${cid}`); };
+  const buy = () => router.push(`/order-new/?product=${p.id}&conv=${chat()}`);
   const photo = PHOTO[p.id];
   const color = AV[p.availability];
 
@@ -32,7 +29,7 @@ function Product() {
     <PageShell title="Product" active="market" dock={false}
       footer={(
         <div className="pfoot">
-          <button className="abtn steel" onClick={() => router.push(`/chat/?id=${chat()}`)}><MessageCircle />Chat</button>
+          <button className="abtn steel" onClick={chatWithSeller}><MessageCircle />Chat</button>
           <button className="abtn orange" onClick={buy}><ShoppingBag />Buy now</button>
         </div>
       )}

@@ -7,6 +7,7 @@ import '../kit.dart' show pushScreen;
 import '../shell.dart';
 import 'chat_page.dart';
 import 'more_pages.dart';
+import '../kit.dart' show showActions, ActItem, confirmDialog, SteelPlate, GoldIcon, ts;
 import '../ui.dart';
 
 class _Chat {
@@ -25,8 +26,8 @@ class _Chat {
   final String? logo;
 }
 
-List<_Chat> get _chats => [
-      for (final c in d.Store.i.chats.where((c) => !c.anon))
+List<_Chat> _chatsFor({required bool archived, String query = ''}) => [
+      for (final c in ([...d.Store.i.chats.where((c) => !c.anon && (c.archived == archived || (query.isNotEmpty && !archived)))]..sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0))))
         () {
           final peer = c.userId == null ? null : d.people[c.userId];
           final last = d.Store.i.last(c.id);
@@ -43,7 +44,8 @@ List<_Chat> get _chats => [
     ];
 
 class ChatsPage extends StatefulWidget {
-  const ChatsPage({super.key});
+  const ChatsPage({super.key, this.archived = false});
+  final bool archived;
 
   @override
   State<ChatsPage> createState() => _ChatsPageState();
@@ -56,7 +58,7 @@ class _ChatsPageState extends State<ChatsPage> {
   @override
   Widget build(BuildContext context) {
     final u = context.u;
-    final items = _chats.where((c) {
+    final items = _chatsFor(archived: widget.archived, query: q).where((c) {
       if (tab == 1 && c.unread == 0) return false;
       if (tab == 2 && !c.group) return false;
       if (q.isNotEmpty && !('${c.name} ${c.preview}').toLowerCase().contains(q.toLowerCase())) return false;
@@ -64,39 +66,56 @@ class _ChatsPageState extends State<ChatsPage> {
     }).toList();
 
     return PageShell(
-      title: 'Chats',
+      title: widget.archived ? 'Archived' : 'Chats',
       headerArt: 'hdr-calls',
       active: 'chats',
+      showDock: !widget.archived,
       right: ChromeBtn(u: u, gold: true, badge: '14', onTap: () => pushScreen(context, const NotificationsLazy()), child: Icon(Icons.notifications_none_rounded, size: 46 * u, color: const Color(0xFFFFD27A))),
       children: [
         _search(u),
         SizedBox(height: 22 * u),
         _tabs(u),
         SizedBox(height: 26 * u),
-        _newChat(context, u),
+        if (!widget.archived) _newChat(context, u),
         Padding(
           padding: EdgeInsets.fromLTRB(8 * u, 34 * u, 6 * u, 16 * u),
           child: Row(children: [
-            Expanded(child: Text('RECENT CHATS', style: TextStyle(fontSize: (40 * u).clamp(14, 20), fontWeight: FontWeight.w800, letterSpacing: .4, color: Colors.white, decoration: TextDecoration.none))),
+            Expanded(child: Text(widget.archived ? 'ARCHIVED CHATS' : 'RECENT CHATS', style: TextStyle(fontSize: (40 * u).clamp(14, 20), fontWeight: FontWeight.w800, letterSpacing: .4, color: Colors.white, decoration: TextDecoration.none))),
             Press(
               u: u,
               radius: 20,
               lift: 0,
               scaleUp: 1.05,
               shine: false,
-              onTap: () => showToast(context, 'See all chats'),
+              onTap: _topMenu,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8 * u, vertical: 6 * u),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Text('See All', style: TextStyle(fontSize: (33 * u).clamp(12, 16), fontWeight: FontWeight.w600, color: Colors.white, decoration: TextDecoration.none)),
-                  Icon(Icons.chevron_right_rounded, size: 40 * u, color: Colors.white),
+                  Icon(Icons.more_vert_rounded, size: 46 * u, color: Colors.white),
                 ]),
               ),
             ),
           ]),
         ),
+        if (!widget.archived && tab == 0 && q.isEmpty && d.Store.i.chats.where((c) => !c.anon && c.archived).isNotEmpty)
+          SteelPlate(u: u, onTap: () => pushScreen(context, const ChatsPage(archived: true)).then((_) => setState(() {})), child: Row(children: [
+            GoldIcon(Icons.archive_outlined, u: u, size: 88),
+            SizedBox(width: 24 * u),
+            Expanded(child: Text('Archived', style: ts(u, 42, w: FontWeight.w800))),
+            Text('${d.Store.i.chats.where((c) => !c.anon && c.archived).length}', style: ts(u, 36, c: const Color(0xFF9DB4E0))),
+          ])),
         for (final c in items) _row(context, u, c),
-        if (items.isEmpty) Padding(padding: EdgeInsets.all(60 * u), child: const Center(child: Text('No conversations found', style: TextStyle(color: Color(0xFF8896A6), decoration: TextDecoration.none)))),
+        if (items.isEmpty)
+          Padding(
+            padding: EdgeInsets.all(60 * u),
+            child: Column(children: [
+              GoldIcon(q.isNotEmpty ? Icons.search_rounded : tab == 2 ? Icons.groups_outlined : Icons.chat_bubble_outline_rounded, u: u, size: 150),
+              SizedBox(height: 22 * u),
+              Text(q.isNotEmpty ? 'No matches' : widget.archived ? 'No archived chats' : tab == 1 ? 'You’re all caught up' : tab == 2 ? 'No group chats yet' : 'No conversations yet', style: ts(u, 42, w: FontWeight.w800)),
+              SizedBox(height: 10 * u),
+              Text(q.isNotEmpty ? 'Try a different name or keyword.' : widget.archived ? 'Chats you archive will appear here, out of the way but never lost.' : tab == 1 ? 'Every conversation is read. Enjoy the calm.' : 'Start your first conversation — everything begins with a chat.', textAlign: TextAlign.center, style: ts(u, 32, c: const Color(0xFF9DB4E0), w: FontWeight.w400, sh: const [])),
+            ]),
+          ),
       ],
     );
   }
@@ -248,11 +267,61 @@ class _ChatsPageState extends State<ChatsPage> {
     });
   }
 
+  void _topMenu() {
+    showActions(context, items: [
+      ActItem('New group', Icons.group_add_outlined, () => pushScreen(context, const NewChatPage())),
+      ActItem(widget.archived ? 'Back to chats' : 'Archived chats', Icons.archive_outlined, () => widget.archived ? Navigator.of(context).maybePop() : pushScreen(context, const ChatsPage(archived: true)).then((_) => setState(() {}))),
+      ActItem('Settings', Icons.settings_outlined, () => pushScreen(context, const SettingsPage())),
+    ]);
+  }
+
+  void _menu(d.Chat c) {
+    final st = d.Store.i;
+    showActions(context, title: c.title, items: [
+      ActItem(c.pinned ? 'Unpin' : 'Pin', Icons.push_pin_outlined, () {
+        st.togglePinChat(c);
+        showToast(context, c.pinned ? 'Pinned to top' : 'Unpinned');
+        setState(() {});
+      }),
+      ActItem(c.muted ? 'Unmute' : 'Mute', c.muted ? Icons.notifications_none_rounded : Icons.notifications_off_outlined, () {
+        st.toggleMuteChat(c);
+        showToast(context, c.muted ? 'Muted' : 'Unmuted');
+      }),
+      ActItem(c.unread > 0 ? 'Mark as read' : 'Mark as unread', Icons.done_all_rounded, () {
+        if (c.unread > 0) {
+          c.unread = 0;
+          st.touch();
+        } else {
+          st.markUnread(c);
+        }
+        setState(() {});
+      }),
+      ActItem(c.archived ? 'Unarchive' : 'Archive', c.archived ? Icons.unarchive_outlined : Icons.archive_outlined, () {
+        st.toggleArchiveChat(c);
+        showToast(context, c.archived ? 'Archived' : 'Unarchived');
+        setState(() {});
+      }),
+      ActItem('Delete conversation', Icons.delete_outline_rounded, () async {
+        if (await confirmDialog(context, title: 'Delete conversation?', text: c.group ? 'Removes the group from your list only.' : 'Removes it from your chat list only.')) {
+          st.deleteChat(c);
+          if (mounted) {
+            showToast(context, 'Conversation removed from your chat list');
+            setState(() {});
+          }
+        }
+      }, danger: true),
+    ]);
+  }
+
   Widget _row(BuildContext context, double u, _Chat c) {
     return RowCard(
       u: u,
       minHeight: 126,
-      onTap: () => pushScreen(context, ConversationPage(c.id)).then((_) => setState(() {})),
+      onTap: () {
+        d.Store.i.chat(c.id).unread = 0;
+        pushScreen(context, ConversationPage(c.id)).then((_) => setState(() {}));
+      },
+      onLong: () => _menu(d.Store.i.chat(c.id)),
       leading: _ChatFace(u: u, chat: c),
       title: c.name,
       titleColors: const [Color(0xFFFFFFFF), Color(0xFFFFF2DC), Color(0xFFE8C99A)],

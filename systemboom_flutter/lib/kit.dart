@@ -450,3 +450,53 @@ Future<bool> confirmDialog(BuildContext context, {required String title, require
 }
 
 const goldColor = _gold;
+
+
+class ActItem {
+  const ActItem(this.label, this.icon, this.onSelect, {this.danger = false});
+  final String label;
+  final IconData icon;
+  final VoidCallback onSelect;
+  final bool danger;
+}
+
+/// Bottom action sheet of glossy icon rows (prototype ActionSheet).
+Future<void> showActions(BuildContext context, {String? title, required List<ActItem> items}) {
+  final u = context.u;
+  return showArtSheet<void>(context, (c) => Container(
+        margin: EdgeInsets.all(12 * u),
+        padding: EdgeInsets.fromLTRB(26 * u, 26 * u, 26 * u, 26 * u),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(44 * u),
+          gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF232A33), Color(0xFF11151B), Color(0xFF0A0D11)]),
+          border: Border.all(color: const Color(0xFFC3CBD2), width: 6 * u),
+          boxShadow: [BoxShadow(color: const Color(0xFFFF821E).withValues(alpha: .4), blurRadius: 34 * u)],
+        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          if (title != null) Padding(padding: EdgeInsets.only(bottom: 18 * u), child: Text(title, style: ts(u, 42, w: FontWeight.w800))),
+          for (final a in items)
+            Padding(
+              padding: EdgeInsets.only(bottom: 10 * u),
+              child: Tap(
+                onTap: () {
+                  Navigator.pop(c);
+                  a.onSelect();
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 26 * u, vertical: 20 * u),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30 * u),
+                    gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF2B3A4D), Color(0xFF131C28), Color(0xFF0A1018)]),
+                    border: Border.all(color: const Color(0xFFAAB3BB), width: 4 * u),
+                  ),
+                  child: Row(children: [
+                    GoldIcon(a.icon, u: u, size: 76),
+                    SizedBox(width: 24 * u),
+                    Expanded(child: Text(a.label, style: ts(u, 40, w: FontWeight.w700, c: a.danger ? const Color(0xFFFF9A8F) : Colors.white))),
+                  ]),
+                ),
+              ),
+            ),
+        ]),
+      ));
+}

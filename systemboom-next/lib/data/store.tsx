@@ -276,6 +276,7 @@ interface StoreApi {
   togglePinMessage: (messageId: ID) => void
   toggleArchive: (id: ID) => void
   markRead: (conversationId: ID) => void
+  markUnread: (conversationId: ID) => void
   createGroup: (
     name: string,
     memberIds: ID[],
@@ -405,6 +406,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         dispatch({ type: 'patch_conversation', id, patch: { archived: !c?.archived } })
       },
       markRead: (conversationId) => dispatch({ type: 'mark_read', conversationId }),
+      markUnread: (conversationId) => dispatch({ type: 'patch_conversation', id: conversationId, patch: { unread: 1 } }),
       createGroup: (name, memberIds, opts) => {
         const env = opts?.env ?? 'registered'
         const mode: PrivacyMode = opts?.privacyMode ?? 'standard'

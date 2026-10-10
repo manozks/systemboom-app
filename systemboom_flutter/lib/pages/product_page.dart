@@ -5,6 +5,7 @@ import '../kit.dart';
 import '../shell.dart';
 import 'chat_page.dart';
 import 'offer_page.dart';
+import 'chat_extra_pages.dart';
 import 'order_page.dart';
 
 class ProductPage extends StatelessWidget {
@@ -31,10 +32,7 @@ class ProductPage extends StatelessWidget {
         child: Row(children: [
           Expanded(flex: 100, child: ArtBtn(u: u, label: 'Chat', icon: Icons.chat_bubble_outline_rounded, minH: 174, fontPx: 58, onTap: () => pushScreen(context, ConversationPage(chat().id)))),
           SizedBox(width: 8 * u),
-          Expanded(flex: 107, child: ArtBtn(u: u, label: 'Buy now', icon: Icons.shopping_bag_outlined, orange: true, minH: 174, fontPx: 58, onTap: () {
-            final o = Store.i.createOrder(chat().id, p, p.price, 1);
-            pushScreen(context, OrderPage(o.id));
-          })),
+          Expanded(flex: 107, child: ArtBtn(u: u, label: 'Buy now', icon: Icons.shopping_bag_outlined, orange: true, minH: 174, fontPx: 58, onTap: () => pushScreen(context, CreateOrderPage(p.id, chat().id)))),
         ]),
       ),
       children: [

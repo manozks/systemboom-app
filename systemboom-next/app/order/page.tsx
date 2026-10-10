@@ -8,7 +8,8 @@ import { Banner, Btn, Field, ProdImg } from '@/components/kit';
 import { useOrder, useStore } from '@/lib/data/store';
 import { listTime, money } from '@/lib/data/format';
 import { STATUS_COLOR, statusLabel } from '@/lib/status';
-import { U, img } from '@/lib/ui';
+import { U, img, useToast } from '@/lib/ui';
+import { useOnline } from '@/lib/connectivity';
 
 const Label = ({ children }: { children: React.ReactNode }) => <div className="olabel"><span>{children}</span></div>;
 
@@ -29,14 +30,32 @@ function OrderScreen() {
   const [sr, setSr] = useState(5);
   const [pr, setPr] = useState(5);
   const [text, setText] = useState('');
+  const online = useOnline();
+  const toast = useToast();
+  const [paying, setPaying] = useState(false);
+  const [failed, setFailed] = useState(false);
   if (!o || !id) return <PageShell title="Order" active="market" dock={false}><div className="empty">Order not found.</div></PageShell>;
   const seller = store.state.users[o.sellerId];
   const idx = ORDER.indexOf(o.status);
   const sub = o.items.reduce((s, i) => s + i.unitPrice * i.qty, 0);
   const canReview = o.status === 'delivered' && !o.reviewed;
+  const canTrack = o.paymentStatus === 'paid' && (o.status === 'shipped' || o.status === 'out_for_delivery' || o.status === 'confirmed' || o.status === 'delivered');
+  const pay = () => {
+    setFailed(false);
+    setPaying(true);
+    window.setTimeout(() => {
+      setPaying(false);
+      if (!online) { setFailed(true); return; }   // payment cannot complete offline (SM-004)
+      store.payOrder(id, method);
+      toast('Payment confirmed');
+    }, 1600);
+  };
   return (
     <PageShell title="Order" active="market" dock={false} bottomPad={o.paymentStatus === 'unpaid' || canReview ? 400 : undefined}
-      footer={o.paymentStatus === 'unpaid' ? <div className="payfoot"><button className="mp pay" onClick={() => store.payOrder(id, method)}><ShoppingBag />Pay {money(o.finalPrice)}</button></div> : canReview ? <div className="footbar"><Btn kind="primary" size="lg" block onClick={() => store.reviewOrder(id, { sellerRating: sr, productRating: pr, text: text.trim() })}>Submit review</Btn></div> : undefined}>
+      footer={o.paymentStatus === 'unpaid'
+        ? <div className="payfoot"><button className="mp pay" disabled={paying} onClick={pay}><ShoppingBag />{paying ? 'Processing…' : failed ? 'Try again' : method === 'Cash on delivery' ? 'Confirm order' : `Pay ${money(o.finalPrice)}`}</button></div>
+        : canReview ? <div className="payfoot"><button className="mp pay" onClick={() => router.push(`/order-review/?id=${o.id}`)}><Star />Leave a review</button></div>
+        : canTrack && o.status !== 'delivered' ? <div className="payfoot"><button className="mp pay" onClick={() => router.push(`/order-track/?id=${o.id}`)}><Truck />Track delivery</button></div> : undefined}>
       <div className="ohead">
         <div><div className="oid">Order {o.id.slice(-6).toUpperCase()}</div><div className="osub">{listTime(o.createdAt)} - {seller?.name}</div></div>
         <span className="mp pill" style={{ ['--tc' as string]: STATUS_COLOR[o.status] }}>{statusLabel(o.status)}</span>
@@ -59,6 +78,7 @@ function OrderScreen() {
       {o.paymentStatus === 'unpaid' ? (<>
         <Label>Payment method</Label>
         <div className="mgrid">{METHODS.map(([m, ic]) => <button key={m} className={`mp mbtn${method === m ? ' on' : ''}`} onClick={() => setMethod(m)}>{ic}{m}</button>)}</div>
+        {failed && <div style={{ marginBottom: U(16) }}><Banner tone="err" icon={<Info />}><b>Payment couldn’t be completed.</b> Check your connection and try again — you haven’t been charged.</Banner></div>}
         <div className="mp green obanner"><span className="oinfo"><Info /></span><span>Payment details stay private — only a confirmation is shared in chat.</span></div>
       </>) : (<>
         <Label>Tracking{o.tracking ? ` · ${o.tracking.courier} ${o.tracking.code}` : ''}</Label>
@@ -67,16 +87,9 @@ function OrderScreen() {
         </div></div>
       </>)}
 
-      {canReview && (<>
-        <Label>Rate your order</Label>
-        <div className="plate flat pad stack">
-          <div><div className="t-mute">Seller</div><Stars v={sr} onChange={setSr} /></div>
-          <div><div className="t-mute">Product</div><Stars v={pr} onChange={setPr} /></div>
-          <Field><textarea value={text} onChange={(e) => setText(e.target.value)} placeholder="Share a few words (optional)" /></Field>
-        </div>
-      </>)}
       {o.reviewed && <><div style={{ height: U(20) }} /><Banner tone="ok">Thanks for your review.</Banner></>}
       <div style={{ height: U(24) }} />
+      {canTrack && o.status !== 'delivered' && <div style={{ marginBottom: U(14) }}><Btn kind="steel" block icon={<Truck />} onClick={() => router.push(`/order-track/?id=${o.id}`)}>Open tracking</Btn></div>}
       <Btn kind="ghost" block icon={<MessageCircle />} onClick={() => router.push(`/chat/?id=${o.conversationId}`)}>Open conversation</Btn>
     </PageShell>
   );

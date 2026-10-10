@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data.dart';
 import '../kit.dart';
 import '../shell.dart';
+import 'chat_extra_pages.dart';
 import 'chat_page.dart';
 
 const _steps = [('confirmed', 'Order confirmed', Icons.check_rounded), ('shipped', 'Shipped', Icons.inventory_2_outlined), ('out_for_delivery', 'Out for delivery', Icons.local_shipping_outlined), ('delivered', 'Delivered', Icons.check_rounded)];
@@ -31,6 +32,7 @@ class OrderPage extends StatefulWidget {
 class _OrderPageState extends State<OrderPage> {
   String method = 'eSewa';
   int stars = 5;
+  bool paying = false;
   Store get s => Store.i;
 
   @override
@@ -64,12 +66,22 @@ class _OrderPageState extends State<OrderPage> {
       showDock: false,
       headerArt: 'hdr-calls',
       right: bellBtn(context, u),
-      bottomPad: (!o.paid || canReview) ? 400 : 80,
+      bottomPad: (!o.paid || canReview || o.status == 'shipped' || o.status == 'out_for_delivery' || o.status == 'confirmed') ? 400 : 80,
       footer: !o.paid
-          ? FootBar(u: u, child: ArtBtn(u: u, label: 'Pay ${money(o.total)}', icon: Icons.shopping_bag_outlined, orange: true, minH: 190, fontPx: 62, onTap: () => s.pay(o, method)))
+          ? FootBar(u: u, child: ArtBtn(u: u, label: paying ? 'Processing…' : method == 'Cash on delivery' ? 'Confirm order' : 'Pay ${money(o.total)}', icon: Icons.shopping_bag_outlined, orange: true, minH: 190, fontPx: 62, onTap: paying ? null : () {
+            setState(() => paying = true);
+            Future<void>.delayed(const Duration(milliseconds: 1600), () {
+              if (!mounted) return;
+              s.pay(o, method);
+              setState(() => paying = false);
+              showToast(context, 'Payment confirmed');
+            });
+          }, enabled: !paying))
           : canReview
-              ? FootBar(u: u, child: ArtBtn(u: u, label: 'Submit review', orange: true, minH: 190, fontPx: 62, onTap: () => s.review(o)))
-              : null,
+              ? FootBar(u: u, child: ArtBtn(u: u, label: 'Leave a review', icon: Icons.star_rounded, orange: true, minH: 190, fontPx: 62, onTap: () => pushScreen(context, OrderReviewPage(o.id))))
+              : (o.status == 'shipped' || o.status == 'out_for_delivery' || o.status == 'confirmed')
+                  ? FootBar(u: u, child: ArtBtn(u: u, label: 'Track delivery', icon: Icons.local_shipping_outlined, orange: true, minH: 190, fontPx: 62, onTap: () => pushScreen(context, OrderTrackPage(o.id))))
+                  : null,
       children: [
         Padding(
           padding: EdgeInsets.fromLTRB(6 * u, 0, 6 * u, 10 * u),
@@ -123,10 +135,6 @@ class _OrderPageState extends State<OrderPage> {
                 ]),
               ),
           ])),
-        ],
-        if (canReview) ...[
-          OLabel('Rate your order', u: u),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [for (var i = 1; i <= 5; i++) Tap(onTap: () => setState(() => stars = i), child: Icon(Icons.star_rounded, size: 80 * u, color: i <= stars ? const Color(0xFFFFC24A) : const Color(0xFF4A5560)))]),
         ],
         SizedBox(height: 24 * u),
         ArtBtn(u: u, label: 'Open conversation', icon: Icons.chat_bubble_outline_rounded, minH: 120, fontPx: 38, onTap: () => pushScreen(context, ConversationPage(o.chat))),

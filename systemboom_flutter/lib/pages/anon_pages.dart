@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import '../data.dart';
 import '../kit.dart';
 import '../shell.dart';
+import 'chat_extra_pages.dart';
 import 'chat_page.dart';
 
 const _teal = Color(0xFF14A09A);
@@ -108,7 +109,10 @@ class _AnonymousPageState extends State<AnonymousPage> {
         ]),
         SizedBox(height: 22 * u),
         _banner(u, 'Anonymous conversations are always end-to-end encrypted. Contacts see only a temporary name and your public key.'),
-        OLabel('Anonymous chats', u: u),
+        Row(children: [
+          Expanded(child: OLabel('Anonymous chats', u: u)),
+          Tap(onTap: () => pushScreen(context, const AnonChatsPage()).then((_) => setState(() {})), child: Padding(padding: EdgeInsets.only(top: 20 * u), child: Text('See all ›', style: ts(u, 34, w: FontWeight.w700)))),
+        ]),
         for (final c in chats)
           SteelPlate(
             u: u,
@@ -248,6 +252,8 @@ class AnonQrPage extends StatelessWidget {
           Clipboard.setData(ClipboardData(text: me.key));
           showToast(context, 'Public key copied');
         }),
+        SizedBox(height: 20 * u),
+        ArtBtn(u: u, label: 'View public key details', icon: Icons.key_rounded, minH: 120, fontPx: 38, onTap: () => pushScreen(context, const AnonKeyPage('anon-me'))),
         SizedBox(height: 20 * u),
         _banner(u, 'Only share this with people you want to talk to. Your private key never leaves this device.'),
       ],

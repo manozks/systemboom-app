@@ -2,13 +2,15 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Check, CheckCheck, Copy, Download, Edit3, FileText, Link2, Lock, MapPin, Mic, MoreVertical, Paperclip, Phone, Pin, Play, Plus, Send, Smile, Star, Trash2, User as UserIcon, Video, X, ShoppingBag, Tag, Package, Clock, ChevronLeft, Image as ImageIcon, Camera, ShoppingCart } from 'lucide-react';
+import { Check, CheckCheck, Copy, Download, Edit3, FileText, Link2, Lock, MapPin, Mic, MoreVertical, Paperclip, Phone, Pin, Play, Plus, Send, Smile, Star, Trash2, User as UserIcon, Video, X, ShoppingBag, Tag, Package, Clock, ChevronLeft, Image as ImageIcon, Camera, ShoppingCart, Forward, Search as SearchIcon, Info as InfoIcon, KeyRound, Flag, Ban, LogOut, Megaphone, BellOff, Bell, VenetianMask } from 'lucide-react';
 import { PageShell, ChromeBtn } from '@/components/PageShell';
-import { Avatar, Banner, Btn, Dialog, IBtn, ProdImg, Sheet, gradFor } from '@/components/kit';
-import { conversationTitle, isE2EE, useConversation, useMessages, useStore, useProducts } from '@/lib/data/store';
+import { useOnline } from '@/lib/connectivity';
+import { ActionSheet, Avatar, Banner, Btn, Dialog, IBtn, ProdImg, Sheet, gradFor } from '@/components/kit';
+import { conversationTitle, isE2EE, isPrivateMode, useConversation, useMessages, useStore, useProducts } from '@/lib/data/store';
 import { clockTime, dayLabel, money } from '@/lib/data/format';
 import type { Message } from '@/lib/data/types';
 import { Art, At, K, Press, U, img, useToast } from '@/lib/ui';
+import { MessageCircle as MessageCircleIcon } from 'lucide-react';
 import { photoOf } from '@/lib/photo';
 
 const EMOJI = ['👍', '❤️', '😂', '😮', '🙏', '🔥'];
@@ -33,7 +35,7 @@ function Body({ m, mine, onOpen }: { m: Message; mine: boolean; onOpen: (path: s
   const { state } = store;
   if (m.deleted) return <i style={{ opacity: 0.7 }}>🚫 This message was deleted</i>;
   const reply = m.replyToId ? state.messages[m.replyToId] : undefined;
-  const wrap = (c: React.ReactNode) => <>{reply && <div style={{ borderLeft: `${U(6)} solid #ffb866`, paddingLeft: U(14), marginBottom: U(10), opacity: 0.85, fontSize: U(26) }}>{reply.text ?? reply.type}</div>}{c}</>;
+  const wrap = (c: React.ReactNode) => <>{reply && <div onClick={(e) => { e.stopPropagation(); const el = document.getElementById(`msg-${m.replyToId}`); el?.scrollIntoView({ behavior: 'smooth', block: 'center' }); el?.animate([{ background: 'rgba(255,138,42,.35)' }, { background: 'transparent' }], { duration: 1200 }); }} style={{ borderLeft: `${U(6)} solid #ffb866`, paddingLeft: U(14), marginBottom: U(10), opacity: 0.85, fontSize: U(26), cursor: 'pointer' }}><b>{state.users[reply.authorId]?.name ?? 'You'}</b><div>{reply.text ?? reply.type}</div></div>}{c}</>;
   switch (m.type) {
     case 'text': return wrap(<span>{m.text}{m.editedAt && <em style={{ opacity: 0.7, fontSize: U(22) }}> · edited</em>}</span>);
     case 'image':
@@ -84,13 +86,7 @@ function Body({ m, mine, onOpen }: { m: Message; mine: boolean; onOpen: (path: s
             {o.status === 'accepted' ? '✓ Accepted' : o.status === 'declined' ? '✗ Declined' : '… Waiting for seller'}
           </div>
           {o.status === 'accepted' && mine && !Object.values(state.orders).some((x) => x.conversationId === m.conversationId && x.items[0]?.productId === o.productId && x.items[0]?.unitPrice === o.price) && (
-            <button className="btn primary sm" style={{ marginTop: U(14) }} onClick={(e) => {
-              e.stopPropagation();
-              const conv = state.conversations.find((c) => c.id === m.conversationId);
-              const prod = state.products.find((p) => p.id === o.productId);
-              const oid = store.createOrder({ conversationId: m.conversationId, sellerId: conv?.userId ?? prod?.sellerId ?? 'u_boom', items: [{ productId: o.productId, title: o.title, image: prod?.image ?? 'p1', unitPrice: o.price, qty: o.qty }], deliveryFee: 150, address: 'Baneshwor, Kathmandu' });
-              onOpen(`/order/?id=${oid}`);
-            }}>Create order</button>
+            <button className="btn primary sm" style={{ marginTop: U(14) }} onClick={(e) => { e.stopPropagation(); onOpen(`/order-new/?product=${o.productId}&conv=${m.conversationId}&price=${o.price}&qty=${o.qty}`); }}>Create order</button>
           )}
         </div>
       );
@@ -125,10 +121,13 @@ function ChatScreen() {
   const [del, setDel] = useState<Message | null>(null);
   const [reply, setReply] = useState<Message | null>(null);
   const [pick, setPick] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const [delConv, setDelConv] = useState(false);
+  const online = useOnline();
   const end = useRef<HTMLDivElement>(null);
 
   useEffect(() => { if (id) store.markRead(id); }, [id, msgs.length]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { end.current?.scrollIntoView({ block: 'end' }); }, [msgs.length]);
+  useEffect(() => { end.current?.scrollIntoView({ block: 'end' }); }, [msgs.length, id ? store.state.typing[id] : false]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const title = conv ? conversationTitle(conv, store.state.users) : 'Chat';
   const e2ee = isE2EE(conv);
@@ -146,17 +145,22 @@ function ChatScreen() {
     return <PageShell title="Chat" active="chats" dock={false}><div className="empty">Conversation not found.</div></PageShell>;
   }
 
+  const myRole = conv.participants?.find((p) => p.userId === store.me)?.role;
+  const locked = !!conv.announcementMode && conv.kind === 'group' && myRole === 'member';
+
   const send = () => {
     const t = text.trim();
     if (!t) return;
     if (edit) { store.editMessage(edit.id, t); setEdit(null); }
-    else store.sendMessage(id, { type: 'text', text: t, replyToId: reply?.id });
+    else store.sendMessage(id, { type: 'text', text: t, replyToId: reply?.id }, online);
     setText(''); setReply(null);
   };
 
-  const sendKind = (partial: Parameters<typeof store.sendMessage>[1]) => { store.sendMessage(id, partial); setAttach(false); };
+  const sendKind = (partial: Parameters<typeof store.sendMessage>[1]) => { store.sendMessage(id, partial, online); setAttach(false); };
 
-  const footer = (
+  const footer = locked ? (
+    <div className="composer"><div className="banner" style={{ margin: `0 ${U(20)} ${U(20)}` }}><Megaphone /><div>Only admins can post in Announcement Mode</div></div></div>
+  ) : (
     <div className="composer">
       {(reply || edit) && (
         <div className="banner" style={{ marginBottom: U(14) }}>
@@ -175,7 +179,7 @@ function ChatScreen() {
   );
 
   const peer = conv.userId ? store.state.users[conv.userId] : undefined;
-  const status = conv.kind === 'group' ? `${conv.participants?.length ?? 0} members` : peer?.presence === 'online' ? 'online now' : peer?.lastSeen ? `last seen ${peer.lastSeen}` : 'offline';
+  const status = typing ? 'typing…' : anon ? (conv.kind === 'group' ? `${conv.participants?.length ?? 0} members · anonymous` : 'anonymous · identity hidden') : conv.kind === 'group' ? `${conv.participants?.length ?? 0} members` : peer?.presence === 'online' ? 'online now' : peer?.lastSeen ? `last seen ${peer.lastSeen}` : 'offline';
 
   const mine = (m: Message) => m.authorId === store.me;
 
@@ -187,25 +191,26 @@ function ChatScreen() {
             <ChromeBtn label="Back" onClick={() => (window.history.length > 1 ? router.back() : router.push('/chats/'))}><ChevronLeft style={{ width: '58%', height: '58%' }} strokeWidth={2.2} /></ChromeBtn>
           </At>
           <At x={150} y={46} w={104} h={104}>
-            <Press pop shine={false} label="Chat info" onClick={() => router.push(`/chat-info/?id=${id}`)} style={{ width: '100%', height: '100%', borderRadius: '50%', position: 'relative' }}>
+            <Press pop shine={false} label="Chat info" onClick={() => (anon ? (conv.kind === 'private' && conv.userId ? router.push(`/anon-key/?id=${conv.userId}`) : undefined) : router.push(`/chat-info/?id=${id}`))} style={{ width: '100%', height: '100%', borderRadius: '50%', position: 'relative' }}>
               <div style={{ width: '100%', height: '100%' }}><Face id={conv.userId ?? conv.id} name={title} size={114.6} business={peer?.business} anon={anon} group={conv.kind === 'group'} /></div>
               {peer?.presence === 'online' && <span style={{ position: 'absolute', right: K(2), bottom: K(2), width: K(26), height: K(26), borderRadius: '50%', background: '#22c55e', border: `${K(4)} solid #0d1117`, boxShadow: '0 0 8px #22c55e' }} />}
             </Press>
           </At>
           <At x={278} y={58} w={250}>
             <div className="ellip" style={{ fontSize: K(title.length > 14 ? 30 : title.length > 9 ? 36 : 44), fontWeight: 800, color: '#fff', textShadow: `0 ${K(3)} ${K(4)} rgba(0,0,0,.8)`, lineHeight: 1.1 }}>{title}</div>
-            <div className="rowflex ellip" style={{ gap: K(8), fontSize: K(26), color: '#e6ecf3', marginTop: K(6) }}>{peer?.presence === 'online' && <i style={{ width: K(18), height: K(18), borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e', flex: 'none' }} />}{status}</div>
+            <div className="rowflex ellip" style={{ gap: K(8), fontSize: K(26), color: '#e6ecf3', marginTop: K(6) }}>{peer?.presence === 'online' && !anon && <i style={{ width: K(18), height: K(18), borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 8px #22c55e', flex: 'none' }} />}{status}</div>
           </At>
-          {([[536, Phone, 'Voice call', () => router.push(`/call/?name=${encodeURIComponent(title)}`)], [624, Video, 'Video call', () => router.push(`/call/?name=${encodeURIComponent(title)}&video=1`)], [712, MoreVertical, 'More', () => router.push(`/chat-info/?id=${id}`)]] as const).map(([x, Ic, l, fn]) => (
+          {([[536, Phone, 'Voice call', () => router.push(`/call/?chat=${id}&kind=voice`)], [624, Video, 'Video call', () => router.push(`/call/?chat=${id}&kind=video`)], [712, MoreVertical, 'More', () => setMenu(true)]] as const).map(([x, Ic, l, fn]) => (
             <At key={l} x={x} y={62} w={80} h={80}><ChromeBtn label={l} gold={l !== 'More'} onClick={fn}><Ic style={{ width: '54%', height: '54%' }} strokeWidth={1.9} /></ChromeBtn></At>
           ))}
         </Art>
       </header>
       <main style={{ padding: `${U(10)} ${U(22)} ${U(330)}` }}>
       {(e2ee || anon) && <div style={{ marginBottom: U(20) }}><Banner icon={<Lock />} tone="ok">{anon ? 'Anonymous · end-to-end encrypted. Only your device keys can read this.' : 'Private mode · end-to-end encrypted.'}</Banner></div>}
+      {msgs.length === 0 && <div className="empty"><div className="ring"><MessageCircleIcon /></div><div className="t-title">{title}</div><div className="t-mute">Say hello 👋</div></div>}
       <div className={`thread rbub${anon ? ' anon' : ''}`}>
         {rows.map((r, i) => r.k === 'day' ? <div className="daysep" key={`d${i}`}><span>{r.label}</span></div> : r.m.type === 'system' ? <div className="sysmsg" key={r.m.id}>{r.m.text}</div> : (
-          <div key={r.m.id} className={`mrow${mine(r.m) ? ' me' : ''}`}>
+          <div key={r.m.id} id={`msg-${r.m.id}`} className={`mrow${mine(r.m) ? ' me' : ''}`}>
             <Face id={r.m.authorId} name={store.state.users[r.m.authorId]?.name ?? '?'} size={104} business={store.state.users[r.m.authorId]?.business} anon={anon} />
             <div className="col">
               {!mine(r.m) && conv.kind === 'group' && <div className="t-mute" style={{ margin: `0 ${U(14)} ${U(4)}` }}>{store.state.users[r.m.authorId]?.name}</div>}
@@ -214,7 +219,7 @@ function ChatScreen() {
                 <div className="meta">{r.m.pinned && <Pin style={{ width: U(24), height: U(24) }} />}{r.m.starred && <Star style={{ width: U(24), height: U(24), fill: '#ffc24a', color: '#ffc24a' }} />}{clockTime(r.m.createdAt)}{mine(r.m) && <Ticks s={r.m.status} />}</div>
               </div>
               {!!r.m.reactions?.length && <div className="rowflex" style={{ gap: U(8), marginTop: U(-12), padding: `0 ${U(16)}` }}>{r.m.reactions.map((x) => <button key={x.emoji} className="pill" style={{ ['--t' as string]: '#c9a46a', height: U(46) }} onClick={() => store.react(r.m.id, x.emoji)}>{x.emoji} {x.by.length}</button>)}</div>}
-              {r.m.status === 'failed' && <button className="t-mute" style={{ color: '#ff9a8f' }} onClick={() => store.retryMessage(r.m.id)}>Failed · tap to retry</button>}
+              {r.m.status === 'failed' && <button className="t-mute" style={{ color: '#ff9a8f' }} onClick={() => store.retryMessage(r.m.id, online)}>Failed · tap to retry</button>}
             </div>
           </div>
         ))}
@@ -231,10 +236,11 @@ function ChatScreen() {
               <button className="aring" onClick={() => { setReply(sel); setSel(null); }}><Smile /><b>Reply</b></button>
               <button className="aring" onClick={() => { store.togglePinMessage(sel.id); setSel(null); }}><Pin /><b>{sel.pinned ? 'Unpin' : 'Pin'}</b></button>
               <button className="aring" onClick={() => { toast(sel.starred ? 'Unstarred' : 'Starred'); setSel(null); }}><Star /><b>Star</b></button>
-              {mine(sel) && <button className="aring red" onClick={() => { setDel(sel); setSel(null); }}><Trash2 /><b>Delete</b></button>}
+              {!sel.deleted && <button className="aring red" onClick={() => { setDel(sel); setSel(null); }}><Trash2 /><b>Delete</b></button>}
             </div>
-            {(sel.text || (mine(sel) && sel.type === 'text')) && (
+            {!sel.deleted && (
               <div className="xrow">
+                <Btn kind="ghost" size="sm" icon={<Forward />} onClick={() => { toast('Forward opens a picker (prototype)'); setSel(null); }}>Forward</Btn>
                 {sel.text && <Btn kind="ghost" size="sm" icon={<Copy />} onClick={() => { navigator.clipboard?.writeText(sel.text!); toast('Copied'); setSel(null); }}>Copy</Btn>}
                 {mine(sel) && sel.type === 'text' && <Btn kind="ghost" size="sm" icon={<Edit3 />} onClick={() => { setEdit(sel); setText(sel.text ?? ''); setSel(null); }}>Edit</Btn>}
               </div>
@@ -243,7 +249,24 @@ function ChatScreen() {
         )}
       </Sheet>
 
-      <Dialog open={!!del} onClose={() => setDel(null)} title="Delete message?" text="This removes it from the conversation." onConfirm={() => { del && store.deleteMessage(del.id, true); setDel(null); }} />
+      <Dialog open={!!del} onClose={() => setDel(null)} title="Delete message?" text={del && mine(del) ? 'Deletes the message for everyone in the chat.' : 'Removes the message from your view.'} onConfirm={() => { del && store.deleteMessage(del.id, mine(del)); setDel(null); }} />
+
+      <ActionSheet open={menu} onClose={() => setMenu(false)} title={title}
+        actions={anon
+          ? [
+              ...(conv.kind === 'private' && conv.userId ? [{ label: 'View public key', icon: <KeyRound />, onSelect: () => router.push(`/anon-key/?id=${conv.userId}`) }] : []),
+              { label: 'Report', icon: <Flag />, onSelect: () => toast('Report submitted') },
+              { label: 'Block', icon: <Ban />, danger: true, onSelect: () => { toast('Identity blocked'); router.push('/anonymous/'); } },
+              { label: 'Exit conversation', icon: <LogOut />, danger: true, onSelect: () => router.push('/anonymous/') },
+            ]
+          : [
+              { label: 'View info', icon: <InfoIcon />, onSelect: () => router.push(`/chat-info/?id=${id}`) },
+              ...(!isPrivateMode(conv) && conv.kind === 'private' && conv.userId ? [{ label: 'Continue privately', icon: <Lock />, onSelect: () => { const pid = store.continuePrivately(conv.userId!); toast('Continuing in your private conversation'); router.push(`/chat/?id=${pid}`); } }] : []),
+              { label: 'Search in chat', icon: <SearchIcon />, onSelect: () => router.push(`/chat-search/?id=${id}`) },
+              { label: conv.muted ? 'Unmute' : 'Mute', icon: conv.muted ? <Bell /> : <BellOff />, onSelect: () => { store.toggleMute(id); toast(conv.muted ? 'Unmuted' : 'Muted'); } },
+              { label: 'Delete conversation', icon: <Trash2 />, danger: true, onSelect: () => setDelConv(true) },
+            ]} />
+      <Dialog open={delConv} onClose={() => setDelConv(false)} title="Delete conversation?" text={conv.kind === 'group' ? 'Removes the group from your list only. The group continues.' : `Removes it from your chat list only. ${title} is not affected.`} onConfirm={() => { store.deleteConversation(id); toast('Conversation removed from your chat list'); router.replace('/chats/'); }} />
 
       <Sheet open={attach} onClose={() => setAttach(false)} title="Share">
         <div className="rgrid">

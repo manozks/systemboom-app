@@ -679,7 +679,8 @@ class ChromeAvatar extends StatelessWidget {
 
 /// Wide steel plate row (same art as the Start a conversation / Design System cards).
 class RowCard extends StatelessWidget {
-  const RowCard({super.key, required this.u, required this.onTap, required this.leading, required this.title, this.subtitle, this.trailing, this.titleColors, this.hot = false, this.minHeight = 156});
+  const RowCard({super.key, required this.u, required this.onTap, required this.leading, required this.title, this.subtitle, this.trailing, this.titleColors, this.hot = false, this.minHeight = 156, this.onLong});
+  final VoidCallback? onLong;
   final double u;
   final VoidCallback onTap;
   final Widget leading;
@@ -695,7 +696,11 @@ class RowCard extends StatelessWidget {
     final tc = titleColors ?? const [Colors.white, Color(0xFFDFE6EE), Color(0xFF9AA6B2)];
     return Padding(
       padding: EdgeInsets.only(bottom: 14 * u),
-      child: Press(
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onLongPress: onLong,
+        onSecondaryTap: onLong,
+        child: Press(
         u: u,
         radius: 34,
         lift: 3,
@@ -738,6 +743,7 @@ class RowCard extends StatelessWidget {
             ),
           ),
         ]),
+      ),
       ),
     );
   }

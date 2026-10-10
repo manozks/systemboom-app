@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../data.dart';
 import '../kit.dart';
 import '../main.dart' show HomePage;
+import 'chat_extra_pages.dart';
 import '../shell.dart';
 import 'chat_page.dart';
 
@@ -39,7 +40,11 @@ class _NewChatPageState extends State<NewChatPage> {
         for (final p in list)
           SteelPlate(
             u: u,
-            onTap: () => pushScreen(context, ConversationPage(Store.i.openOrCreate(p.id, private: private && !p.business).id)),
+            onTap: () {
+              final wantPrivate = private && !p.business;
+              final ex = Store.i.chats.where((c) => c.userId == p.id && c.private == wantPrivate && !c.anon);
+              pushScreen(context, ex.isNotEmpty ? ConversationPage(ex.first.id) : DraftChatPage(p.id, privateIntent: wantPrivate));
+            },
             child: Row(children: [
               Face(u: u, person: p, size: 104, online: p.online),
               SizedBox(width: 26 * u),
