@@ -35,6 +35,8 @@ class _ConversationPageState extends State<ConversationPage> {
   int _lastCount = 0;
 
   Store get s => Store.i;
+  bool get _anon => s.chat(widget.chatId).anon;
+  static const _teal = <double>[-.2, .1, .85, 0, 0, .3, .8, -.1, 0, 0, .9, .35, -.25, 0, 0, 0, 0, 0, 1, 0];
 
   @override
   void initState() {
@@ -78,8 +80,8 @@ class _ConversationPageState extends State<ConversationPage> {
       _lastCount = thread.length;
       _toBottom();
     }
-    final peer = chat.userId == null ? null : people[chat.userId];
-    final status = chat.group ? '4 members' : (peer?.online ?? false) ? 'online now' : 'last seen recently';
+    final peer = chat.userId == null ? null : s.person(chat.userId);
+    final status = chat.anon ? 'end-to-end encrypted' : chat.group ? '4 members' : (peer?.online ?? false) ? 'online now' : 'last seen recently';
 
     return PageShell(
       title: chat.title,
@@ -142,10 +144,8 @@ class _ConversationPageState extends State<ConversationPage> {
 
   Widget _bubble(double u, bool mine, Widget child) {
     final art = mine ? 'chat-bubble-out' : 'chat-bubble';
-    return Padding(
-      padding: EdgeInsets.all(9 * u),
-      child: Nine(art, px: mine ? sizeBubbleOut : sizeBubble, slice: 38, u: u, pad: EdgeInsets.fromLTRB(40 * u, 36 * u, 40 * u, 36 * u), child: child),
-    );
+    final nine = Nine(art, px: mine ? sizeBubbleOut : sizeBubble, slice: 38, u: u, pad: EdgeInsets.fromLTRB(40 * u, 36 * u, 40 * u, 36 * u), child: child);
+    return Padding(padding: EdgeInsets.all(9 * u), child: _anon ? ColorFiltered(colorFilter: const ColorFilter.matrix(_teal), child: nine) : nine);
   }
 
   Widget _msg(BuildContext context, double u, Msg m, Chat chat) {
@@ -153,7 +153,7 @@ class _ConversationPageState extends State<ConversationPage> {
       return Center(child: Padding(padding: EdgeInsets.symmetric(vertical: 8 * u), child: Container(padding: EdgeInsets.symmetric(horizontal: 22 * u, vertical: 8 * u), decoration: BoxDecoration(color: const Color(0x59000000), borderRadius: BorderRadius.circular(99), border: Border.all(color: const Color(0x14FFFFFF))), child: Text(m.text ?? '', style: ts(u, 25, c: const Color(0xFFAAB8C8), w: FontWeight.w500)))));
     }
     final mine = m.from == 'me';
-    final who = people[m.from] ?? const Person('x', 'Someone');
+    final who = s.person(m.from);
     final face = Face(u: u, person: who, size: 104);
     final body = _body(context, u, m, mine);
     final meta = Padding(

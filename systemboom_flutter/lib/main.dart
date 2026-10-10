@@ -95,10 +95,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       'Market': 'market',
       'Profile': 'profile',
       'Design System': 'design',
+      'Anonymous': 'anonymous',
     };
     final r = routes[label];
     if (kEnableNav && r != null) {
-      if (r == 'design') {
+      if (r == 'design' || r == 'anonymous') {
         openPage(context, r);
       } else {
         goTab(context, r);

@@ -26,7 +26,7 @@ class _Chat {
 }
 
 List<_Chat> get _chats => [
-      for (final c in d.Store.i.chats)
+      for (final c in d.Store.i.chats.where((c) => !c.anon))
         () {
           final peer = c.userId == null ? null : d.people[c.userId];
           final last = d.Store.i.last(c.id);

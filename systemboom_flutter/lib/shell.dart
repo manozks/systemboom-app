@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'main.dart' show HomePage;
 import 'pages/calls_page.dart';
+import 'pages/anon_pages.dart';
 import 'pages/chats_page.dart';
 import 'pages/design_page.dart';
 import 'pages/market_page.dart';
@@ -35,6 +36,8 @@ Widget _pageFor(String route) {
       return const ProfilePage();
     case 'design':
       return const DesignPage();
+    case 'anonymous':
+      return const AnonymousPage();
     default:
       return const HomePage();
   }

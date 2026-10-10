@@ -4,7 +4,8 @@ import 'package:flutter/foundation.dart';
 
 /// Demo data + tiny in-memory store (mirrors the Next.js version's mock store).
 class Person {
-  const Person(this.id, this.name, {this.about, this.online = false, this.business = false, this.verified = false, this.photo});
+  const Person(this.id, this.name, {this.about, this.online = false, this.business = false, this.verified = false, this.photo, this.anon = false});
+  final bool anon;
   final String id;
   final String name;
   final String? about;
@@ -22,7 +23,31 @@ const people = <String, Person>{
   'anita': Person('anita', 'Anita Gurung', about: 'Travel a lot ✈️', photo: 'cf4'),
   'maya': Person('maya', 'Maya Karki', online: true, photo: 'cf4'),
   'boom': Person('boom', 'Boom Store', about: 'Official SYSTEMBOOM merchandise', online: true, business: true, verified: true),
+  'a_heron': Person('a_heron', 'Silent Heron 2290', online: true, anon: true),
+  'a_cipher': Person('a_cipher', 'Violet Cipher 7731', anon: true),
+  'a_raven': Person('a_raven', 'Onyx Raven 0518', anon: true),
+  'a_moth': Person('a_moth', 'Lunar Moth 3364', online: true, anon: true),
 };
+
+class AnonId {
+  AnonId(this.id, this.name, this.session, this.key);
+  final String id;
+  final String name;
+  final String session;
+  final String key;
+  String get fingerprint => [for (var i = 0; i < 32; i += 4) key.substring(i, i + 4)].join(' ');
+}
+
+String _hex(String seed, int n) {
+  var h = 2166136261;
+  final b = StringBuffer();
+  for (var i = 0; i < n; i++) {
+    h ^= seed.codeUnitAt(i % seed.length) + i * 131;
+    h = (h * 16777619) & 0xFFFFFFFF;
+    b.write('0123456789ABCDEF'[(h >> (i % 24)) & 15]);
+  }
+  return b.toString();
+}
 
 enum MType { text, image, voice, document, product, offer, order, system }
 
@@ -42,7 +67,8 @@ class Msg {
 }
 
 class Chat {
-  Chat(this.id, this.title, {this.userId, this.group = false, this.unread = 0, this.private = false, this.muted = false, this.pinned = false, this.archived = false});
+  Chat(this.id, this.title, {this.userId, this.group = false, this.unread = 0, this.private = false, this.muted = false, this.pinned = false, this.archived = false, this.anon = false});
+  final bool anon;
   final String id;
   final String title;
   final String? userId;
@@ -132,7 +158,51 @@ class Store extends ChangeNotifier {
   final orders = <Order>[];
   final notifs = <Notif>[];
   final typing = <String, bool>{};
+  final identities = <AnonId>[AnonId('anon-primary', 'Amber Falcon 4821', 'SB-${_hex('amber-falcon-4821sid', 6)}', _hex('amber-falcon-4821', 64))];
+  String activeAnon = 'anon-primary';
+  AnonId get me => identities.firstWhere((a) => a.id == activeAnon);
   int _n = 1000;
+
+  static const _adj = ['Crimson', 'Violet', 'Silent', 'Midnight', 'Amber', 'Cobalt', 'Ember', 'Shadow', 'Lunar', 'Ivory'];
+  static const _ani = ['Fox', 'Heron', 'Falcon', 'Otter', 'Wolf', 'Cipher', 'Raven', 'Lynx', 'Moth', 'Owl'];
+
+  AnonId createIdentity() {
+    final k = _n++;
+    final a = AnonId('anon-$k', '${_adj[k % _adj.length]} ${_ani[(k * 7) % _ani.length]} ${1000 + (k * 37) % 9000}', 'SB-${_hex('sid$k', 6)}', _hex('key$k', 64));
+    identities.add(a);
+    activeAnon = a.id;
+    notifyListeners();
+    return a;
+  }
+
+  void setActive(String id) {
+    activeAnon = id;
+    notifyListeners();
+  }
+
+  void deleteIdentity(String id) {
+    if (identities.length < 2) return;
+    identities.removeWhere((a) => a.id == id);
+    if (activeAnon == id) activeAnon = identities.first.id;
+    notifyListeners();
+  }
+
+  /// Simulates scanning a QR / pasting a key: creates a new anonymous contact + encrypted chat.
+  Chat pairViaQR() {
+    final k = _n++;
+    final name = '${_adj[(k * 3) % _adj.length]} ${_ani[(k * 5) % _ani.length]} ${1000 + (k * 53) % 9000}';
+    final pid = 'a_$k';
+    peopleExtra[pid] = Person(pid, name, online: true, anon: true);
+    final c = Chat('ac_$k', name, userId: pid, anon: true);
+    chats.insert(0, c);
+    msgs.add(Msg(id(), c.id, pid, MType.system, 'Now', text: 'Identities exchanged via QR. This conversation is end-to-end encrypted.'));
+    notifyListeners();
+    return c;
+  }
+
+  final peopleExtra = <String, Person>{};
+  Person person(String? id) => people[id] ?? peopleExtra[id] ?? const Person('x', 'Someone');
+
   String id() => 'x${_n++}';
 
   void _seed() {
@@ -142,6 +212,9 @@ class Store extends ChangeNotifier {
       Chat('c_bibek', 'Bibek Thapa', userId: 'bibek'),
       Chat('c_team', 'Design Team', group: true, unread: 3),
       Chat('c_anita', 'Anita Gurung', userId: 'anita'),
+      Chat('ac_heron', 'Silent Heron 2290', userId: 'a_heron', unread: 1, anon: true),
+      Chat('ac_cipher', 'Violet Cipher 7731', userId: 'a_cipher', anon: true),
+      Chat('ac_night', 'Night Owls', group: true, anon: true),
     ]);
     Msg m(String c, String f, MType t, String time, {String? text, String s = 'read', List<String> r = const [], bool pin = false, Map<String, Object?>? x}) =>
         Msg(id(), c, f, t, time, text: text, status: s, reactions: r, pinned: pin, extra: x);
@@ -162,6 +235,14 @@ class Store extends ChangeNotifier {
       m('c_bibek', 'bibek', MType.document, '02:46 AM', x: {'name': 'Q3-Review.pptx', 'size': '2.4 MB', 'ext': 'PPTX'}),
       m('c_team', 'sita', MType.text, '08:15 AM', text: 'Rojan: can you own the icon audit?'),
       m('c_anita', 'anita', MType.text, 'Mon', text: 'Landing at 9, call you after!'),
+      m('ac_heron', 'a_heron', MType.system, '02:00 AM', text: 'Identities exchanged via QR. This conversation is end-to-end encrypted.'),
+      m('ac_heron', 'a_heron', MType.text, '02:01 AM', text: 'Hey — got your public key from the QR. This channel is anonymous, right?'),
+      m('ac_heron', 'me', MType.text, '02:03 AM', text: 'Yes. Neither of us can see the other’s real identity.'),
+      m('ac_heron', 'a_heron', MType.document, '02:30 AM', x: {'name': 'proposal-v3.pdf', 'size': '1.2 MB', 'ext': 'PDF'}),
+      m('ac_heron', 'me', MType.text, '02:48 AM', text: 'Reading now. Thanks for keeping this off the record.'),
+      m('ac_cipher', 'a_cipher', MType.text, 'Yesterday', text: 'Whistleblower channel — please verify my fingerprint before we continue.'),
+      m('ac_cipher', 'me', MType.text, 'Yesterday', text: 'Verified ✅ Fingerprints match.'),
+      m('ac_night', 'a_raven', MType.text, '08:20 AM', text: 'Agenda for tonight?', r: ['👍']),
     ]);
     notifs.addAll([
       Notif('n1', 'message', 'Sita Rai', 'Agreed. I’ll update the tokens 👇', '08:41 AM', chat: 'c_sita'),
