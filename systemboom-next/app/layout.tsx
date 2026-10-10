@@ -19,7 +19,7 @@ export const viewport: Viewport = { themeColor: '#07090c', width: 'device-width'
 const css = `
 @font-face{font-family:'Figtree';src:url('${bp}/fonts/Figtree.ttf') format('truetype');font-weight:300 900;font-display:swap}
 .stage{background-image:radial-gradient(120% 40% at 50% 0%,rgba(255,122,26,.08),transparent 60%),url('${bp}/img/carbon-tile.webp');background-size:auto,calc(18*var(--u)) calc(17*var(--u));background-repeat:no-repeat,repeat}
-.splashplate{background:url('${bp}/img/splash-plate.webp') center/100% 100% no-repeat}
+.splashbg{border-image-source:url('${bp}/img/splash-bg.webp')}
 .apanel{border-image-source:url('${bp}/img/asheet-frame.webp')}
 .arow2{background-image:url('${bp}/img/asheet-row.webp')}
 .arow2.danger{background-image:url('${bp}/img/asheet-row-red.webp')}
