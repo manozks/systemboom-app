@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../data.dart';
 import '../kit.dart';
+import '../main.dart' show HomePage;
 import '../shell.dart';
 import 'chat_page.dart';
 
@@ -160,6 +163,93 @@ class WelcomePage extends StatelessWidget {
               ),
             ),
           ]),
+        ),
+      ),
+    );
+  }
+}
+
+
+/// Launch screen: breathing logo plate + spinner, then fades into Home (tap to skip).
+class SplashPage extends StatefulWidget {
+  const SplashPage({super.key});
+  @override
+  State<SplashPage> createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 2400))..repeat(reverse: true);
+  Timer? _t;
+  bool _gone = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _t = Timer(const Duration(milliseconds: 2800), _next);
+  }
+
+  bool _pre = false;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_pre) return;
+    _pre = true;
+    for (final n in const ['logo-lockup.webp', 'carbon-tile.webp']) {
+      precacheImage(AssetImage('assets/images/$n'), context);
+    }
+  }
+
+  @override
+  void dispose() {
+    _t?.cancel();
+    _c.dispose();
+    super.dispose();
+  }
+
+  void _next() {
+    if (_gone || !mounted) return;
+    _gone = true;
+    Navigator.of(context).pushReplacement(PageRouteBuilder<void>(
+      pageBuilder: (_, _, _) => const HomePage(),
+      transitionDuration: const Duration(milliseconds: 800),
+      transitionsBuilder: (_, a, _, child) => FadeTransition(opacity: CurvedAnimation(parent: a, curve: Curves.easeOut), child: child),
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final u = context.u;
+    return Scaffold(
+      backgroundColor: const Color(0xFF07090C),
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: _next,
+        child: Center(
+          child: SizedBox(
+            width: u * 941,
+            child: Stack(children: [
+              const Positioned.fill(child: CarbonBg()),
+              Center(
+                child: AnimatedBuilder(
+                  animation: _c,
+                  builder: (_, child) => Opacity(opacity: .8 + .2 * _c.value, child: child),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Container(
+                      width: u * 941 * .88,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(36 * u),
+                        border: Border.all(color: const Color(0xFFAAB3BB), width: 7 * u),
+                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .75), blurRadius: 14 * u, offset: Offset(0, 10 * u)), BoxShadow(color: const Color(0xFFFF821E).withValues(alpha: .5), blurRadius: 26 * u)],
+                      ),
+                      child: ClipRRect(borderRadius: BorderRadius.circular(29 * u), child: AspectRatio(aspectRatio: 863 / 193, child: Image.asset('assets/images/logo-lockup.webp', fit: BoxFit.fill))),
+                    ),
+                    SizedBox(height: 90 * u),
+                    SizedBox(width: 52 * u, height: 52 * u, child: const CircularProgressIndicator(strokeWidth: 3, color: Color(0xFFFF8A2A), backgroundColor: Color(0x2EFFFFFF))),
+                  ]),
+                ),
+              ),
+            ]),
+          ),
         ),
       ),
     );

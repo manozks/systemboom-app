@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'pages/more_pages.dart' show SplashPage;
 import 'shell.dart';
 import 'ui.dart';
 
@@ -29,7 +30,7 @@ class SystemBoomApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Figtree',
       ),
-      home: const HomePage(),
+      home: const SplashPage(),
     );
   }
 }
