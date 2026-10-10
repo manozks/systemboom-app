@@ -460,43 +460,49 @@ class ActItem {
   final bool danger;
 }
 
-/// Bottom action sheet of glossy icon rows (prototype ActionSheet).
+/// Bottom action sheet: ornate art panel + metal rows (reference 1116x1296).
 Future<void> showActions(BuildContext context, {String? title, required List<ActItem> items}) {
   final u = context.u;
+  final k = 889 / 1116 * u;
+  final n = items.length;
+  final w = 1116 * k;
+  final h = (170 + n * 205 - 5 + 106) * k;
   return showArtSheet<void>(context, (c) => Container(
-        margin: EdgeInsets.all(12 * u),
-        padding: EdgeInsets.fromLTRB(26 * u, 26 * u, 26 * u, 26 * u),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(44 * u),
-          gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF232A33), Color(0xFF11151B), Color(0xFF0A0D11)]),
-          border: Border.all(color: const Color(0xFFC3CBD2), width: 6 * u),
-          boxShadow: [BoxShadow(color: const Color(0xFFFF821E).withValues(alpha: .4), blurRadius: 34 * u)],
-        ),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          if (title != null) Padding(padding: EdgeInsets.only(bottom: 18 * u), child: Text(title, style: ts(u, 42, w: FontWeight.w800))),
-          for (final a in items)
-            Padding(
-              padding: EdgeInsets.only(bottom: 10 * u),
-              child: Tap(
-                onTap: () {
-                  Navigator.pop(c);
-                  a.onSelect();
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 26 * u, vertical: 20 * u),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30 * u),
-                    gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF2B3A4D), Color(0xFF131C28), Color(0xFF0A1018)]),
-                    border: Border.all(color: const Color(0xFFAAB3BB), width: 4 * u),
+        margin: EdgeInsets.only(bottom: 26 * u),
+        child: Center(
+          heightFactor: 1,
+          child: SizedBox(
+            width: w,
+            height: h,
+            child: Stack(clipBehavior: Clip.none, children: [
+              Positioned.fill(child: Image.asset('assets/images/asheet-frame.webp', scale: 1 / k, centerSlice: Rect.fromLTRB(40 * k, 178 * k, w - 40 * k, 1190 * k), fit: BoxFit.fill, filterQuality: FilterQuality.medium)),
+              if (title != null) Positioned(left: 0, right: 0, top: 58 * k, child: Center(child: Text(title, style: ts(u, 66 * 889 / 1116, w: FontWeight.w900, c: const Color(0xFFE9EDF3))))),
+              for (var i = 0; i < n; i++)
+                Positioned(
+                  left: 36 * k,
+                  top: (170 + i * 205) * k,
+                  width: 1044 * k,
+                  height: 200 * k,
+                  child: Tap(
+                    onTap: () {
+                      Navigator.pop(c);
+                      items[i].onSelect();
+                    },
+                    child: Stack(children: [
+                      Positioned.fill(child: Image.asset('assets/images/${items[i].danger ? 'asheet-row-red' : 'asheet-row'}.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium)),
+                      Positioned(
+                        left: 117 * k - 40 * k,
+                        top: 102 * k - 40 * k,
+                        width: 80 * k,
+                        height: 80 * k,
+                        child: Icon(items[i].icon, size: 50 * k, color: items[i].danger ? const Color(0xFFFF5A3C) : const Color(0xFFFFA21F), shadows: [Shadow(color: (items[i].danger ? const Color(0xFFFF4628) : const Color(0xFFFF961E)).withValues(alpha: .9), blurRadius: 7 * k)]),
+                      ),
+                      Positioned(left: 234 * k, right: 150 * k, top: 0, bottom: 0, child: Align(alignment: Alignment.centerLeft, child: Text(items[i].label, maxLines: 1, overflow: TextOverflow.ellipsis, style: ts(u, 56 * 889 / 1116, w: FontWeight.w800, c: items[i].danger ? const Color(0xFFFF9A88) : const Color(0xFFF4F6FA))))),
+                    ]),
                   ),
-                  child: Row(children: [
-                    GoldIcon(a.icon, u: u, size: 76),
-                    SizedBox(width: 24 * u),
-                    Expanded(child: Text(a.label, style: ts(u, 40, w: FontWeight.w700, c: a.danger ? const Color(0xFFFF9A8F) : Colors.white))),
-                  ]),
                 ),
-              ),
-            ),
-        ]),
+            ]),
+          ),
+        ),
       ));
 }
