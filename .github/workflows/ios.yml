@@ -1,0 +1,60 @@
+name: Build iOS app (unsigned)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'systemboom_flutter/**'
+      - '.github/workflows/ios.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ios:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: systemboom_flutter
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Build iOS (no code signing)
+        run: flutter build ios --release --no-codesign
+
+      # An .ipa is just a zip with Payload/<App>.app inside. It is unsigned:
+      # re-sign/install it with AltStore or Sideloadly (free Apple ID), or sign it with your own Apple Developer account.
+      - name: Package unsigned .ipa
+        run: |
+          rm -rf ../Payload && mkdir ../Payload
+          cp -R build/ios/iphoneos/Runner.app ../Payload/Runner.app
+          cd .. && zip -qry systemboom-unsigned.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: systemboom-ios-unsigned
+          path: systemboom-unsigned.ipa
+
+      - name: Publish to the ios-latest release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ios-latest
+          name: iOS app, unsigned (latest)
+          body: |
+            Unsigned iOS build from `${{ github.sha }}`. It will NOT install as-is: sign and install it with
+            AltStore / Sideloadly (free Apple ID, valid 7 days) or your own Apple Developer certificate.
+          artifacts: systemboom-unsigned.ipa
+          allowUpdates: true
+          replacesArtifacts: true
+          prerelease: true
+          makeLatest: false
+          commit: ${{ github.sha }}
