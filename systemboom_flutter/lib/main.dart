@@ -209,8 +209,7 @@ class _Stage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(70 * u),
+    return ClipRect(
       child: Stack(clipBehavior: Clip.none, children: [
         Positioned.fill(child: _Background(u: u)),
         _hero(),
@@ -234,13 +233,11 @@ class _Stage extends StatelessWidget {
             glow: const Color(0xFF28EBD7)),
         _designSystem(),
         _aiAndNav(),
-        // outer device rim + vignette
+        // vignette (no mock-device rim: the page fills the real screen)
         Positioned.fill(
           child: IgnorePointer(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(70 * u),
-                border: Border.all(color: const Color(0xFFB9C2CB), width: 3 * u),
                 gradient: const RadialGradient(
                   radius: 1.1,
                   colors: [Color(0x00000000), Color(0x00000000), Color(0x59000000)],
