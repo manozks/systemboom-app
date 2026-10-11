@@ -9,9 +9,15 @@ import 'ui.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setPreferredOrientations(const [DeviceOrientation.portraitUp]);
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
+    statusBarIconBrightness: Brightness.light, // Android
+    statusBarBrightness: Brightness.dark, // iOS (light text on dark UI)
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarIconBrightness: Brightness.light,
+    systemNavigationBarContrastEnforced: false,
   ));
   runApp(const SystemBoomApp());
 }
@@ -128,17 +134,17 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 physics: const BouncingScrollPhysics(),
                 child: SizedBox(
                   width: w,
-                  height: kStageH * u,
+                  height: kStageH * u + MediaQuery.paddingOf(context).top,
                   child: AnimatedBuilder(
                     animation: _loop,
-                    builder: (context, _) => _Stage(u: u, t: _t, onTap: _tap),
+                    builder: (context, _) => Padding(padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top), child: _Stage(u: u, t: _t, onTap: _tap)),
                   ),
                 ),
               ),
               Positioned(
                 left: 0,
                 right: 0,
-                bottom: 120 * u,
+                bottom: 120 * u + MediaQuery.paddingOf(context).bottom,
                 child: IgnorePointer(child: _ToastView(notifier: _toast)),
               ),
             ]);

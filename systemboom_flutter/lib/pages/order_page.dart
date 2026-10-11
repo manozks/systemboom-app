@@ -70,11 +70,12 @@ class _OrderPageState extends State<OrderPage> {
       footer: !o.paid
           ? FootBar(u: u, child: ArtBtn(u: u, label: paying ? 'Processing…' : method == 'Cash on delivery' ? 'Confirm order' : 'Pay ${money(o.total)}', icon: Icons.shopping_bag_outlined, orange: true, minH: 190, fontPx: 62, onTap: paying ? null : () {
             setState(() => paying = true);
+            final ctx = context;
             Future<void>.delayed(const Duration(milliseconds: 1600), () {
               if (!mounted) return;
               s.pay(o, method);
               setState(() => paying = false);
-              showToast(context, 'Payment confirmed');
+              if (ctx.mounted) showToast(ctx, 'Payment confirmed');
             });
           }, enabled: !paying))
           : canReview

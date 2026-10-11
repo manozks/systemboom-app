@@ -381,8 +381,8 @@ class Store extends ChangeNotifier {
   Order createOrder(String chat, Product p, int unit, int qty) {
     final o = Order('ord_${id()}', chat, p.id, p.title, unit, qty, 150);
     orders.insert(0, o);
-    msgs.add(Msg(this.id(), chat, 'me', MType.system, 'Now', text: 'Order created · ${money(o.total)}'));
-    msgs.add(Msg(this.id(), chat, 'me', MType.order, 'Now', status: 'sent', extra: {'oid': o.id}));
+    msgs.add(Msg(id(), chat, 'me', MType.system, 'Now', text: 'Order created · ${money(o.total)}'));
+    msgs.add(Msg(id(), chat, 'me', MType.order, 'Now', status: 'sent', extra: {'oid': o.id}));
     notifyListeners();
     return o;
   }

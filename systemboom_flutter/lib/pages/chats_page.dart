@@ -11,7 +11,7 @@ import '../kit.dart' show showActions, ActItem, confirmDialog, SteelPlate, GoldI
 import '../ui.dart';
 
 class _Chat {
-  const _Chat(this.id, this.name, this.initials, this.color, this.preview, this.time, this.unread, {this.pinned = false, this.muted = false, this.online = false, this.photo, this.group = false, this.mic = false, this.logo});
+  const _Chat(this.id, this.name, this.initials, this.color, this.preview, this.time, this.unread, {this.pinned = false, this.muted = false, this.online = false, this.photo, this.group = false, this.mic = false});
   final String id;
   final String name;
   final String initials;
@@ -25,7 +25,6 @@ class _Chat {
   final String? photo;
   final bool group;
   final bool mic;
-  final String? logo;
 }
 
 List<_Chat> _chatsFor({required bool archived, String query = ''}) => [
@@ -363,7 +362,7 @@ class _ChatFace extends StatelessWidget {
             decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0, -.3), colors: [Color(0xFF4A2A10), Color(0xFF0E0804)])),
             child: c.group
                 ? Icon(Icons.groups_2_rounded, size: 58 * u, color: const Color(0xFFFFE2B8), shadows: [Shadow(color: const Color(0xFFFF8C28), blurRadius: 8 * u)])
-                : Text(c.logo ?? c.initials, style: TextStyle(fontSize: (60 * u).clamp(20, 30), fontWeight: FontWeight.w900, color: const Color(0xFFFFE2B8), decoration: TextDecoration.none, shadows: [Shadow(color: const Color(0xFFFF8C28), blurRadius: 8 * u)])),
+                : Text(c.initials, style: TextStyle(fontSize: (60 * u).clamp(20, 30), fontWeight: FontWeight.w900, color: const Color(0xFFFFE2B8), decoration: TextDecoration.none, shadows: [Shadow(color: const Color(0xFFFF8C28), blurRadius: 8 * u)])),
           );
     final ringHot = c.photo == null;
     return SizedBox(

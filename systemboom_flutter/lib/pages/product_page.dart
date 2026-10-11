@@ -6,7 +6,6 @@ import '../shell.dart';
 import 'chat_page.dart';
 import 'offer_page.dart';
 import 'chat_extra_pages.dart';
-import 'order_page.dart';
 
 class ProductPage extends StatelessWidget {
   const ProductPage(this.id, {super.key});

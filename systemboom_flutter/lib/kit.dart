@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import 'data.dart';
@@ -50,7 +52,7 @@ class _TapState extends State<Tap> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 450),
           curve: Curves.easeOutCubic,
-          transform: Matrix4.translationValues(0, _h && !_d ? -widget.lift : 0, 0)..scale(_d ? .96 : 1.0),
+          transform: Matrix4.translationValues(0, _h && !_d ? -widget.lift : 0, 0)..scaleByDouble(_d ? .96 : 1.0, _d ? .96 : 1.0, 1.0, 1.0),
           transformAlignment: Alignment.center,
           child: Opacity(opacity: widget.enabled ? 1 : .5, child: widget.child),
         ),
@@ -60,6 +62,27 @@ class _TapState extends State<Tap> {
 }
 
 /// Nine-slice art. [px] is the image size, [slice] the border in image pixels.
+/// Image scale nudged by a few ulps so Flutter's debug-only 9-slice check (which compares doubles with ==)
+/// doesn't trip on float noise. Mirrors the arithmetic in paintImage; the change is far below a pixel.
+double _nineScale(double w, double h, double cw, double ch, double s) {
+  bool ok(double c) {
+    double fit(double n, double cs) {
+      final inp = n - (n / c - cs) * c;
+      return (inp / c) * c - inp;
+    }
+    return fit(w, cw) == 0 && fit(h, ch) == 0;
+  }
+
+  if (ok(s)) return s;
+  for (var i = 1; i < 600; i++) {
+    for (final d in [i, -i]) {
+      final c = s * (1 + d * 2.2e-16);
+      if (ok(c)) return c;
+    }
+  }
+  return s;
+}
+
 class Nine extends StatelessWidget {
   const Nine(this.asset, {super.key, required this.px, required this.slice, required this.u, this.child, this.pad = EdgeInsets.zero, this.minH});
   final String asset;
@@ -75,7 +98,15 @@ class Nine extends StatelessWidget {
     final s = slice * u;
     return Stack(children: [
       Positioned.fill(
-        child: Image.asset('assets/images/$asset.webp', scale: 1 / u, centerSlice: Rect.fromLTRB(s, s, px.width * u - s, px.height * u - s), fit: BoxFit.fill, filterQuality: FilterQuality.medium),
+        // The slices must fit inside the destination: shrink them when the box is smaller than
+        // twice the border (and draw nothing for an empty box) — otherwise Flutter's 9-slice asserts.
+        child: LayoutBuilder(builder: (context, c) {
+          if (c.biggest.isEmpty) return const SizedBox.shrink();
+          final sx = math.min(s, c.maxWidth / 2 - .5), sy = math.min(s, c.maxHeight / 2 - .5);
+          if (sx <= 0 || sy <= 0) return const SizedBox.shrink();
+          final slice = Rect.fromLTRB(sx, sy, px.width * u - sx, px.height * u - sy);
+          return Image.asset('assets/images/$asset.webp', scale: _nineScale(px.width, px.height, slice.width, slice.height, 1 / u), centerSlice: slice, fit: BoxFit.fill, filterQuality: FilterQuality.medium);
+        }),
       ),
       if (child != null) ConstrainedBox(constraints: BoxConstraints(minHeight: minH ?? 0), child: Padding(padding: pad, child: child)),
     ]);
@@ -228,10 +259,15 @@ class ArtBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final w = Nine(orange ? 'btn-orange' : 'btn-steel', px: orange ? sizeBtnOrange : sizeBtnSteel, slice: 60, u: u, minH: minH * u, pad: EdgeInsets.symmetric(horizontal: 54 * u, vertical: 34 * u),
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
-          if (icon != null) ...[Icon(icon, size: fontPx * u * 1.2, color: Colors.white), SizedBox(width: 16 * u)],
-          Flexible(child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: ts(u, fontPx, w: FontWeight.w800))),
-        ]));
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              if (icon != null) ...[Icon(icon, size: fontPx * u * 1.2, color: Colors.white), SizedBox(width: 16 * u)],
+              Text(label, maxLines: 1, style: ts(u, fontPx, w: FontWeight.w800)),
+            ]),
+          ),
+        ));
     return Tap(onTap: onTap, enabled: enabled, child: expand ? SizedBox(width: double.infinity, child: w) : w);
   }
 }
@@ -428,7 +464,7 @@ class FootBar extends StatelessWidget {
   final Widget child;
   @override
   Widget build(BuildContext context) => Container(
-        padding: EdgeInsets.fromLTRB(10 * u, 30 * u, 10 * u, 10 * u),
+        padding: EdgeInsets.fromLTRB(10 * u, 30 * u, 10 * u, 10 * u + MediaQuery.paddingOf(context).bottom),
         decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0x0006090D), Color(0xE006090D), Color(0xF206090D)], stops: [0, .45, 1])),
         child: child,
       );
@@ -457,7 +493,7 @@ Future<T?> showArtSheet<T>(BuildContext context, WidgetBuilder builder) => showG
       barrierLabel: 'close',
       barrierColor: const Color(0xA8000000),
       transitionDuration: const Duration(milliseconds: 600),
-      pageBuilder: (c, _, _) => Align(alignment: Alignment.bottomCenter, child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: kMaxW), child: Material(color: Colors.transparent, child: builder(c)))),
+      pageBuilder: (c, _, _) => Align(alignment: Alignment.bottomCenter, child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: kMaxW), child: Material(color: Colors.transparent, child: Padding(padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(c).bottom), child: builder(c))))),
       transitionBuilder: (_, a, _, child) => SlideTransition(position: Tween<Offset>(begin: const Offset(0, .35), end: Offset.zero).animate(CurvedAnimation(parent: a, curve: Curves.easeOutCubic)), child: FadeTransition(opacity: a, child: child)),
     );
 
@@ -518,7 +554,7 @@ Future<void> showActions(BuildContext context, {String? title, required List<Act
             width: w,
             height: h,
             child: Stack(clipBehavior: Clip.none, children: [
-              Positioned.fill(child: Image.asset('assets/images/asheet-frame.webp', scale: 1 / k, centerSlice: Rect.fromLTRB(40 * k, 178 * k, w - 40 * k, 1190 * k), fit: BoxFit.fill, filterQuality: FilterQuality.medium)),
+              Positioned.fill(child: Image.asset('assets/images/asheet-frame.webp', scale: _nineScale(1116, 1296, (w - 80 * k), 1012 * k, 1 / k), centerSlice: Rect.fromLTRB(40 * k, 178 * k, w - 40 * k, 1190 * k), fit: BoxFit.fill, filterQuality: FilterQuality.medium)),
               if (title != null) Positioned(left: 0, right: 0, top: 58 * k, child: Center(child: Text(title, style: ts(u, 66 * 889 / 1116, w: FontWeight.w900, c: const Color(0xFFE9EDF3))))),
               for (var i = 0; i < n; i++)
                 Positioned(

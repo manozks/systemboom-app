@@ -173,7 +173,9 @@ class _PageShellState extends State<PageShell> with SingleTickerProviderStateMix
           width: w,
           child: Stack(children: [
             const Positioned.fill(child: CarbonBg()),
-            Column(children: [
+            Padding(
+              padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),
+              child: Column(children: [
               _header(context, u, kk),
               if (widget.searchHint != null) _search(u),
               if (widget.tabs != null) _tabs(u),
@@ -190,8 +192,11 @@ class _PageShellState extends State<PageShell> with SingleTickerProviderStateMix
                 ),
               ),
             ]),
-            if (widget.showDock)
-              Positioned(left: 0, right: 0, bottom: 0, child: Dock(active: widget.active, loop: _loop)),
+            ),
+            if (widget.showDock) ...[
+              Positioned(left: 0, right: 0, bottom: 0, height: MediaQuery.paddingOf(context).bottom, child: const ColoredBox(color: Color(0xFF07090C))),
+              Positioned(left: 0, right: 0, bottom: MediaQuery.paddingOf(context).bottom, child: Dock(active: widget.active, loop: _loop)),
+            ],
             if (widget.footer != null) Positioned(left: 0, right: 0, bottom: 0, child: widget.footer!),
             // device rim + vignette
             Positioned.fill(
@@ -306,16 +311,16 @@ class _PageShellState extends State<PageShell> with SingleTickerProviderStateMix
         height: 118,
         child: Padding(
           padding: EdgeInsets.all(5 * u),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            child: Row(children: [
+          child: () {
+            final row = Row(children: [
               for (var i = 0; i < tabs.length; i++) ...[
                 if (i > 0) SizedBox(width: 8 * u),
                 _TabKey(u: u, label: tabs[i], on: i == widget.tab, expand: tabs.length <= 3, onTap: () => widget.onTab?.call(i)),
               ],
-            ]),
-          ),
+            ]);
+            // few tabs share the width (Expanded needs a bounded Row); many tabs scroll sideways
+            return tabs.length <= 3 ? row : SingleChildScrollView(scrollDirection: Axis.horizontal, physics: const BouncingScrollPhysics(), child: row);
+          }(),
         ),
       ),
     );

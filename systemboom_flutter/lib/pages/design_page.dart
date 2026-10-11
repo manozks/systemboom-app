@@ -76,9 +76,11 @@ class _DesignPageState extends State<DesignPage> {
                   shine: false,
                   onTap: () => showToast(context, '${_brand[i].$1} ${_brand[i].$2}'),
                   builder: (context, g, s) => Column(children: [
-                    SizedBox(height: 84 * k),
-                    FittedBox(fit: BoxFit.scaleDown, child: Text(_brand[i].$1, maxLines: 1, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: Colors.white, decoration: TextDecoration.none))),
-                    FittedBox(fit: BoxFit.scaleDown, child: Text(_brand[i].$2, maxLines: 1, style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: _brand[i].$3, decoration: TextDecoration.none))),
+                    SizedBox(height: 80 * k),
+                    Expanded(child: FittedBox(fit: BoxFit.scaleDown, child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      Text(_brand[i].$1, maxLines: 1, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: Colors.white, decoration: TextDecoration.none)),
+                      Text(_brand[i].$2, maxLines: 1, style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: _brand[i].$3, decoration: TextDecoration.none)),
+                    ]))),
                   ]),
                 ),
               ),

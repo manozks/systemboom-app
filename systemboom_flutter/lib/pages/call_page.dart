@@ -60,7 +60,8 @@ class _CallPageState extends State<CallPage> {
         );
     return Scaffold(
       backgroundColor: const Color(0xFF05070A),
-      body: Center(
+      body: Align(
+        alignment: Alignment.topCenter,
         child: SizedBox(
           width: w,
           height: 1365 * k,
