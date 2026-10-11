@@ -87,7 +87,7 @@ class _OfferPageState extends State<OfferPage> {
         SizedBox(height: 12 * u),
         Row(children: [
           for (final pr in [('List price', 1.0), ('-5%', .95), ('-10%', .9), ('-15%', .85)])
-            Expanded(child: Padding(padding: EdgeInsets.symmetric(horizontal: 5 * u), child: ArtBtn(u: u, label: pr.$1, minH: 96, fontPx: 30, onTap: () => setState(() => _price.text = '${(p.price * pr.$2).round()}')))),
+            Expanded(child: Padding(padding: EdgeInsets.symmetric(horizontal: 5 * u), child: MiniBtn(u: u, label: pr.$1, fontPx: 30, onTap: () => setState(() => _price.text = '${(p.price * pr.$2).round()}')))),
         ]),
         OLabel('Quantity', u: u),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [

@@ -234,9 +234,9 @@ class _AnonKeyPageState extends State<AnonKeyPage> {
         if (!self) ...[
           SizedBox(height: 20 * u),
           Row(children: [
-            Expanded(child: ArtBtn(u: u, label: 'Block', icon: Icons.block_rounded, minH: 120, fontPx: 36, onTap: () => showToast(context, '$name blocked'))),
+            Expanded(child: MiniBtn(u: u, label: 'Block', icon: Icons.block_rounded, fontPx: 36, onTap: () => showToast(context, '$name blocked'))),
             SizedBox(width: 10 * u),
-            Expanded(child: ArtBtn(u: u, label: 'Report', icon: Icons.flag_outlined, minH: 120, fontPx: 36, onTap: () => showToast(context, 'Report submitted'))),
+            Expanded(child: MiniBtn(u: u, label: 'Report', icon: Icons.flag_outlined, fontPx: 36, onTap: () => showToast(context, 'Report submitted'))),
           ]),
         ],
       ],

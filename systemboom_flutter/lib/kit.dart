@@ -236,6 +236,49 @@ class ArtBtn extends StatelessWidget {
   }
 }
 
+/// Compact glossy steel button for 2–3 across rows (no 9-slice art, so it never distorts when narrow).
+class MiniBtn extends StatelessWidget {
+  const MiniBtn({super.key, required this.u, required this.label, this.icon, required this.onTap, this.fontPx = 34});
+  final double u;
+  final String label;
+  final IconData? icon;
+  final VoidCallback onTap;
+  final double fontPx;
+  @override
+  Widget build(BuildContext context) {
+    return Tap(
+      onTap: onTap,
+      child: Container(
+        height: 112 * u,
+        padding: EdgeInsets.all(5 * u),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(34 * u),
+          gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFFF2F5F8), Color(0xFF7C8791), Color(0xFF2B333B), Color(0xFFB7C0C8)]),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .7), blurRadius: 10 * u, offset: Offset(0, 6 * u)), BoxShadow(color: const Color(0xFFFF821E).withValues(alpha: .28), blurRadius: 16 * u)],
+        ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30 * u),
+            gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF3A4C63), Color(0xFF172231), Color(0xFF0A1018)], stops: [0, .5, 1]),
+          ),
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 14 * u),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  if (icon != null) ...[Icon(icon, size: fontPx * 1.25 * u, color: const Color(0xFFFFB866), shadows: [Shadow(color: const Color(0xCCFF821E), blurRadius: 8 * u)]), SizedBox(width: 12 * u)],
+                  Text(label, maxLines: 1, style: ts(u, fontPx, w: FontWeight.w800)),
+                ]),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// Wide orange / red call-to-action (chat info style).
 class CtaBtn extends StatelessWidget {
   const CtaBtn({super.key, required this.u, required this.label, required this.icon, required this.onTap, this.red = false});

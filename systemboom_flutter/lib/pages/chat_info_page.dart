@@ -81,11 +81,11 @@ class _ChatInfoPageState extends State<ChatInfoPage> {
         Center(child: Text(chat.group ? '4 members' : (peer?.about ?? ''), style: ts(u, 36, c: const Color(0xFFB9C9EE), w: FontWeight.w400, sh: const []))),
         SizedBox(height: 14 * u),
         Row(children: [
-          Expanded(child: ArtBtn(u: u, label: 'Audio', icon: Icons.call_rounded, minH: 120, fontPx: 34, onTap: () => pushScreen(context, CallPage(chat.title, photo: peer?.photo)))),
+          Expanded(child: MiniBtn(u: u, label: 'Audio', icon: Icons.call_rounded, fontPx: 34, onTap: () => pushScreen(context, CallPage(chat.title, photo: peer?.photo)))),
           SizedBox(width: 8 * u),
-          Expanded(child: ArtBtn(u: u, label: 'Video', icon: Icons.videocam_rounded, minH: 120, fontPx: 34, onTap: () => pushScreen(context, CallPage(chat.title, video: true, photo: peer?.photo)))),
+          Expanded(child: MiniBtn(u: u, label: 'Video', icon: Icons.videocam_rounded, fontPx: 34, onTap: () => pushScreen(context, CallPage(chat.title, video: true, photo: peer?.photo)))),
           SizedBox(width: 8 * u),
-          Expanded(child: ArtBtn(u: u, label: 'Search', icon: Icons.search_rounded, minH: 120, fontPx: 34, onTap: () => pushScreen(context, ChatSearchPage(chat.id)))),
+          Expanded(child: MiniBtn(u: u, label: 'Search', icon: Icons.search_rounded, fontPx: 34, onTap: () => pushScreen(context, ChatSearchPage(chat.id)))),
         ]),
         SizedBox(height: 14 * u),
         if (!chat.group && !chat.private && peer != null) CtaBtn(u: u, label: 'Continue privately', icon: Icons.lock_outline_rounded, onTap: () => pushScreen(context, ConversationPage(s.openOrCreate(peer.id, private: true).id))),
@@ -112,21 +112,21 @@ class _ChatInfoPageState extends State<ChatInfoPage> {
         if (tab == 1) for (final m in pinned) SteelPlate(u: u, child: Text(m.text ?? m.type.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: ts(u, 38, w: FontWeight.w800))),
         if (tab == 2) _empty(u, Icons.search_rounded, 'Search messages in this chat'),
         Row(children: [
-          Expanded(child: ArtBtn(u: u, label: 'Pinned', icon: Icons.push_pin_outlined, minH: 120, fontPx: 34, onTap: () => pushScreen(context, ChatPinnedPage(chat.id)))),
+          Expanded(child: MiniBtn(u: u, label: 'Pinned', icon: Icons.push_pin_outlined, fontPx: 34, onTap: () => pushScreen(context, ChatPinnedPage(chat.id)))),
           SizedBox(width: 8 * u),
-          Expanded(child: ArtBtn(u: u, label: 'Media & docs', icon: Icons.image_outlined, minH: 120, fontPx: 32, onTap: () => pushScreen(context, ChatMediaPage(chat.id)))),
+          Expanded(child: MiniBtn(u: u, label: 'Media & docs', icon: Icons.image_outlined, fontPx: 32, onTap: () => pushScreen(context, ChatMediaPage(chat.id)))),
         ]),
         SizedBox(height: 16 * u),
         if (!chat.group && peer != null)
           Row(children: [
-            Expanded(child: ArtBtn(u: u, label: 'Block', icon: Icons.block_rounded, minH: 120, fontPx: 34, onTap: () async {
+            Expanded(child: MiniBtn(u: u, label: 'Block', icon: Icons.block_rounded, fontPx: 34, onTap: () async {
               if (await confirmDialog(context, title: 'Block ${peer.name.split(' ').first}?', text: 'They won’t be able to message or call you.', confirm: 'Block') && context.mounted) showToast(context, '${peer.name} blocked');
             })),
             SizedBox(width: 8 * u),
-            Expanded(child: ArtBtn(u: u, label: 'Report', icon: Icons.flag_outlined, minH: 120, fontPx: 34, onTap: () => showToast(context, 'Report submitted'))),
+            Expanded(child: MiniBtn(u: u, label: 'Report', icon: Icons.flag_outlined, fontPx: 34, onTap: () => showToast(context, 'Report submitted'))),
           ])
         else
-          ArtBtn(u: u, label: 'Leave group', icon: Icons.logout_rounded, minH: 120, fontPx: 38, onTap: () async {
+          MiniBtn(u: u, label: 'Leave group', icon: Icons.logout_rounded, fontPx: 38, onTap: () async {
             final nav = Navigator.of(context);
             if (await confirmDialog(context, title: 'Leave group?', text: 'You’ll stop receiving messages.', confirm: 'Leave')) {
               s.deleteChat(chat);
