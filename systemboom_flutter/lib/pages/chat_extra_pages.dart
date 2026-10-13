@@ -171,11 +171,18 @@ class _DraftChatPageState extends State<DraftChatPage> {
       showDock: false,
       headerArt: 'hdr-calls',
       bottomPad: 330,
-      footer: FootBar(u: u, child: Row(children: [
-        Expanded(child: GlassWell(u: u, radius: 60, pad: EdgeInsets.symmetric(horizontal: 34 * u, vertical: 20 * u), child: TextField(controller: _t, onSubmitted: (_) => _send(), cursorColor: const Color(0xFFFFB866), style: TextStyle(color: Colors.white, fontSize: 36 * u), decoration: InputDecoration(border: InputBorder.none, isCollapsed: true, hintText: priv ? 'Private message' : 'Message', hintStyle: TextStyle(color: const Color(0xFF8896A6), fontSize: 36 * u))))),
-        SizedBox(width: 14 * u),
-        RoundBtn(u: u, icon: Icons.send_rounded, hot: true, onTap: _send),
-      ])),
+      footer: FootBar(u: u, child: LayoutBuilder(builder: (ctx, _) {
+        final w = u * 941, k = w / 910;
+        Widget at(double x, double y, double ww, double hh, Widget c) => Positioned(left: x * k, top: y * k, width: ww * k, height: hh * k, child: c);
+        const g = Color(0xFFFFB866);
+        return SizedBox(width: w, height: 197 * k, child: Stack(children: [
+          Positioned.fill(child: Image.asset('assets/images/chat-bar.webp', fit: BoxFit.fill)),
+          at(154, 52, 480, 76, Center(child: TextField(controller: _t, onSubmitted: (_) => _send(), cursorColor: g, style: TextStyle(color: Colors.white, fontSize: 36 * u), decoration: InputDecoration(border: InputBorder.none, isCollapsed: true, hintText: priv ? 'Private message' : 'Message', hintStyle: TextStyle(color: const Color(0xFF8E9BAB), fontSize: 36 * u))))),
+          at(33, 45, 90, 90, Tap(onTap: () => showToast(context, 'Available once the conversation starts'), child: Icon(Icons.attach_file_rounded, size: 46 * u, color: g, shadows: [Shadow(color: const Color(0xE6FF8C1E), blurRadius: 10 * u)]))),
+          at(654, 52, 68, 76, Tap(onTap: () => showToast(context, 'Available once the conversation starts'), child: Icon(Icons.mic_none_rounded, size: 52 * u, color: Colors.white))),
+          at(765, 42, 96, 96, Tap(onTap: _send, child: Icon(Icons.send_rounded, size: 50 * u, color: g, shadows: [Shadow(color: const Color(0xE6FF8C1E), blurRadius: 10 * u)]))),
+        ]));
+      })),
       children: [
         Center(child: Face(u: u, person: p, size: 200, online: p.online)),
         Center(child: Padding(padding: EdgeInsets.only(top: 14 * u, bottom: 28 * u), child: Text('Choose how this conversation is protected, then say hello.', textAlign: TextAlign.center, style: ts(u, 32, c: const Color(0xFF9DB4E0), w: FontWeight.w400, sh: const [])))),
