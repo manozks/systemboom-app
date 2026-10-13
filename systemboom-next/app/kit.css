@@ -776,3 +776,29 @@ button.lr:active { transform: scale(.985); }
 @keyframes ringspin { to { transform: rotate(360deg); } }
 @keyframes ringglow { 0%, 100% { box-shadow: 0 0 calc(18 * var(--u)) calc(2 * var(--u)) rgba(255, 140, 30, .16); } 50% { box-shadow: 0 0 calc(34 * var(--u)) calc(6 * var(--u)) rgba(255, 150, 40, .5); } }
 @media (prefers-reduced-motion: reduce) { .ringsweep, .ringpulse { animation: none !important; } }
+
+/* ───────── Home: animated icon tiles + start-a-conversation button ───────── */
+@property --oa { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.tilefx { animation: tilefloat 3.4s ease-in-out infinite; animation-delay: var(--ph, 0s); }
+.tilefx img.tile { position: relative; }
+.tileshine { position: absolute; inset: 0; border-radius: calc(22 * var(--k, 1px)); overflow: hidden; pointer-events: none; }
+.tileshine::before { content: ''; position: absolute; top: -10%; bottom: -10%; width: 34%; left: -50%; transform: skewX(-20deg); background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent); animation: tileshine 4.6s ease-in-out infinite; animation-delay: var(--ph, 0s); }
+.tileorbit { position: absolute; inset: 0; border-radius: calc(22 * var(--k, 1px)); pointer-events: none; padding: 2px;
+  background: conic-gradient(from var(--oa), transparent 0 230deg, color-mix(in srgb, var(--tg, #7ec8ff) 55%, transparent) 300deg, #fff 355deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: tileorbit 3.8s linear infinite; animation-delay: var(--ph, 0s); }
+.tileicon svg { animation: tilewiggle 2.4s ease-in-out infinite; animation-delay: var(--ph, 0s); }
+.ctaarrow { display: grid; place-items: center; overflow: hidden; pointer-events: none; }
+.ctaarrow svg { grid-area: 1 / 1; width: 62%; height: 62%; color: #fff; filter: drop-shadow(0 0 calc(10 * var(--k, 1px)) rgba(255,179,71,.95)) drop-shadow(0 calc(2 * var(--k, 1px)) calc(2 * var(--k, 1px)) rgba(0,0,0,.35)); }
+.ctaarrow .a1 { animation: arrowpush 1.7s ease-in-out infinite; }
+.ctaarrow .a2 { opacity: .28; animation: arrowpush 1.7s ease-in-out infinite; animation-delay: -.16s; }
+.orbping { border-radius: 50%; pointer-events: none; }
+.orbping::before, .orbping::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: calc(3 * var(--k, 1px)) solid rgba(255,160,60,.6); animation: orbping 2.6s ease-out infinite; }
+.orbping::after { animation-delay: -1.3s; }
+@keyframes tilefloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(calc(-3 * var(--k, 1px))); } }
+@keyframes tileshine { 0%, 68% { left: -50%; opacity: 0; } 72% { opacity: 1; } 100% { left: 130%; opacity: 0; } }
+@keyframes tileorbit { to { --oa: 360deg; } }
+@keyframes tilewiggle { 0%, 100% { transform: rotate(-6deg) scale(1); } 50% { transform: rotate(6deg) scale(1.08); } }
+@keyframes arrowpush { 0% { transform: translateX(-30%); } 45% { transform: translateX(32%); } 100% { transform: translateX(-30%); } }
+@keyframes orbping { 0% { transform: scale(1); opacity: .85; } 100% { transform: scale(1.85); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .tilefx, .tileshine::before, .tileorbit, .tileicon svg, .ctaarrow svg, .orbping::before, .orbping::after { animation: none !important; } }

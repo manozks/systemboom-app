@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronRight, Store, VenetianMask, Palette } from 'lucide-react';
+import { ArrowRight, ChevronRight, Store, VenetianMask, Palette } from 'lucide-react';
 import type { CSSProperties, ReactNode } from 'react';
 import { Art, At, K, Press, U, img, useToast } from '@/lib/ui';
 import { DockContent } from '@/components/Dock';
@@ -77,6 +77,10 @@ export default function Home() {
               <div className="gold-text" style={{ fontSize: K(46), fontWeight: 800, lineHeight: 1.15 }}>Start a conversation</div>
               <div style={{ fontSize: K(31), lineHeight: 1.22, marginTop: K(8), color: '#f2f4f7', textShadow: `0 ${K(2)} ${K(2)} rgba(0,0,0,.7)` }}>Everything begins with a chat — decisions, calls, and purchases.</div>
             </At>
+            <At x={671} y={37} w={140} h={140} className="orbping" />
+            <At x={671} y={37} w={140} h={140} className="ringpulse" />
+            <At x={671} y={37} w={140} h={140} className="ringsweep" style={{ ['--in' as string]: '80%' }} />
+            <At x={697} y={63} w={88} h={88} className="ctaarrow" aria-hidden><ArrowRight strokeWidth={2.4} className="a2" /><ArrowRight strokeWidth={2.4} className="a1" /></At>
             <At x={672} y={38} w={138} h={138}>
               <Link href="/chats/" aria-label="Start a conversation" className="press pop" style={{ display: 'block', width: '100%', height: '100%', borderRadius: '50%' }} />
             </At>
@@ -90,9 +94,10 @@ export default function Home() {
             <Link href={c.href} style={{ display: 'block' }} aria-label={`${c.title} — ${c.sub}`}>
               <Press className="explore-card" style={{ borderRadius: U(34) }}>
                 <Art w={429} h={220} src={c.base} style={{ filter: `drop-shadow(0 ${U(8)} ${U(10)} rgba(0,0,0,.6))` }}>
-                  <At x={36} y={38} w={c.tw} h={80} style={{ filter: `drop-shadow(0 ${K(5)} ${K(6)} rgba(0,0,0,.65))` }}>
+                  <At x={36} y={38} w={c.tw} h={80} className="tilefx" style={{ filter: `drop-shadow(0 ${K(5)} ${K(6)} rgba(0,0,0,.65))`, ['--ph' as string]: `${-(c.x + c.y) % 7 * 0.4}s`, ['--tg' as string]: c.badgeBg ? '#ffd27a' : '#7ec8ff' }}>
                     <img className="tile" src={img(c.tile)} alt="" draggable={false} style={{ width: '100%', height: '100%', borderRadius: K(22), display: 'block' }} />
-                    {c.icon && <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>{c.icon}</div>}
+                    {c.icon && <div className="tileicon" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}>{c.icon}</div>}
+                    <span className="tileshine" /><span className="tileorbit" />
                   </At>
                   <At x={40} y={127} style={{ fontSize: K(41), fontWeight: 800, lineHeight: 1.05, textShadow: `0 ${K(1.5)} 0 #0a1018, 0 ${K(4)} ${K(4)} rgba(0,0,0,.7)` }}>{c.title}</At>
                   <At x={41} y={170} style={{ fontSize: K(31), lineHeight: 1, color: '#eef3f9', textShadow: `0 ${K(1.5)} ${K(2)} rgba(0,0,0,.7)` }}>{c.sub}</At>
