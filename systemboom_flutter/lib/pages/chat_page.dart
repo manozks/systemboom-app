@@ -423,35 +423,57 @@ class _ConversationPageState extends State<ConversationPage> {
   void _share(BuildContext context) {
     final u = context.u;
     showArtSheet(context, (c) {
-      Widget item(String l, Widget icon, VoidCallback f) => Tap(
-            onTap: () {
-              Navigator.pop(c);
-              f();
-            },
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              SizedBox(width: 250 * u, height: 250 * u, child: Stack(alignment: Alignment.center, children: [Positioned.fill(child: Image.asset('assets/images/share-ring.webp', fit: BoxFit.fill)), IconTheme(data: IconThemeData(size: 100 * u, color: const Color(0xFFF4E6D2)), child: icon)])),
-              Text(l, style: ts(u, 33, w: FontWeight.w500)),
-            ]),
+      Widget item(String l, IconData ic, VoidCallback f, {Color glow = const Color(0xFFFF9A2A)}) => Expanded(
+            child: Tap(
+              onTap: () {
+                Navigator.pop(c);
+                f();
+              },
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                SizedBox(
+                  width: 196 * u,
+                  height: 196 * u,
+                  child: Stack(alignment: Alignment.center, children: [
+                    Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: glow.withValues(alpha: .55), blurRadius: 32 * u, spreadRadius: 2 * u)]))),
+                    Positioned.fill(child: Image.asset('assets/images/share-ring.webp', fit: BoxFit.fill)),
+                    Icon(ic, size: 82 * u, color: const Color(0xFFFFF1D6), shadows: [Shadow(color: glow.withValues(alpha: .95), blurRadius: 16 * u), Shadow(color: Colors.black.withValues(alpha: .6), blurRadius: 4 * u, offset: Offset(0, 3 * u))]),
+                  ]),
+                ),
+                SizedBox(height: 10 * u),
+                Text(l, style: ts(u, 36, w: FontWeight.w900)),
+              ]),
+            ),
           );
       return Container(
-        margin: EdgeInsets.all(12 * u),
-        padding: EdgeInsets.fromLTRB(20 * u, 34 * u, 20 * u, 22 * u),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(44 * u), gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF151A21), Color(0xFF0A0D12)]), border: Border.all(color: const Color(0xFFC3CBD2), width: 6 * u), boxShadow: [BoxShadow(color: const Color(0xFFFF821E).withValues(alpha: .4), blurRadius: 36 * u)]),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Wrap(alignment: WrapAlignment.center, spacing: 6 * u, runSpacing: 10 * u, children: [
-            item('Gallery', const Icon(Icons.image_outlined), () => s.send(widget.chatId, MType.text, text: '📷 Photo')),
-            item('Camera', const Icon(Icons.photo_camera_outlined), () => s.send(widget.chatId, MType.text, text: '📷 Camera photo')),
-            item('Document', const Icon(Icons.description_outlined), () => s.send(widget.chatId, MType.document, x: {'name': 'Notes.pdf', 'size': '1.2 MB', 'ext': 'PDF'})),
-            item('Location', const Icon(Icons.location_on_outlined), () => s.send(widget.chatId, MType.text, text: '📍 Current location · Kathmandu')),
-            item('Contact', const Icon(Icons.person_outline_rounded), () => s.send(widget.chatId, MType.text, text: '👤 Sita Rai · +977 9801 234 567')),
-            item('Product', const Icon(Icons.add_shopping_cart_rounded), () => _pickProduct(context)),
-          ]),
-          if (s.chat(widget.chatId).userId != null)
-            Padding(padding: EdgeInsets.only(top: 10 * u), child: ArtBtn(u: u, label: 'Make an offer', icon: Icons.sell_outlined, minH: 110, fontPx: 36, onTap: () {
-              Navigator.pop(c);
-              pushScreen(context, OfferPage(widget.chatId));
-            })),
-        ]),
+        margin: EdgeInsets.only(bottom: 20 * u),
+        child: Center(
+          heightFactor: 1,
+          child: ArtFrame(
+            u: u,
+            title: 'Share',
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                item('Gallery', Icons.image_outlined, () => s.send(widget.chatId, MType.text, text: '📷 Photo'), glow: const Color(0xFF5AB8F2)),
+                item('Camera', Icons.photo_camera_outlined, () => s.send(widget.chatId, MType.text, text: '📷 Camera photo'), glow: const Color(0xFFFF6FA3)),
+                item('Document', Icons.description_outlined, () => s.send(widget.chatId, MType.document, x: {'name': 'Notes.pdf', 'size': '1.2 MB', 'ext': 'PDF'}), glow: const Color(0xFFFFD27A)),
+              ]),
+              SizedBox(height: 24 * u),
+              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                item('Location', Icons.location_on_outlined, () => s.send(widget.chatId, MType.text, text: '📍 Current location · Kathmandu'), glow: const Color(0xFF2BFF8A)),
+                item('Contact', Icons.person_outline_rounded, () => s.send(widget.chatId, MType.text, text: '👤 Sita Rai · +977 9801 234 567'), glow: const Color(0xFFB69CFF)),
+                item('Product', Icons.add_shopping_cart_rounded, () => _pickProduct(context)),
+              ]),
+              if (s.chat(widget.chatId).userId != null)
+                Padding(
+                  padding: EdgeInsets.only(top: 28 * u),
+                  child: MiniBtn(u: u, hot: true, icon: Icons.sell_outlined, label: 'Make an offer', fontPx: 40, onTap: () {
+                    Navigator.pop(c);
+                    pushScreen(context, OfferPage(widget.chatId));
+                  }),
+                ),
+            ]),
+          ),
+        ),
       );
     });
   }
