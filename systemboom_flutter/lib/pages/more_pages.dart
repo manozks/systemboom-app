@@ -299,7 +299,10 @@ class _FusePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final sc = rect.width / 1254;
-    if (burn > 0) {
+    // the burnt fuse must dissolve together with the icon when the bomb blows (no floating rope left behind)
+    final fade = (1 - blast * 6).clamp(0.0, 1.0);
+    if (burn > 0 && fade > 0) {
+      canvas.saveLayer(null, Paint()..color = Color.fromRGBO(255, 255, 255, fade));
       canvas.save();
       canvas.translate(rect.left, rect.top);
       canvas.scale(sc);
@@ -330,6 +333,7 @@ class _FusePainter extends CustomPainter {
           canvas.drawCircle(o, 9 * (1 - ph) + 1, Paint()..color = Color.fromRGBO(255, 179, 71, 1 - ph));
         }
       }
+      canvas.restore();
       canvas.restore();
     }
     if (blast > 0) {
