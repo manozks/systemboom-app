@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -334,16 +336,17 @@ class _ConversationPageState extends State<ConversationPage> {
               ]),
             ),
           );
-      Widget act(String l, IconData ic, VoidCallback f, {bool red = false}) => ring(
-            red ? 'ring63-red' : 'ring63-act',
-            200,
-            Column(mainAxisSize: MainAxisSize.min, children: [
-              Icon(ic, size: 70 * u, color: Colors.white, shadows: [Shadow(color: (red ? const Color(0xFFFF5A3C) : const Color(0xFF9CD3FF)).withValues(alpha: .9), blurRadius: 14 * u)]),
-              SizedBox(height: 4 * u),
-              Text(l, style: ts(u, 38, w: FontWeight.w900)),
+      // one compact glowing circle + caption, sized so every action fits on a single line like the reactions
+      final canEdit = !m.deleted && mine && m.type == MType.text;
+      final n = 3 + (canEdit ? 1 : 0) + (m.deleted ? 0 : 1) + (!m.deleted && m.text != null ? 1 : 0) + (m.deleted ? 0 : 1);
+      final rs = math.min(124.0, (777 - (n - 1) * 8) / n);
+      Widget act(String l, IconData ic, VoidCallback f, {bool red = false, bool hot = false}) => SizedBox(
+            width: rs * u,
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              ring(red ? 'ring63-red' : 'ring63-act', rs, Icon(ic, size: rs * .46 * u, color: Colors.white, shadows: [Shadow(color: (red ? const Color(0xFFFF5A3C) : hot ? const Color(0xFFFFB347) : const Color(0xFF9CD3FF)).withValues(alpha: .9), blurRadius: 14 * u)]), f, glow: red ? const Color(0xFFFF3A28) : hot ? const Color(0xFFFF9A2A) : const Color(0xFF6FB6FF)),
+              SizedBox(height: 8 * u),
+              FittedBox(fit: BoxFit.scaleDown, child: Text(l, maxLines: 1, style: ts(u, 28, w: FontWeight.w800, c: red ? const Color(0xFFFF9A88) : Colors.white))),
             ]),
-            f,
-            glow: red ? const Color(0xFFFF3A28) : const Color(0xFF6FB6FF),
           );
       return Container(
         margin: EdgeInsets.only(bottom: 20 * u),
@@ -355,42 +358,25 @@ class _ConversationPageState extends State<ConversationPage> {
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [for (final e in _emoji) ring('ring63-emoji', 124, celestialIcon(e, 92 * u, fallbackFont: 62 * u), () => s.react(m, e))]),
               Container(height: 6 * u, margin: EdgeInsets.symmetric(vertical: 22 * u), decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0x00FF6A1A), Color(0xFFFF6A1A), Color(0xFFFFF0D0), Color(0xFFFF6A1A), Color(0x00FF6A1A)]), boxShadow: [BoxShadow(color: const Color(0xFFFF8A2A), blurRadius: 16 * u)])),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [
                 act('Reply', Icons.sentiment_satisfied_alt_outlined, () => setState(() => _quote = (m.text ?? m.type.name).split('\n').last)),
                 act(m.pinned ? 'Unpin' : 'Pin', Icons.push_pin_outlined, () => s.togglePin(m)),
                 act('Star', Icons.star_border_rounded, () => showToast(context, 'Starred')),
+                if (canEdit) act('Edit', Icons.edit_outlined, () {
+                  setState(() {
+                    _editing = m;
+                    _input.text = m.text ?? '';
+                  });
+                }),
+                if (!m.deleted) act('Forward', Icons.forward_rounded, () => showToast(context, 'Forward opens a picker (prototype)')),
+                if (!m.deleted && m.text != null) act('Copy', Icons.copy_rounded, () {
+                  Clipboard.setData(ClipboardData(text: m.text!));
+                  showToast(context, 'Copied');
+                }, hot: true),
                 if (!m.deleted) act('Delete', Icons.delete_outline_rounded, () async {
                   if (await confirmDialog(context, title: 'Delete message?', text: mine ? 'Deletes the message for everyone in the chat.' : 'Removes the message from your view.')) s.remove(m);
                 }, red: true),
               ]),
-              if (!m.deleted)
-                Padding(
-                  padding: EdgeInsets.only(top: 26 * u),
-                  child: Row(children: [
-                    Expanded(child: MiniBtn(u: u, icon: Icons.forward_rounded, label: 'Forward', onTap: () {
-                      Navigator.pop(c);
-                      showToast(context, 'Forward opens a picker (prototype)');
-                    })),
-                    if (mine && m.type == MType.text) ...[
-                      SizedBox(width: 14 * u),
-                      Expanded(child: MiniBtn(u: u, icon: Icons.edit_outlined, label: 'Edit', onTap: () {
-                        Navigator.pop(c);
-                        setState(() {
-                          _editing = m;
-                          _input.text = m.text ?? '';
-                        });
-                      })),
-                    ],
-                    if (m.text != null) ...[
-                      SizedBox(width: 14 * u),
-                      Expanded(child: MiniBtn(u: u, hot: true, icon: Icons.copy_rounded, label: 'Copy', onTap: () {
-                        Navigator.pop(c);
-                        Clipboard.setData(ClipboardData(text: m.text!));
-                        showToast(context, 'Copied');
-                      })),
-                    ],
-                  ]),
-                ),
             ]),
           ),
         ),
