@@ -274,12 +274,13 @@ class ArtBtn extends StatelessWidget {
 
 /// Compact glossy steel button for 2–3 across rows (no 9-slice art, so it never distorts when narrow).
 class MiniBtn extends StatelessWidget {
-  const MiniBtn({super.key, required this.u, required this.label, this.icon, required this.onTap, this.fontPx = 34});
+  const MiniBtn({super.key, required this.u, required this.label, this.icon, required this.onTap, this.fontPx = 34, this.hot = false});
   final double u;
   final String label;
   final IconData? icon;
   final VoidCallback onTap;
   final double fontPx;
+  final bool hot; // orange, eye-catching primary action
   @override
   Widget build(BuildContext context) {
     return Tap(
@@ -290,12 +291,14 @@ class MiniBtn extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(34 * u),
           gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFFF2F5F8), Color(0xFF7C8791), Color(0xFF2B333B), Color(0xFFB7C0C8)]),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .7), blurRadius: 10 * u, offset: Offset(0, 6 * u)), BoxShadow(color: const Color(0xFFFF821E).withValues(alpha: .28), blurRadius: 16 * u)],
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .7), blurRadius: 10 * u, offset: Offset(0, 6 * u)), BoxShadow(color: const Color(0xFFFF821E).withValues(alpha: hot ? .6 : .28), blurRadius: hot ? 24 * u : 16 * u)],
         ),
         child: DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30 * u),
-            gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF3A4C63), Color(0xFF172231), Color(0xFF0A1018)], stops: [0, .5, 1]),
+            gradient: hot
+                ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFFFD596), Color(0xFFFF9A3A), Color(0xFFE5560A), Color(0xFF9A3004)], stops: [0, .3, .68, 1])
+                : const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF3A4C63), Color(0xFF172231), Color(0xFF0A1018)], stops: [0, .5, 1]),
           ),
           child: Center(
             child: Padding(
@@ -303,7 +306,7 @@ class MiniBtn extends StatelessWidget {
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  if (icon != null) ...[Icon(icon, size: fontPx * 1.25 * u, color: const Color(0xFFFFB866), shadows: [Shadow(color: const Color(0xCCFF821E), blurRadius: 8 * u)]), SizedBox(width: 12 * u)],
+                  if (icon != null) ...[Icon(icon, size: fontPx * 1.25 * u, color: hot ? Colors.white : const Color(0xFFFFB866), shadows: [Shadow(color: const Color(0xCCFF821E), blurRadius: 8 * u)]), SizedBox(width: 12 * u)],
                   Text(label, maxLines: 1, style: ts(u, fontPx, w: FontWeight.w800)),
                 ]),
               ),
@@ -530,6 +533,35 @@ Future<bool> confirmDialog(BuildContext context, {required String title, require
 
 const goldColor = _gold;
 
+
+/// The ornate sheet panel (title bar with bolts + corner tabs) around any content; height follows the content.
+class ArtFrame extends StatelessWidget {
+  const ArtFrame({super.key, required this.u, required this.child, this.title});
+  final double u;
+  final String? title;
+  final Widget child;
+  @override
+  Widget build(BuildContext context) {
+    final k = 889 / 1116 * u;
+    final w = 1116 * k;
+    return SizedBox(
+      width: w,
+      child: Stack(children: [
+        Positioned.fill(
+          child: LayoutBuilder(builder: (context, c) {
+            if (c.biggest.isEmpty) return const SizedBox.shrink();
+            return Image.asset('assets/images/asheet-frame.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium, scale: 1 / k, centerSlice: Rect.fromLTRB(40 * k, 178 * k, w - 40 * k, 1190 * k), width: c.maxWidth, height: c.maxHeight);
+          }),
+        ),
+        Column(mainAxisSize: MainAxisSize.min, children: [
+          SizedBox(height: 178 * k, child: Center(child: Padding(padding: EdgeInsets.only(top: 6 * k), child: title == null ? null : Text(title!, style: ts(u, 60 * 889 / 1116, w: FontWeight.w900, c: const Color(0xFFE9EDF3)))))),
+          Padding(padding: EdgeInsets.fromLTRB(70 * k, 0, 70 * k, 0), child: child),
+          SizedBox(height: 96 * k),
+        ]),
+      ]),
+    );
+  }
+}
 
 class ActItem {
   const ActItem(this.label, this.icon, this.onSelect, {this.danger = false});

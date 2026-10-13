@@ -318,67 +318,86 @@ class _ConversationPageState extends State<ConversationPage> {
   void _actions(BuildContext context, Msg m, bool mine) {
     final u = context.u;
     showArtSheet(context, (c) {
-      Widget ring(String asset, double size, Widget child, VoidCallback f) => Tap(onTap: () {
-            Navigator.pop(c);
-            f();
-          }, child: SizedBox(width: size * u, height: size * u, child: Stack(alignment: Alignment.center, children: [Positioned.fill(child: Image.asset('assets/images/$asset.webp', fit: BoxFit.fill)), child])));
-      Widget act(String l, IconData ic, VoidCallback f, {bool red = false}) => ring(red ? 'ring63-red' : 'ring63-act', 196, Column(mainAxisSize: MainAxisSize.min, children: [Icon(ic, size: 66 * u, color: Colors.white), Text(l, style: ts(u, 38, w: FontWeight.w800))]), f);
-      return Container(
-        margin: EdgeInsets.all(12 * u),
-        padding: EdgeInsets.fromLTRB(28 * u, 26 * u, 28 * u, 26 * u),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(44 * u),
-          gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF232A33), Color(0xFF11151B), Color(0xFF0A0D11)]),
-          border: Border.all(color: const Color(0xFFC3CBD2), width: 6 * u),
-          boxShadow: [BoxShadow(color: const Color(0xFFFF821E).withValues(alpha: .45), blurRadius: 34 * u)],
-        ),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [for (final e in _emoji) ring('ring63-emoji', 134, celestialIcon(e, 84 * u, fallbackFont: 62 * u), () => s.react(m, e))]),
-          Container(height: 5 * u, margin: EdgeInsets.symmetric(vertical: 18 * u), decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0x00FF6A1A), Color(0xFFFF6A1A), Color(0xFFFFE0B8), Color(0xFFFF6A1A), Color(0x00FF6A1A)]), boxShadow: [BoxShadow(color: const Color(0xFFFF7A1A), blurRadius: 12 * u)])),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            act('Reply', Icons.sentiment_satisfied_alt_outlined, () => setState(() => _quote = (m.text ?? m.type.name).split('\n').last)),
-            act(m.pinned ? 'Unpin' : 'Pin', Icons.push_pin_outlined, () => s.togglePin(m)),
-            act('Star', Icons.star_border_rounded, () => showToast(context, 'Starred')),
-            if (!m.deleted) act('Delete', Icons.delete_outline_rounded, () async {
-              if (await confirmDialog(context, title: 'Delete message?', text: mine ? 'Deletes the message for everyone in the chat.' : 'Removes the message from your view.')) s.remove(m);
-            }, red: true),
-          ]),
-          if (!m.deleted)
-            Padding(
-              padding: EdgeInsets.only(top: 14 * u),
-              child: Wrap(alignment: WrapAlignment.center, spacing: 14 * u, children: [
-                Tap(onTap: () {
-                  Navigator.pop(c);
-                  showToast(context, 'Forward opens a picker (prototype)');
-                }, child: _pillBtn(u, Icons.forward_rounded, 'Forward')),
-                if (mine && m.type == MType.text) Tap(onTap: () {
-                  Navigator.pop(c);
-                  setState(() {
-                    _editing = m;
-                    _input.text = m.text ?? '';
-                  });
-                }, child: _pillBtn(u, Icons.edit_outlined, 'Edit')),
+      // glowing circular button: art ring + soft halo behind it so it pops off the dark panel
+      Widget ring(String asset, double size, Widget child, VoidCallback f, {Color glow = const Color(0xFFFF9A2A)}) => Tap(
+            onTap: () {
+              Navigator.pop(c);
+              f();
+            },
+            child: SizedBox(
+              width: size * u,
+              height: size * u,
+              child: Stack(alignment: Alignment.center, children: [
+                Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: glow.withValues(alpha: .45), blurRadius: 26 * u, spreadRadius: 1 * u)]))),
+                Positioned.fill(child: Image.asset('assets/images/$asset.webp', fit: BoxFit.fill)),
+                child,
               ]),
             ),
-          if (m.text != null)
-            Padding(
-              padding: EdgeInsets.only(top: 14 * u),
-              child: Center(child: SizedBox(width: 460 * u, child: ArtBtn(u: u, label: 'Copy', icon: Icons.copy_rounded, minH: 150, fontPx: 40, onTap: () {
-                Navigator.pop(c);
-                Clipboard.setData(ClipboardData(text: m.text!));
-                showToast(context, 'Copied');
-              }))),
-            ),
-        ]),
+          );
+      Widget act(String l, IconData ic, VoidCallback f, {bool red = false}) => ring(
+            red ? 'ring63-red' : 'ring63-act',
+            200,
+            Column(mainAxisSize: MainAxisSize.min, children: [
+              Icon(ic, size: 70 * u, color: Colors.white, shadows: [Shadow(color: (red ? const Color(0xFFFF5A3C) : const Color(0xFF9CD3FF)).withValues(alpha: .9), blurRadius: 14 * u)]),
+              SizedBox(height: 4 * u),
+              Text(l, style: ts(u, 38, w: FontWeight.w900)),
+            ]),
+            f,
+            glow: red ? const Color(0xFFFF3A28) : const Color(0xFF6FB6FF),
+          );
+      return Container(
+        margin: EdgeInsets.only(bottom: 20 * u),
+        child: Center(
+          heightFactor: 1,
+          child: ArtFrame(
+            u: u,
+            title: 'Message',
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [for (final e in _emoji) ring('ring63-emoji', 124, celestialIcon(e, 92 * u, fallbackFont: 62 * u), () => s.react(m, e))]),
+              Container(height: 6 * u, margin: EdgeInsets.symmetric(vertical: 22 * u), decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0x00FF6A1A), Color(0xFFFF6A1A), Color(0xFFFFF0D0), Color(0xFFFF6A1A), Color(0x00FF6A1A)]), boxShadow: [BoxShadow(color: const Color(0xFFFF8A2A), blurRadius: 16 * u)])),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                act('Reply', Icons.sentiment_satisfied_alt_outlined, () => setState(() => _quote = (m.text ?? m.type.name).split('\n').last)),
+                act(m.pinned ? 'Unpin' : 'Pin', Icons.push_pin_outlined, () => s.togglePin(m)),
+                act('Star', Icons.star_border_rounded, () => showToast(context, 'Starred')),
+                if (!m.deleted) act('Delete', Icons.delete_outline_rounded, () async {
+                  if (await confirmDialog(context, title: 'Delete message?', text: mine ? 'Deletes the message for everyone in the chat.' : 'Removes the message from your view.')) s.remove(m);
+                }, red: true),
+              ]),
+              if (!m.deleted)
+                Padding(
+                  padding: EdgeInsets.only(top: 26 * u),
+                  child: Row(children: [
+                    Expanded(child: MiniBtn(u: u, icon: Icons.forward_rounded, label: 'Forward', onTap: () {
+                      Navigator.pop(c);
+                      showToast(context, 'Forward opens a picker (prototype)');
+                    })),
+                    if (mine && m.type == MType.text) ...[
+                      SizedBox(width: 14 * u),
+                      Expanded(child: MiniBtn(u: u, icon: Icons.edit_outlined, label: 'Edit', onTap: () {
+                        Navigator.pop(c);
+                        setState(() {
+                          _editing = m;
+                          _input.text = m.text ?? '';
+                        });
+                      })),
+                    ],
+                    if (m.text != null) ...[
+                      SizedBox(width: 14 * u),
+                      Expanded(child: MiniBtn(u: u, hot: true, icon: Icons.copy_rounded, label: 'Copy', onTap: () {
+                        Navigator.pop(c);
+                        Clipboard.setData(ClipboardData(text: m.text!));
+                        showToast(context, 'Copied');
+                      })),
+                    ],
+                  ]),
+                ),
+            ]),
+          ),
+        ),
       );
     });
   }
 
-  Widget _pillBtn(double u, IconData ic, String l) => Container(
-        padding: EdgeInsets.symmetric(horizontal: 34 * u, vertical: 16 * u),
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(99), border: Border.all(color: const Color(0xFFAAB3BB), width: 4 * u), gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF2B3A4D), Color(0xFF0A1018)])),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(ic, size: 44 * u, color: Colors.white), SizedBox(width: 12 * u), Text(l, style: ts(u, 34, w: FontWeight.w700))]),
-      );
 
   void _headerMenu() {
     final chat = s.chat(widget.chatId);
