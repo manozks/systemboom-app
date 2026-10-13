@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../data.dart';
+import '../celestial.dart';
 import '../kit.dart';
 import '../shell.dart';
 import 'call_page.dart';
@@ -184,7 +185,7 @@ class _ConversationPageState extends State<ConversationPage> {
         if (m.reactions.isNotEmpty)
           Padding(
             padding: EdgeInsets.only(left: mine ? 0 : 130 * u, right: mine ? 130 * u : 0),
-            child: Wrap(spacing: 8 * u, children: [for (final r in m.reactions) Tap(onTap: () => s.react(m, r), child: Container(padding: EdgeInsets.symmetric(horizontal: 18 * u, vertical: 4 * u), decoration: BoxDecoration(borderRadius: BorderRadius.circular(99), color: const Color(0xFF1A140A), border: Border.all(color: const Color(0xFFC9A46A), width: 2.5 * u)), child: Text(r, style: TextStyle(fontSize: 26 * u, decoration: TextDecoration.none))))]),
+            child: Wrap(spacing: 8 * u, children: [for (final r in m.reactions) Tap(onTap: () => s.react(m, r), child: Container(padding: EdgeInsets.symmetric(horizontal: 18 * u, vertical: 4 * u), decoration: BoxDecoration(borderRadius: BorderRadius.circular(99), color: const Color(0xFF1A140A), border: Border.all(color: const Color(0xFFC9A46A), width: 2.5 * u)), child: celestialIcon(r, 64 * u, fallbackFont: 26 * u)))]),
           ),
       ]),
     );
@@ -194,7 +195,7 @@ class _ConversationPageState extends State<ConversationPage> {
     if (m.deleted) return Text('🚫 This message was deleted', style: ts(u, 32, w: FontWeight.w400));
     switch (m.type) {
       case MType.text:
-        return Text(m.text ?? '', style: ts(u, 35, w: FontWeight.w400, h: 1.3, sh: const []));
+        return celestialText(m.text ?? '', ts(u, 35, w: FontWeight.w400, h: 1.3, sh: const []), 44 * u);
       case MType.voice:
         return Row(mainAxisSize: MainAxisSize.min, children: [
           Container(width: 104 * u, height: 104 * u, decoration: BoxDecoration(shape: BoxShape.circle, color: const Color(0xFF0A0F2A), border: Border.all(color: const Color(0xFF3E63FF), width: 5 * u), boxShadow: [BoxShadow(color: const Color(0xFF3E63FF).withValues(alpha: .9), blurRadius: 14 * u)]), child: Icon(Icons.play_arrow_rounded, size: 56 * u, color: Colors.white)),
@@ -297,7 +298,11 @@ class _ConversationPageState extends State<ConversationPage> {
             Positioned.fill(child: Image.asset('assets/images/chat-bar.webp', fit: BoxFit.fill)),
             at(33, 45, 90, 90, Tap(onTap: () => _share(context), child: Icon(Icons.attach_file_rounded, size: 46 * u, color: _g, shadows: _glow(u)))),
             at(154, 52, 390, 76, Center(child: TextField(controller: _input, onSubmitted: (_) => _send(), cursorColor: _g, style: TextStyle(color: Colors.white, fontSize: 36 * u), decoration: InputDecoration(border: InputBorder.none, isCollapsed: true, hintText: 'Type a message...', hintStyle: TextStyle(color: const Color(0xFF8E9BAB), fontSize: 36 * u))))),
-            at(549, 56, 64, 64, Tap(onTap: () => _input.text += '😊', child: Icon(Icons.emoji_emotions_outlined, size: 56 * u, color: _g, shadows: _glow(u)))),
+            at(549, 56, 64, 64, Tap(onTap: () => showCelestialPicker(context, (k) {
+              final t = s.thread(widget.chatId).where((m) => !m.deleted);
+              if (t.isEmpty) return;
+              s.react(t.last, k);
+            }), child: Icon(Icons.emoji_emotions_outlined, size: 56 * u, color: _g, shadows: _glow(u)))),
             at(654, 52, 68, 76, Tap(onTap: () => s.send(widget.chatId, MType.voice, x: {'d': '0:06'}), child: Icon(Icons.mic_none_rounded, size: 52 * u, color: Colors.white))),
             at(765, 42, 96, 96, Tap(onTap: _send, child: Icon(Icons.send_rounded, size: 50 * u, color: _g, shadows: _glow(u)))),
           ]),
@@ -328,7 +333,7 @@ class _ConversationPageState extends State<ConversationPage> {
           boxShadow: [BoxShadow(color: const Color(0xFFFF821E).withValues(alpha: .45), blurRadius: 34 * u)],
         ),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [for (final e in _emoji) ring('ring63-emoji', 134, Text(e, style: TextStyle(fontSize: 62 * u, decoration: TextDecoration.none)), () => s.react(m, e))]),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [for (final e in _emoji) ring('ring63-emoji', 134, celestialIcon(e, 84 * u, fallbackFont: 62 * u), () => s.react(m, e))]),
           Container(height: 5 * u, margin: EdgeInsets.symmetric(vertical: 18 * u), decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0x00FF6A1A), Color(0xFFFF6A1A), Color(0xFFFFE0B8), Color(0xFFFF6A1A), Color(0x00FF6A1A)]), boxShadow: [BoxShadow(color: const Color(0xFFFF7A1A), blurRadius: 12 * u)])),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             act('Reply', Icons.sentiment_satisfied_alt_outlined, () => setState(() => _quote = (m.text ?? m.type.name).split('\n').last)),
