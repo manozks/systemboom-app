@@ -667,11 +667,23 @@ button.lr:active { transform: scale(.985); }
 .bombicon { width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; filter: drop-shadow(0 calc(16 * var(--u)) calc(30 * var(--u)) rgba(0,0,0,.7)); }
 .bombfx { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .bsparks circle { animation: bspark .55s ease-out infinite; transform-box: fill-box; transform-origin: center; opacity: 0; }
-.bombblast { position: absolute; left: 41.9%; top: 27.7%; width: calc(80 * var(--u)); height: calc(80 * var(--u)); transform: translate(-50%, -50%) scale(1); border-radius: 50%; background: radial-gradient(circle, #fff 0%, #ffe9a8 22%, #ff9a2a 48%, rgba(255,90,0,.6) 66%, rgba(255,90,0,0) 72%); animation: bombblast .85s cubic-bezier(.5,0,.9,.6) forwards; z-index: 5; }
+.bombblast { position: absolute; left: 41.9%; top: 27.7%; width: calc(80 * var(--u)); height: calc(80 * var(--u)); transform: translate(-50%, -50%) scale(1); border-radius: 50%; background: radial-gradient(circle, #fff 0%, #ffe9a8 22%, #ff9a2a 48%, rgba(255,90,0,.6) 66%, rgba(255,90,0,0) 72%); animation: bombblast .9s cubic-bezier(.2,.6,.3,1) forwards; z-index: 5; pointer-events: none; }
 .bombwrap.shake .bombicon { animation: bombshake .12s linear infinite; }
 .splashfull { overflow: hidden; }
 @keyframes bombpop { from { transform: scale(.82); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes bspark { 0% { opacity: 1; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--dx, 24px), -40px) scale(.2); } }
-@keyframes bombblast { 0% { transform: translate(-50%,-50%) scale(1); opacity: 1; } 70% { opacity: 1; } 100% { transform: translate(-50%,-50%) scale(60); opacity: 1; } }
+@keyframes bombblast { 0% { transform: translate(-50%,-50%) scale(1); opacity: 1; } 30% { transform: translate(-50%,-50%) scale(14); opacity: 1; } 100% { transform: translate(-50%,-50%) scale(30); opacity: 0; } }
 @keyframes bombshake { 0% { transform: translate(0,0); } 25% { transform: translate(calc(-6 * var(--u)), calc(3 * var(--u))); } 50% { transform: translate(calc(5 * var(--u)), calc(-4 * var(--u))); } 75% { transform: translate(calc(-3 * var(--u)), calc(-5 * var(--u))); } 100% { transform: translate(0,0); } }
 @media (prefers-reduced-motion: reduce) { .bombwrap, .bombicon, .bsparks circle { animation: none !important; } }
+
+/* lava sparks that fly out of the blast */
+.lava { position: absolute; left: 41.9%; top: 27.7%; width: 0; height: 0; z-index: 6; pointer-events: none; }
+.lava i { position: absolute; left: 0; top: 0; border-radius: 50%; margin: -4px 0 0 -4px; background: #fff3b0; box-shadow: 0 0 8px 2px rgba(255,150,40,.9); opacity: 0; animation: lavafly 1s cubic-bezier(.15,.7,.35,1) forwards; }
+@keyframes lavafly {
+  0% { transform: translate(0,0) scale(1); opacity: 1; background: #fff6c8; box-shadow: 0 0 10px 3px rgba(255,220,120,.95); }
+  25% { transform: translate(calc(var(--dx) * .6), calc(var(--dy) * .6)) scale(1); opacity: 1; background: #ffb43a; box-shadow: 0 0 9px 2px rgba(255,140,30,.9); }
+  70% { transform: translate(calc(var(--dx) * .95), calc(var(--dy) * .95 + var(--fall) * .4)) scale(.8); opacity: .9; background: #ff6a12; box-shadow: 0 0 7px 2px rgba(255,80,10,.8); }
+  100% { transform: translate(var(--dx), calc(var(--dy) + var(--fall))) scale(.35); opacity: 0; background: #b3200a; box-shadow: 0 0 4px 1px rgba(160,30,10,.6); }
+}
+.bombwrap.shake .bombicon, .bombwrap.shake .bombfx { animation: bombshake .12s linear infinite, bombgone .35s ease-in .12s forwards; }
+@keyframes bombgone { to { opacity: 0; filter: brightness(2.5); } }

@@ -7,13 +7,22 @@ import { useRouter } from 'next/navigation';
 const FUSE = 'M874,306 C868.0,301.7 849.5,289.7 838,280 C826.5,270.3 815.0,259.0 805,248 C795.0,237.0 789.2,223.7 778,214 C766.8,204.3 754.0,196.3 738,190 C722.0,183.7 700.5,175.3 682,176 C663.5,176.7 644.2,187.0 627,194 C609.8,201.0 593.0,208.3 579,218 C565.0,227.7 552.7,240.8 543,252 C533.3,263.2 526.0,273.3 521,285 C516.0,296.7 512.3,311.5 513,322 C513.7,332.5 523.0,343.7 525,348';
 const START = 0.4; // s before the fuse is lit
 const BURN = 2.2; // s for the flame to travel the whole rope
+const BLAST = 1.3; // s of blast + lava sparks before the app opens
+
+// deterministic pseudo-random so server and client render the same particles
+const rnd = (i: number, k: number) => { const x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); };
+const LAVA = Array.from({ length: 110 }, (_, i) => {
+  const a = rnd(i, 1) * Math.PI * 2;
+  const dist = 120 + Math.pow(rnd(i, 2), 0.7) * 520; // px
+  return { dx: Math.cos(a) * dist, dy: Math.sin(a) * dist, size: 3 + rnd(i, 3) * 9, dur: 0.7 + rnd(i, 4) * 0.6, delay: rnd(i, 5) * 0.08, fall: 40 + rnd(i, 6) * 160 };
+});
 
 export default function Splash() {
   const router = useRouter();
   const [boom, setBoom] = useState(false);
   useEffect(() => {
     const t1 = setTimeout(() => setBoom(true), (START + BURN) * 1000);
-    const t2 = setTimeout(() => router.replace('/welcome/'), (START + BURN) * 1000 + 850);
+    const t2 = setTimeout(() => router.replace('/welcome/'), (START + BURN + BLAST) * 1000);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [router]);
   return (
@@ -50,6 +59,13 @@ export default function Splash() {
           </g>
         </svg>
         {boom && <div className="bombblast" />}
+        {boom && (
+          <div className="lava" aria-hidden>
+            {LAVA.map((p, i) => (
+              <i key={i} style={{ ['--dx' as string]: `${p.dx}px`, ['--dy' as string]: `${p.dy}px`, ['--fall' as string]: `${p.fall}px`, width: p.size, height: p.size, animationDuration: `${p.dur}s`, animationDelay: `${p.delay}s` }} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

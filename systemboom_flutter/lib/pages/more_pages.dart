@@ -202,7 +202,7 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
-  static const _start = .4, _burn = 2.2, _blast = .85; // seconds
+  static const _start = .4, _burn = 2.2, _blast = 1.3; // seconds
   static const _total = _start + _burn + _blast;
   late final AnimationController _c = AnimationController(vsync: this, duration: Duration(milliseconds: (_total * 1000).round()))..forward().whenComplete(_next);
   bool _gone = false;
@@ -262,7 +262,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                       return Stack(children: [
                         Positioned.fromRect(
                           rect: rect.shift(shake),
-                          child: Opacity(opacity: (pop).clamp(0.0, 1.0), child: Transform.scale(scale: .82 + .18 * pop, child: Image.asset('assets/images/bomb-icon.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium))),
+                          child: Opacity(opacity: (pop * (1 - (blast * 6).clamp(0.0, 1.0))).clamp(0.0, 1.0), child: Transform.scale(scale: .82 + .18 * pop, child: Image.asset('assets/images/bomb-icon.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium))),
                         ),
                         Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _FusePainter(rect: rect.shift(shake), burn: burn, blast: blast, sec: sec)))),
                       ]);
@@ -334,9 +334,40 @@ class _FusePainter extends CustomPainter {
     }
     if (blast > 0) {
       final c = rect.topLeft + const Offset(525, 348) * sc;
-      final maxR = math.sqrt(size.width * size.width + size.height * size.height) * 1.05;
-      final r = 40 * sc + (maxR - 40 * sc) * Curves.easeIn.transform(blast);
-      canvas.drawCircle(c, r, Paint()..shader = ui.Gradient.radial(c, r, const [Color(0xFFFFFFFF), Color(0xFFFFE9A8), Color(0xFFFF9A2A), Color(0x99FF5A00), Color(0x00FF5A00)], [0, .22, .48, .66, .72]));
+      final k = rect.width / 400; // ~1 on a phone
+      final t = blast * _SplashPageState._blast; // seconds since the blast
+      // 1) bright flash that swells and fades
+      final fl = (t / .32).clamp(0.0, 1.0);
+      final fr = 30 * k + (rect.width * 1.5) * Curves.easeOut.transform(fl);
+      final fa = t < .18 ? 1.0 : (1 - ((t - .18) / .5)).clamp(0.0, 1.0);
+      if (fa > 0) {
+        canvas.drawCircle(c, fr, Paint()..shader = ui.Gradient.radial(c, fr, [Color.fromRGBO(255, 255, 255, fa), Color.fromRGBO(255, 233, 168, fa), Color.fromRGBO(255, 154, 42, fa), Color.fromRGBO(255, 90, 0, .55 * fa), const Color(0x00FF5A00)], const [0, .22, .48, .68, 1]));
+      }
+      // 2) lava sparks flying outward with gravity, cooling from white-yellow to dark red
+      double h(int i, int n) {
+        final x = math.sin(i * 127.1 + n * 311.7) * 43758.5453;
+        return x - x.floorToDouble();
+      }
+      for (var i = 0; i < 110; i++) {
+        final life = .7 + h(i, 4) * .6;
+        final age = t - h(i, 5) * .08;
+        if (age <= 0 || age >= life) continue;
+        final u = age / life; // 0..1
+        final ang = h(i, 1) * math.pi * 2;
+        final dist = (120 + math.pow(h(i, 2), .7) * 520) * k;
+        final out = 1 - math.pow(1 - u, 2.6); // fast out, slows down
+        final fall = (40 + h(i, 6) * 160) * k * u * u;
+        final pos = c + Offset(math.cos(ang) * dist * out, math.sin(ang) * dist * out + fall);
+        final col = u < .25
+            ? Color.lerp(const Color(0xFFFFF6C8), const Color(0xFFFFB43A), u / .25)!
+            : u < .7
+                ? Color.lerp(const Color(0xFFFFB43A), const Color(0xFFFF6A12), (u - .25) / .45)!
+                : Color.lerp(const Color(0xFFFF6A12), const Color(0xFFB3200A), (u - .7) / .3)!;
+        final alpha = (1 - u * u).clamp(0.0, 1.0);
+        final r = (3 + h(i, 3) * 9) * k * (1 - .65 * u);
+        canvas.drawCircle(pos, r * 2.2, Paint()..color = col.withValues(alpha: .35 * alpha)..maskFilter = MaskFilter.blur(BlurStyle.normal, r));
+        canvas.drawCircle(pos, r, Paint()..color = col.withValues(alpha: alpha));
+      }
     }
   }
 

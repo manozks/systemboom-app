@@ -115,10 +115,10 @@ void main() {
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(MaterialApp(theme: ThemeData(brightness: Brightness.dark, fontFamily: 'Figtree'), home: const SplashPage()));
-    for (var i = 0; i < 12; i++) {
-      await tester.pump(const Duration(milliseconds: 300)); // 3.6 s > burn + blast
+    for (var i = 0; i < 14; i++) {
+      await tester.pump(const Duration(milliseconds: 300)); // 4.2 s > burn + blast
     }
-    await tester.pump(const Duration(milliseconds: 700));
+    await tester.pump(const Duration(milliseconds: 900));
     expect(tester.takeException(), isNull);
     expect(find.byType(SplashPage), findsNothing); // moved on to the home page
   });
