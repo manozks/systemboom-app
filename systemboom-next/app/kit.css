@@ -693,3 +693,25 @@ button.lr:active { transform: scale(.985); }
 .lavafx i { position: absolute; left: 0; top: 0; border-radius: 50%; margin: -4px 0 0 -4px; background: #fff3b0; box-shadow: 0 0 8px 2px rgba(255,150,40,.9); opacity: 0; animation: lavafly 1s cubic-bezier(.15,.7,.35,1) forwards; }
 .lavaflash { position: absolute; left: 0; top: 0; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, #fff 0%, #ffe9a8 22%, #ff9a2a 48%, rgba(255,90,0,.6) 66%, rgba(255,90,0,0) 72%); transform: translate(-50%,-50%) scale(14); animation: lavaflashfade .6s ease-out forwards; }
 @keyframes lavaflashfade { 0% { opacity: 1; transform: translate(-50%,-50%) scale(14); } 100% { opacity: 0; transform: translate(-50%,-50%) scale(30); } }
+
+/* Calls-orb fan menu (rendered in a portal on <body>) */
+.orbmenu { position: fixed; inset: 0; z-index: 9000; }
+.orbdim { position: absolute; inset: 0; background: rgba(0,0,0,.5); opacity: 0; transition: opacity .35s; }
+.orbmenu.on .orbdim { opacity: 1; }
+.orbhalo { position: absolute; left: var(--ox); top: var(--oy); width: calc(var(--ou) * 1100); height: calc(var(--ou) * 1100); transform: translate(-50%, -50%) scale(.2); border-radius: 50%; background: radial-gradient(circle, rgba(255,154,42,.42), rgba(255,106,26,.2) 55%, rgba(255,106,26,0) 72%); opacity: 0; transition: transform .6s cubic-bezier(.2,.9,.3,1), opacity .4s; pointer-events: none; }
+.orbmenu.on .orbhalo { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+.orbring { position: absolute; left: var(--ox); top: var(--oy); width: calc(var(--ou) * 770); height: calc(var(--ou) * 770); transform: translate(-50%, -50%) scale(.3) rotate(-90deg); border-radius: 50%; border: calc(var(--ou) * 4) solid rgba(255,214,150,.85); box-shadow: 0 0 calc(var(--ou) * 22) rgba(255,160,60,.8), inset 0 0 calc(var(--ou) * 22) rgba(255,160,60,.4); opacity: 0; transition: transform .7s cubic-bezier(.2,.9,.3,1), opacity .4s; pointer-events: none; }
+.orbmenu.on .orbring { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+.orbzone { position: absolute; left: var(--ox); top: var(--oy); width: calc(var(--ou) * 1000); height: calc(var(--ou) * 560); transform: translate(-50%, -100%); border-radius: 999px 999px 0 0; background: transparent; }
+.orbitem { position: absolute; left: var(--ox); top: var(--oy); width: calc(var(--ou) * 270); display: flex; flex-direction: column; align-items: center; gap: calc(var(--ou) * 8); background: none; border: 0; padding: 0; cursor: pointer; color: #fff; opacity: 0;
+  transform: translate(-50%, -50%) scale(0) rotate(var(--rot)); transition: transform .52s cubic-bezier(.34,1.56,.64,1), opacity .25s; transition-delay: calc(var(--i) * 70ms); }
+.orbmenu.on .orbitem { opacity: 1; transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1) rotate(0deg); }
+.orbmenu:not(.on) .orbitem { transition-delay: 0ms; transition-duration: .22s; }
+.orbbtn { position: relative; display: grid; place-items: center; width: calc(var(--ou) * 168); height: calc(var(--ou) * 168); border-radius: 50%; box-shadow: 0 0 calc(var(--ou) * 30) calc(var(--ou) * 3) color-mix(in srgb, var(--g) 55%, transparent); transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s; }
+.orbbtn img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.orbbtn svg { position: relative; width: 42%; height: 42%; color: #fff4dc; filter: drop-shadow(0 0 calc(var(--ou) * 14) var(--g)) drop-shadow(0 calc(var(--ou) * 3) calc(var(--ou) * 3) rgba(0,0,0,.6)); }
+.orbitem:hover .orbbtn, .orbitem:focus-visible .orbbtn { transform: scale(1.14); box-shadow: 0 0 calc(var(--ou) * 44) calc(var(--ou) * 3) color-mix(in srgb, var(--g) 85%, transparent); }
+.orbitem:active .orbbtn { transform: scale(.94); }
+.orbitem b { font-size: calc(var(--ou) * 32); font-weight: 900; white-space: nowrap; text-shadow: 0 2px 4px rgba(0,0,0,.9); }
+.orbitem:hover b { color: #ffe6b0; }
+@media (prefers-reduced-motion: reduce) { .orbitem, .orbhalo, .orbring { transition-duration: .01s !important; } }

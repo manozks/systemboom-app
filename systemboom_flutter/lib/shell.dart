@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import 'main.dart' show HomePage;
+import 'orb_menu.dart';
 import 'pages/calls_page.dart';
 import 'pages/anon_pages.dart';
 import 'pages/chats_page.dart';
@@ -429,12 +430,12 @@ class Dock extends StatelessWidget {
               top: 2 * k,
               width: 148 * k,
               height: 148 * k,
-              child: Press(
+              child: DockOrbMenu(builder: (context, tap) => Press(
                 u: u,
                 circle: true,
                 scaleUp: 1.08,
                 lift: 5,
-                onTap: () => goTab(context, 'calls'),
+                onTap: tap,
                 builder: (context, g, hs) => OverflowBox(
                   maxWidth: 152 * k,
                   maxHeight: 152 * k,
@@ -451,7 +452,7 @@ class Dock extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
+              )),
             ),
           ]);
         },

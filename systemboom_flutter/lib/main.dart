@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'pages/more_pages.dart' show SplashPage;
+import 'orb_menu.dart';
 import 'shell.dart';
 import 'ui.dart';
 
@@ -785,12 +786,12 @@ class _Stage extends StatelessWidget {
         top: 302 * u,
         width: 148 * u,
         height: 148 * u,
-        child: Press(
+        child: DockOrbMenu(builder: (context, tap) => Press(
           u: u,
           circle: true,
           scaleUp: 1.08,
           lift: 5,
-          onTap: () => onTap('Calls'),
+          onTap: tap,
           builder: (context, g, hs) => OverflowBox(
             maxWidth: 152 * u,
             maxHeight: 152 * u,
@@ -807,7 +808,7 @@ class _Stage extends StatelessWidget {
               ),
             ),
           ),
-        ),
+        )),
       ),
     ]);
   }

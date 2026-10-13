@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,6 +8,7 @@ import 'package:systemboom_app/celestial.dart';
 import 'package:systemboom_app/data.dart';
 import 'package:systemboom_app/kit.dart';
 import 'package:systemboom_app/main.dart';
+import 'package:systemboom_app/orb_menu.dart';
 import 'package:systemboom_app/pages/anon_pages.dart';
 import 'package:systemboom_app/pages/call_page.dart';
 import 'package:systemboom_app/pages/calls_page.dart';
@@ -137,6 +139,30 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
     }
     expect(find.text('Celebrate'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Calls orb: hover fans out the circular menu, leaving closes it', (tester) async {
+    tester.view.physicalSize = const Size(390, 844) * 3;
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(MaterialApp(
+      theme: ThemeData(brightness: Brightness.dark, fontFamily: 'Figtree'),
+      home: Scaffold(body: Align(alignment: Alignment.bottomCenter, child: Padding(padding: const EdgeInsets.only(bottom: 40), child: DockOrbMenu(builder: (c, tap) => GestureDetector(onTap: tap, child: const SizedBox(width: 70, height: 70, child: ColoredBox(color: Colors.orange))))))),
+    ));
+    final g = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await g.addPointer(location: Offset.zero);
+    await g.moveTo(tester.getCenter(find.byType(ColoredBox).last));
+    for (var i = 0; i < 4; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
+    for (final l in ['Chats', 'Calls', 'Marketplace', 'Anonymous']) {
+      expect(find.text(l), findsOneWidget);
+    }
+    await g.moveTo(const Offset(5, 5));
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('Marketplace'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }
