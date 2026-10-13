@@ -1,4 +1,5 @@
-import 'dart:async';
+import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
@@ -193,6 +194,7 @@ class WelcomePage extends StatelessWidget {
 
 
 /// Launch screen: breathing logo plate + spinner, then fades into Home (tap to skip).
+/// Loading screen: the bomb icon's fuse burns from the spark to the bomb, then it blows and the app opens.
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
   @override
@@ -200,30 +202,24 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 2400))..repeat(reverse: true);
-  Timer? _t;
+  static const _start = .4, _burn = 2.2, _blast = .85; // seconds
+  static const _total = _start + _burn + _blast;
+  late final AnimationController _c = AnimationController(vsync: this, duration: Duration(milliseconds: (_total * 1000).round()))..forward().whenComplete(_next);
   bool _gone = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _t = Timer(const Duration(milliseconds: 2800), _next);
-  }
-
   bool _pre = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_pre) return;
     _pre = true;
-    for (final n in const ['splash-bg.webp', 'carbon-tile.webp']) {
+    for (final n in const ['bomb-icon.webp', 'carbon-tile.webp']) {
       precacheImage(AssetImage('assets/images/$n'), context);
     }
   }
 
   @override
   void dispose() {
-    _t?.cancel();
     _c.dispose();
     super.dispose();
   }
@@ -233,7 +229,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     _gone = true;
     Navigator.of(context).pushReplacement(PageRouteBuilder<void>(
       pageBuilder: (_, _, _) => const HomePage(),
-      transitionDuration: const Duration(milliseconds: 800),
+      transitionDuration: const Duration(milliseconds: 500),
       transitionsBuilder: (_, a, _, child) => FadeTransition(opacity: CurvedAnimation(parent: a, curve: Curves.easeOut), child: child),
     ));
   }
@@ -249,15 +245,29 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
         child: Center(
           child: SizedBox(
             width: u * 941,
-            child: Stack(children: [
+            child: Stack(clipBehavior: Clip.hardEdge, children: [
               const Positioned.fill(child: CarbonBg()),
-              Center(
+              Positioned.fill(
                 child: AnimatedBuilder(
                   animation: _c,
-                  builder: (_, child) => Opacity(opacity: .8 + .2 * _c.value, child: child),
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    SizedBox(width: 84 * u, height: 84 * u, child: DecoratedBox(decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: const Color(0xFFFF780F).withValues(alpha: .5), blurRadius: 22 * u)]), child: CircularProgressIndicator(strokeWidth: 10 * u, color: const Color(0xFFFF8A2A), backgroundColor: const Color(0x38FFFFFF)))),
-                  ]),
+                  builder: (context, _) {
+                    final sec = _c.value * _total;
+                    final burn = ((sec - _start) / _burn).clamp(0.0, 1.0);
+                    final blast = ((sec - _start - _burn) / _blast).clamp(0.0, 1.0);
+                    final pop = Curves.easeOutBack.transform((sec / .6).clamp(0.0, 1.0));
+                    return LayoutBuilder(builder: (context, box) {
+                      final s = box.maxWidth * .9;
+                      final rect = Rect.fromCenter(center: Offset(box.maxWidth / 2, box.maxHeight / 2), width: s, height: s);
+                      final shake = blast > 0 ? Offset(math.sin(sec * 120) * 6, math.cos(sec * 97) * 4) * (s / 1254) : Offset.zero;
+                      return Stack(children: [
+                        Positioned.fromRect(
+                          rect: rect.shift(shake),
+                          child: Opacity(opacity: (pop).clamp(0.0, 1.0), child: Transform.scale(scale: .82 + .18 * pop, child: Image.asset('assets/images/bomb-icon.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium))),
+                        ),
+                        Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _FusePainter(rect: rect.shift(shake), burn: burn, blast: blast, sec: sec)))),
+                      ]);
+                    });
+                  },
                 ),
               ),
             ]),
@@ -266,4 +276,70 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
       ),
     );
   }
+}
+
+class _FusePainter extends CustomPainter {
+  _FusePainter({required this.rect, required this.burn, required this.blast, required this.sec});
+  final Rect rect;
+  final double burn, blast, sec;
+
+  // Fuse centre-line in the icon's 1254x1254 space: spark end -> fuse hole.
+  static const _pts = [Offset(874, 306), Offset(838, 280), Offset(805, 248), Offset(778, 214), Offset(738, 190), Offset(682, 176), Offset(627, 194), Offset(579, 218), Offset(543, 252), Offset(521, 285), Offset(513, 322), Offset(525, 348)];
+  static final Path _path = () {
+    final p = Path()..moveTo(_pts.first.dx, _pts.first.dy);
+    for (var i = 0; i < _pts.length - 1; i++) {
+      final p0 = _pts[math.max(i - 1, 0)], p1 = _pts[i], p2 = _pts[i + 1], p3 = _pts[math.min(i + 2, _pts.length - 1)];
+      final c1 = p1 + (p2 - p0) / 6, c2 = p2 - (p3 - p1) / 6;
+      p.cubicTo(c1.dx, c1.dy, c2.dx, c2.dy, p2.dx, p2.dy);
+    }
+    return p;
+  }();
+  static final ui.PathMetric _metric = _path.computeMetrics().first;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final sc = rect.width / 1254;
+    if (burn > 0) {
+      canvas.save();
+      canvas.translate(rect.left, rect.top);
+      canvas.scale(sc);
+      final len = _metric.length;
+      final done = _metric.extractPath(0, len * burn);
+      Paint stroke(double w, Color c, {double blur = 0}) => Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeCap = StrokeCap.round
+        ..strokeWidth = w
+        ..color = c
+        ..maskFilter = blur > 0 ? MaskFilter.blur(BlurStyle.normal, blur) : null;
+      canvas.drawPath(done, stroke(200, const Color(0x8C0A0808), blur: 22));
+      canvas.drawPath(done, stroke(74, const Color(0xFF150F0B)));
+      canvas.drawPath(done, stroke(30, const Color(0xCC3A2A1E)));
+      // ash where the spark used to sit
+      final ash = (burn * 12).clamp(0.0, 1.0);
+      canvas.drawCircle(_pts.first, 62, Paint()..shader = ui.Gradient.radial(_pts.first, 62, [Color.fromRGBO(18, 13, 10, ash), Color.fromRGBO(28, 20, 16, .9 * ash), const Color(0x001C1410)], [0, .6, 1]));
+      if (burn < 1) {
+        final head = _metric.getTangentForOffset(len * burn)!.position;
+        final flick = 1 + .08 * math.sin(sec * 38);
+        canvas.drawCircle(head, 120 * flick, Paint()..shader = ui.Gradient.radial(head, 120 * flick, const [Color(0xFFFFFFFF), Color(0xFFFFF2C0), Color(0xD9FF9A2A), Color(0x00FF5A00)], [0, .22, .5, 1]));
+        canvas.drawCircle(head, 30 * flick, Paint()..color = Colors.white..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6));
+        for (var i = 0; i < 9; i++) {
+          final ph = (sec * 1.9 + i * .113) % 1;
+          final a = i * 2.4 + 1;
+          final d = 30 + 90 * ph;
+          final o = head + Offset(math.cos(a) * d, math.sin(a) * d - 50 * ph);
+          canvas.drawCircle(o, 9 * (1 - ph) + 1, Paint()..color = Color.fromRGBO(255, 179, 71, 1 - ph));
+        }
+      }
+      canvas.restore();
+    }
+    if (blast > 0) {
+      final c = rect.topLeft + const Offset(525, 348) * sc;
+      final maxR = math.sqrt(size.width * size.width + size.height * size.height) * 1.05;
+      final r = 40 * sc + (maxR - 40 * sc) * Curves.easeIn.transform(blast);
+      canvas.drawCircle(c, r, Paint()..shader = ui.Gradient.radial(c, r, const [Color(0xFFFFFFFF), Color(0xFFFFE9A8), Color(0xFFFF9A2A), Color(0x99FF5A00), Color(0x00FF5A00)], [0, .22, .48, .66, .72]));
+    }
+  }
+
+  @override
+  bool shouldRepaint(_FusePainter o) => o.burn != burn || o.blast != blast || o.sec != sec || o.rect != rect;
 }

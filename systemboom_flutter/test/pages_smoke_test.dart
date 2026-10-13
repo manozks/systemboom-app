@@ -109,4 +109,17 @@ void main() {
     expect(find.text('Delete conversation'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('Splash: fuse burns, blasts and opens the app', (tester) async {
+    tester.view.physicalSize = const Size(390, 844) * 3;
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(MaterialApp(theme: ThemeData(brightness: Brightness.dark, fontFamily: 'Figtree'), home: const SplashPage()));
+    for (var i = 0; i < 12; i++) {
+      await tester.pump(const Duration(milliseconds: 300)); // 3.6 s > burn + blast
+    }
+    await tester.pump(const Duration(milliseconds: 700));
+    expect(tester.takeException(), isNull);
+    expect(find.byType(SplashPage), findsNothing); // moved on to the home page
+  });
 }
