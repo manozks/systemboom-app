@@ -765,3 +765,14 @@ button.lr:active { transform: scale(.985); }
   body::before { content: ''; position: fixed; left: 0; right: 0; top: 0; height: 3px; z-index: 9500; pointer-events: none; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, #ff6a1a, #ffd27a 60%, #fff3d0); box-shadow: 0 0 10px rgba(255, 150, 40, .8); animation: scrollProg linear both; animation-timeline: scroll(root); }
 }
 @media (prefers-reduced-motion: reduce) { body::before, .page-t, .stage > header, .dock, .stage > main > *, .thread > *, .sheet, .dialog, .scrim { animation: none !important; } }
+
+/* light orbiting a profile-photo ring + a breathing glow just outside it */
+.ringsweep { border-radius: 50%; pointer-events: none; mix-blend-mode: screen; --in: 77%;
+  background: conic-gradient(from 0deg, transparent 0 216deg, rgba(255,208,138,.33) 306deg, rgba(255,244,214,.98) 354deg, transparent 360deg);
+  -webkit-mask: radial-gradient(closest-side, transparent var(--in), #000 calc(var(--in) + 2%), #000 97%, transparent 100%);
+  mask: radial-gradient(closest-side, transparent var(--in), #000 calc(var(--in) + 2%), #000 97%, transparent 100%);
+  animation: ringspin 3.4s linear infinite; }
+.ringpulse { border-radius: 50%; pointer-events: none; animation: ringglow 2.6s ease-in-out infinite; }
+@keyframes ringspin { to { transform: rotate(360deg); } }
+@keyframes ringglow { 0%, 100% { box-shadow: 0 0 calc(18 * var(--u)) calc(2 * var(--u)) rgba(255, 140, 30, .16); } 50% { box-shadow: 0 0 calc(34 * var(--u)) calc(6 * var(--u)) rgba(255, 150, 40, .5); } }
+@media (prefers-reduced-motion: reduce) { .ringsweep, .ringpulse { animation: none !important; } }

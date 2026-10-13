@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'pages/more_pages.dart' show SplashPage;
+import 'kit.dart' show RingSweep;
 import 'orb_menu.dart';
 import 'shell.dart';
 import 'ui.dart';
@@ -376,6 +377,8 @@ class _Stage extends StatelessWidget {
         height: 150 * u,
         child: Press(u: u, circle: true, scaleUp: 1.05, shine: false, onTap: () => onTap('Change profile photo'), child: const SizedBox.expand()),
       ),
+      // light orbiting the profile-photo ring
+      Positioned(left: (143.7 - 92) * u, top: (102 - 92) * u, width: 184 * u, height: 184 * u, child: const RingSweep(inner: .77)),
       Positioned(
         left: 278 * u,
         top: 40 * u,

@@ -62,6 +62,8 @@ export default function Home() {
         {/* ── greeting ── */}
         <Abs x={21} y={411} w={865} scale={1.025}>
           <Art w={865} h={206} src="greeting-new" style={{ filter: `drop-shadow(0 ${U(8)} ${U(10)} rgba(0,0,0,.65))` }}>
+            <At x={51.7} y={10} w={184} h={184} className="ringpulse" />
+            <At x={51.7} y={10} w={184} h={184} className="ringsweep" />
             <At x={278} y={40} style={{ fontSize: K(27), fontWeight: 800, letterSpacing: '.12em', color: '#e8ecf1', textShadow: `0 ${K(-1)} 0 #000, 0 ${K(1.5)} 0 rgba(255,255,255,.5), 0 ${K(3)} ${K(3)} rgba(0,0,0,.7)` }}>GOOD MORNING</At>
             <At x={268} y={72}><span className="silver-text" style={{ fontSize: K(74), fontWeight: 800, lineHeight: 1, whiteSpace: 'nowrap', letterSpacing: '-.01em' }}>Aarav Sharma</span></At>
             <At x={70} y={30} w={150} h={150}><Press pop shine={false} label="Change profile photo" onClick={() => toast('Change profile photo')} style={{ width: '100%', height: '100%', borderRadius: '50%' }} /></At>

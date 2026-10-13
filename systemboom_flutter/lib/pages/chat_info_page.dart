@@ -73,6 +73,7 @@ class _ChatInfoPageState extends State<ChatInfoPage> {
                 ),
               ),
               Positioned.fill(child: Image.asset('assets/images/info-ring.webp', fit: BoxFit.fill)),
+              Positioned(left: ringW * 20 / 310, top: ringW * 15 / 310, width: ringW * 270 / 310, height: ringW * 270 / 310, child: const RingSweep(inner: .83)),
               if (peer?.online ?? false) Positioned(right: ringW * .16, bottom: ringW * .12, child: Container(width: 46 * u, height: 46 * u, decoration: BoxDecoration(shape: BoxShape.circle, color: const Color(0xFF22C55E), border: Border.all(color: const Color(0xFF0D1117), width: 4 * u), boxShadow: const [BoxShadow(color: Color(0xFF22C55E), blurRadius: 10)]))),
             ]),
           ),

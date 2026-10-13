@@ -535,6 +535,67 @@ class _ScrollRevealState extends State<ScrollReveal> with SingleTickerProviderSt
   }
 }
 
+/// A bright light that orbits a circular ring (profile photo frame) plus a slow breathing glow just outside it.
+/// Size the box to the ring's outer diameter; [inner] is the inner radius as a fraction of the outer radius.
+class RingSweep extends StatefulWidget {
+  const RingSweep({super.key, this.inner = .77, this.period = const Duration(milliseconds: 3400)});
+  final double inner;
+  final Duration period;
+  @override
+  State<RingSweep> createState() => _RingSweepState();
+}
+
+class _RingSweepState extends State<RingSweep> with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: widget.period)..repeat();
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => IgnorePointer(child: RepaintBoundary(child: CustomPaint(painter: _RingSweepPainter(_c, widget.inner), size: Size.infinite)));
+}
+
+class _RingSweepPainter extends CustomPainter {
+  _RingSweepPainter(this.anim, this.inner) : super(repaint: anim);
+  final Animation<double> anim;
+  final double inner;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final c = size.center(Offset.zero);
+    final rOut = math.min(size.width, size.height) / 2;
+    final rIn = rOut * inner;
+    final mid = (rOut + rIn) / 2, w = rOut - rIn;
+    final ang = anim.value * math.pi * 2;
+    // breathing glow just outside the ring
+    final pulse = .5 + .5 * math.sin(anim.value * math.pi * 4);
+    canvas.drawCircle(c, rOut, Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = w * .5
+      ..color = Color.fromRGBO(255, 140, 30, .1 + .22 * pulse)
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, w * .7));
+    // orbiting highlight: a comet-like arc with a bright head
+    final rect = Rect.fromCircle(center: c, radius: mid);
+    canvas.drawCircle(c, mid, Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = w
+      ..blendMode = BlendMode.plus
+      ..shader = SweepGradient(
+        colors: const [Color(0x00FFE3B0), Color(0x00FFE3B0), Color(0x55FFD08A), Color(0xFFFFF4D6), Color(0x00FFE3B0)],
+        stops: const [0, .6, .85, .985, 1],
+        transform: GradientRotation(ang),
+      ).createShader(rect));
+    final head = c + Offset(math.cos(ang + math.pi * 2 * .985), math.sin(ang + math.pi * 2 * .985)) * mid;
+    canvas.drawCircle(head, w * .55, Paint()..color = const Color(0xCCFFF1CC)..maskFilter = MaskFilter.blur(BlurStyle.normal, w * .5));
+  }
+
+  @override
+  bool shouldRepaint(_RingSweepPainter o) => o.inner != inner;
+}
+
 /// Slow fade-and-rise entrance for blocks.
 class Rise extends StatelessWidget {
   const Rise({super.key, required this.child, this.i = 0});

@@ -63,6 +63,8 @@ function Info() {
             )}
           </div>
           <Art w={310} h={300} src="info-ring">
+            <At x={20} y={15} w={270} h={270} className="ringpulse" />
+            <At x={20} y={15} w={270} h={270} className="ringsweep" style={{ ['--in' as string]: '83%' }} />
             {user?.presence === 'online' && <At x={228} y={232} w={46} h={46} style={{ borderRadius: '50%', background: 'radial-gradient(circle at 35% 30%, #8dffb0, #17c24a 60%, #0a7a28)', border: `${K(4)} solid #0d1117`, boxShadow: '0 0 10px #22c55e' }} />}
           </Art>
         </div>
