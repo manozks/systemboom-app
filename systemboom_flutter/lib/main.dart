@@ -137,7 +137,21 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   height: kStageH * u + MediaQuery.paddingOf(context).top,
                   child: AnimatedBuilder(
                     animation: _loop,
-                    builder: (context, _) => Padding(padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top), child: _Stage(u: u, t: _t, onTap: _tap)),
+                    builder: (context, _) => Padding(padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top), child: _Stage(u: u, t: _t, onTap: _tap, hero: false)),
+                  ),
+                ),
+              ),
+              // pinned header: stays put while the rest of the home screen scrolls underneath it
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 0,
+                child: AnimatedBuilder(
+                  animation: _loop,
+                  builder: (context, _) => Container(
+                    color: const Color(0xFF070A0E),
+                    padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),
+                    child: _Stage(u: u, t: _t, onTap: _tap).header(),
                   ),
                 ),
               ),
@@ -186,7 +200,8 @@ class _ToastView extends StatelessWidget {
 // ───────────────────────────────────────────────────────────── stage
 
 class _Stage extends StatelessWidget {
-  const _Stage({required this.u, required this.t, required this.onTap});
+  const _Stage({required this.u, required this.t, required this.onTap, this.hero = true});
+  final bool hero; // false: the header is drawn separately and stays pinned
   final double u;
   final double t;
   final void Function(String) onTap;
@@ -212,7 +227,7 @@ class _Stage extends StatelessWidget {
     return ClipRect(
       child: Stack(clipBehavior: Clip.none, children: [
         Positioned.fill(child: _Background(u: u)),
-        _hero(),
+        if (hero) _hero(),
         _greeting(),
         _cta(),
         at(37, 848, 300, 40, _label('EXPLORE')),
@@ -264,6 +279,20 @@ class _Stage extends StatelessWidget {
           Shadow(color: const Color(0xE6000000), offset: Offset(0, -1.5 * u)),
         ],
       ));
+
+  /// Height of the pinned header in design units (hero art + its 1.038 scale + margin).
+  static const double headerH = 29 + 355 * 1.038 + 10;
+
+  /// The hero header on its own (carbon backing + hero art + bell), used as the pinned top bar.
+  Widget header() => SizedBox(
+        height: headerH * u,
+        child: ClipRect(
+          child: Stack(clipBehavior: Clip.none, children: [
+            Positioned.fill(child: _Background(u: u)),
+            _hero(),
+          ]),
+        ),
+      );
 
   Widget _hero() {
     final sparkRect = Rect.fromLTWH(861 * .35, 355 * .28, 861 * .30, 355 * .40);

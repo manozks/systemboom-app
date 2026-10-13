@@ -44,8 +44,9 @@ export default function Home() {
 
   return (
     <div className="stage">
-      <div style={{ position: 'relative', height: U(2110), overflow: 'hidden' }}>
-        {/* ── hero ── */}
+      <div style={{ position: 'relative', height: U(2110), overflow: 'clip' }}>
+        {/* ── hero: pinned header that stays put while the rest of the page scrolls ── */}
+        <div style={{ position: 'sticky', top: 0, zIndex: 30, height: U(408), backgroundColor: '#070a0e', backgroundImage: `url(${img('carbon-tile')})`, backgroundSize: `${U(18)} ${U(17)}` }}>
         <Abs x={21} y={29} w={861} scale={1.038}>
           <Art w={861} h={355} style={{ filter: `drop-shadow(0 ${U(8)} ${U(12)} rgba(0,0,0,.7)) drop-shadow(0 0 ${U(14)} rgba(255,120,20,.3))` }}>
             <img className="bg" src={img('hero-nobomb')} alt="" draggable={false} style={{ clipPath: 'polygon(0.3% 15.5%,17% 15.5%,24% 0.3%,76% 0.3%,83% 15.5%,99.7% 15.5%,99.7% 83%,94.5% 99.7%,5.5% 99.7%,0.3% 83%)' }} />
@@ -56,6 +57,7 @@ export default function Home() {
             <At x={742} y={40} w={100} h={100}><Press pop shine={false} label="Notifications" onClick={() => toast('Notifications')} style={{ width: '100%', height: '100%', borderRadius: '50%' }} /></At>
           </Art>
         </Abs>
+        </div>
 
         {/* ── greeting ── */}
         <Abs x={21} y={411} w={865} scale={1.025}>
