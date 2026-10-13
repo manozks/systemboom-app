@@ -187,7 +187,7 @@ class _ConversationPageState extends State<ConversationPage> {
         if (m.reactions.isNotEmpty)
           Padding(
             padding: EdgeInsets.only(left: mine ? 0 : 130 * u, right: mine ? 130 * u : 0),
-            child: Wrap(spacing: 8 * u, children: [for (final r in m.reactions) Tap(onTap: () => s.react(m, r), child: Container(padding: EdgeInsets.symmetric(horizontal: 18 * u, vertical: 4 * u), decoration: BoxDecoration(borderRadius: BorderRadius.circular(99), color: const Color(0xFF1A140A), border: Border.all(color: const Color(0xFFC9A46A), width: 2.5 * u)), child: celestialIcon(r, 64 * u, fallbackFont: 26 * u)))]),
+            child: Wrap(spacing: 8 * u, children: [for (final r in m.reactions) Tap(onTap: () => s.react(m, r), child: Container(padding: EdgeInsets.symmetric(horizontal: 18 * u, vertical: 4 * u), decoration: BoxDecoration(borderRadius: BorderRadius.circular(99), color: const Color(0xFF1A140A), border: Border.all(color: const Color(0xFFC9A46A), width: 2.5 * u)), child: AnimatedPlanet(r, 64 * u, fallbackFont: 26 * u)))]),
           ),
       ]),
     );
@@ -356,7 +356,7 @@ class _ConversationPageState extends State<ConversationPage> {
             u: u,
             title: 'Message',
             child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [for (final e in _emoji) ring('ring63-emoji', 124, celestialIcon(e, 92 * u, fallbackFont: 62 * u), () => s.react(m, e))]),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [for (final e in _emoji) ring('ring63-emoji', 124, AnimatedPlanet(e, 92 * u, fallbackFont: 62 * u), () => s.react(m, e))]),
               Container(height: 6 * u, margin: EdgeInsets.symmetric(vertical: 22 * u), decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0x00FF6A1A), Color(0xFFFF6A1A), Color(0xFFFFF0D0), Color(0xFFFF6A1A), Color(0x00FF6A1A)]), boxShadow: [BoxShadow(color: const Color(0xFFFF8A2A), blurRadius: 16 * u)])),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: [
                 act('Reply', Icons.sentiment_satisfied_alt_outlined, () => setState(() => _quote = (m.text ?? m.type.name).split('\n').last)),

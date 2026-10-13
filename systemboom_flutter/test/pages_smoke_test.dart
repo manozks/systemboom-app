@@ -127,18 +127,25 @@ void main() {
   });
 
   testWidgets('Celestial picker builds on a phone', (tester) async {
+    String? picked;
     tester.view.physicalSize = const Size(390, 844) * 3;
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(MaterialApp(
       theme: ThemeData(brightness: Brightness.dark, fontFamily: 'Figtree'),
-      home: Builder(builder: (c) => Scaffold(body: Center(child: TextButton(onPressed: () => showCelestialPicker(c, (_) {}), child: const Text('open'))))),
+      home: Builder(builder: (c) => Scaffold(body: Center(child: TextButton(onPressed: () => showCelestialPicker(c, (k) => picked = k), child: const Text('open'))))),
     ));
     await tester.tap(find.text('open'));
     for (var i = 0; i < 5; i++) {
       await tester.pump(const Duration(milliseconds: 300));
     }
     expect(find.text('Celebrate'), findsOneWidget);
+    await tester.tap(find.text('Celebrate'));
+    for (var i = 0; i < 12; i++) {
+      await tester.pump(const Duration(milliseconds: 150)); // burst, then the sheet closes and the pick is delivered
+    }
+    expect(find.text('Celebrate'), findsNothing);
+    expect(picked, isNotNull);
     expect(tester.takeException(), isNull);
   });
 

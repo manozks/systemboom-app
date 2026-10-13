@@ -230,7 +230,7 @@ function ChatScreen() {
       <Sheet open={!!sel} onClose={() => setSel(null)}>
         {sel && (
           <div className="msheet">
-            <div className="erow">{EMOJI.map((e) => <button key={e} className="ering" aria-label={`React ${e}`} onClick={() => { store.react(sel.id, e); setSel(null); }}><span>{e}</span></button>)}</div>
+            <div className="erow">{EMOJI.map((e) => <button key={e} className="ering" style={{ ['--ei' as string]: EMOJI.indexOf(e) }} aria-label={`React ${e}`} onClick={() => { store.react(sel.id, e); setSel(null); }}><span>{e}</span></button>)}</div>
             <div className="odiv" />
             <div className="arow">
               <button className="aring" onClick={() => { setReply(sel); setSel(null); }}><Smile /><b>Reply</b></button>
