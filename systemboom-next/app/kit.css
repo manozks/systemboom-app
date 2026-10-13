@@ -687,3 +687,9 @@ button.lr:active { transform: scale(.985); }
 }
 .bombwrap.shake .bombicon, .bombwrap.shake .bombfx { animation: bombshake .12s linear infinite, bombgone .35s ease-in .12s forwards; }
 @keyframes bombgone { to { opacity: 0; filter: brightness(2.5); } }
+
+/* lava overlay that outlives the splash (rendered from the root layout) */
+.lavafx { position: fixed; width: 0; height: 0; z-index: 9999; pointer-events: none; }
+.lavafx i { position: absolute; left: 0; top: 0; border-radius: 50%; margin: -4px 0 0 -4px; background: #fff3b0; box-shadow: 0 0 8px 2px rgba(255,150,40,.9); opacity: 0; animation: lavafly 1s cubic-bezier(.15,.7,.35,1) forwards; }
+.lavaflash { position: absolute; left: 0; top: 0; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, #fff 0%, #ffe9a8 22%, #ff9a2a 48%, rgba(255,90,0,.6) 66%, rgba(255,90,0,0) 72%); transform: translate(-50%,-50%) scale(14); animation: lavaflashfade .6s ease-out forwards; }
+@keyframes lavaflashfade { 0% { opacity: 1; transform: translate(-50%,-50%) scale(14); } 100% { opacity: 0; transform: translate(-50%,-50%) scale(30); } }

@@ -205,8 +205,10 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   static const _start = .4, _burn = 2.2, _blast = 1.3; // seconds
   static const _total = _start + _burn + _blast;
   late final AnimationController _c = AnimationController(vsync: this, duration: Duration(milliseconds: (_total * 1000).round()))..forward().whenComplete(_next);
+  static const _peak = .3; // seconds into the blast when the app is swapped in underneath the flash
   bool _gone = false;
   bool _pre = false;
+  Rect? _rect;
 
   @override
   void didChangeDependencies() {
@@ -222,6 +224,20 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
   void dispose() {
     _c.dispose();
     super.dispose();
+  }
+
+  /// At the height of the flash, swap the app in underneath: the splash background disappears and the
+  /// remaining lava sparks fly out over the real home page.
+  void _reveal() {
+    final rect = _rect;
+    if (_gone || !mounted || rect == null) return;
+    _gone = true;
+    _c.stop();
+    Navigator.of(context).pushReplacement(PageRouteBuilder<void>(
+      opaque: true,
+      pageBuilder: (_, _, _) => _BlastReveal(rect: rect, startBlast: _peak / _blast),
+      transitionDuration: Duration.zero,
+    ));
   }
 
   void _next() {
@@ -259,6 +275,8 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                       final s = box.maxWidth * .9;
                       final rect = Rect.fromCenter(center: Offset(box.maxWidth / 2, box.maxHeight / 2), width: s, height: s);
                       final shake = blast > 0 ? Offset(math.sin(sec * 120) * 6, math.cos(sec * 97) * 4) * (s / 1254) : Offset.zero;
+                      _rect = rect;
+                      if (!_gone && blast * _blast >= _peak) WidgetsBinding.instance.addPostFrameCallback((_) => _reveal());
                       return Stack(children: [
                         Positioned.fromRect(
                           rect: rect.shift(shake),
@@ -275,6 +293,51 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
         ),
       ),
     );
+  }
+}
+
+/// The home page with the tail of the blast (fading flash + lava sparks) painted over it.
+class _BlastReveal extends StatefulWidget {
+  const _BlastReveal({required this.rect, required this.startBlast});
+  final Rect rect;
+  final double startBlast; // blast progress (0..1) when this page takes over
+  @override
+  State<_BlastReveal> createState() => _BlastRevealState();
+}
+
+class _BlastRevealState extends State<_BlastReveal> with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: Duration(milliseconds: ((1 - widget.startBlast) * _SplashPageState._blast * 1000).round()))..forward();
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final u = context.u;
+    return Stack(children: [
+      const HomePage(),
+      Positioned.fill(
+        child: IgnorePointer(
+          child: Align(
+            child: SizedBox(
+              width: u * 941,
+              height: MediaQuery.sizeOf(context).height,
+              child: AnimatedBuilder(
+                animation: _c,
+                builder: (context, _) {
+                  if (_c.isCompleted) return const SizedBox.shrink();
+                  final blast = widget.startBlast + (1 - widget.startBlast) * _c.value;
+                  return CustomPaint(painter: _FusePainter(rect: widget.rect, burn: 1, blast: blast, sec: blast * _SplashPageState._blast));
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    ]);
   }
 }
 

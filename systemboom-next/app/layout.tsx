@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { ToastProvider } from '@/lib/ui';
 import { StoreProvider } from '@/lib/data/store';
+import LavaOverlay from '@/components/LavaOverlay';
 import { ConnectivityProvider } from '@/lib/connectivity';
 import './globals.css';
 import './kit.css';
@@ -62,6 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <ToastProvider><ConnectivityProvider><StoreProvider>{children}</StoreProvider></ConnectivityProvider></ToastProvider>
+        <LavaOverlay />
       </body>
     </html>
   );
