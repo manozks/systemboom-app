@@ -6,19 +6,20 @@ import 'shell.dart';
 /// Celestial emoji: each planet replaces a standard emoji key (kept as the stored value).
 class Celestial {
   final String key, asset, name, label;
-  const Celestial(this.key, this.asset, this.name, this.label);
+  final Color glow; // halo colour in the picker
+  const Celestial(this.key, this.asset, this.name, this.label, this.glow);
   String get path => 'assets/images/celestial/$asset.webp';
 }
 
 const celestials = [
-  Celestial('❤️', 'venus', 'Venus', 'Love'),
-  Celestial('🔥', 'sun', 'Sun', 'Joy'),
-  Celestial('😂', 'meteors', 'Meteor Shower', 'Laugh'),
-  Celestial('😮', 'comet', 'Comet', 'Wow'),
-  Celestial('👍', 'jupiter', 'Jupiter', 'Celebrate'),
-  Celestial('🙏', 'saturn', 'Saturn', 'Support'),
-  Celestial('🌙', 'moon', 'Moon', 'Touched'),
-  Celestial('🤔', 'mercury', 'Mercury', 'Curious'),
+  Celestial('❤️', 'venus', 'Venus', 'Love', Color(0xFFFF6FA3)),
+  Celestial('🔥', 'sun', 'Sun', 'Joy', Color(0xFFFFB02E)),
+  Celestial('😂', 'meteors', 'Meteor Shower', 'Laugh', Color(0xFFFF7A2A)),
+  Celestial('😮', 'comet', 'Comet', 'Wow', Color(0xFF4FA8FF)),
+  Celestial('👍', 'jupiter', 'Jupiter', 'Celebrate', Color(0xFFFFA860)),
+  Celestial('🙏', 'saturn', 'Saturn', 'Support', Color(0xFFFFD27A)),
+  Celestial('🌙', 'moon', 'Moon', 'Touched', Color(0xFFA9C4FF)),
+  Celestial('🤔', 'mercury', 'Mercury', 'Curious', Color(0xFFFFB84D)),
 ];
 
 Celestial? celestialFor(String key) {
@@ -50,7 +51,7 @@ Widget celestialText(String text, TextStyle style, double iconSize) {
   return Text.rich(TextSpan(children: spans), style: style);
 }
 
-/// 4×2 picker like the reference lineup. Calls [onPick] with the emoji key.
+/// 4×2 picker: glowing ringed planets in the ornate sheet panel. Calls [onPick] with the emoji key.
 Future<void> showCelestialPicker(BuildContext context, void Function(String key) onPick) {
   return showArtSheet<void>(context, (c) {
     final u = c.u;
@@ -60,26 +61,36 @@ Future<void> showCelestialPicker(BuildContext context, void Function(String key)
             onPick(e.key);
           },
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Image.asset(e.path, width: 150 * u, height: 150 * u, fit: BoxFit.contain),
-            SizedBox(height: 8 * u),
-            Text(e.name.toUpperCase(), textAlign: TextAlign.center, style: ts(u, 24, c: const Color(0xFFAAB8C8), w: FontWeight.w500)),
-            Text(e.label, style: ts(u, 34, w: FontWeight.w800)),
+            SizedBox(
+              width: 176 * u,
+              height: 176 * u,
+              child: Stack(alignment: Alignment.center, children: [
+                // coloured halo so each planet glows off the dark panel
+                Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: e.glow.withValues(alpha: .55), blurRadius: 34 * u, spreadRadius: 2 * u)]))),
+                Positioned.fill(child: Image.asset('assets/images/ring63-emoji.webp', fit: BoxFit.fill)),
+                Image.asset(e.path, width: 124 * u, height: 124 * u, fit: BoxFit.contain),
+              ]),
+            ),
+            SizedBox(height: 10 * u),
+            FittedBox(fit: BoxFit.scaleDown, child: Text(e.name.toUpperCase(), maxLines: 1, style: ts(u, 23, c: e.glow.withValues(alpha: .95), w: FontWeight.w800, ls: 23 * u * .06))),
+            SizedBox(height: 2 * u),
+            Text(e.label, style: ts(u, 38, w: FontWeight.w900)),
           ]),
         );
     return Container(
-      margin: EdgeInsets.all(12 * u),
-      padding: EdgeInsets.fromLTRB(20 * u, 30 * u, 20 * u, 30 * u),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(44 * u),
-        gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF232A33), Color(0xFF11151B), Color(0xFF0A0D11)]),
-        border: Border.all(color: const Color(0xFFC3CBD2), width: 6 * u),
-        boxShadow: [BoxShadow(color: const Color(0xFFFF821E).withValues(alpha: .45), blurRadius: 34 * u)],
+      margin: EdgeInsets.only(bottom: 20 * u),
+      child: Center(
+        heightFactor: 1,
+        child: ArtFrame(
+          u: u,
+          title: 'React',
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [for (final e in celestials.sublist(0, 4)) Expanded(child: cell(e))]),
+            SizedBox(height: 30 * u),
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [for (final e in celestials.sublist(4)) Expanded(child: cell(e))]),
+          ]),
+        ),
       ),
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        Row(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [for (final e in celestials.sublist(0, 4)) Expanded(child: cell(e))]),
-        SizedBox(height: 36 * u),
-        Row(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [for (final e in celestials.sublist(4)) Expanded(child: cell(e))]),
-      ]),
     );
   });
 }

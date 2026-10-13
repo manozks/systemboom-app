@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:systemboom_app/celestial.dart';
 import 'package:systemboom_app/data.dart';
 import 'package:systemboom_app/kit.dart';
 import 'package:systemboom_app/main.dart';
@@ -121,5 +122,21 @@ void main() {
     await tester.pump(const Duration(milliseconds: 900));
     expect(tester.takeException(), isNull);
     expect(find.byType(SplashPage), findsNothing); // moved on to the home page
+  });
+
+  testWidgets('Celestial picker builds on a phone', (tester) async {
+    tester.view.physicalSize = const Size(390, 844) * 3;
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(MaterialApp(
+      theme: ThemeData(brightness: Brightness.dark, fontFamily: 'Figtree'),
+      home: Builder(builder: (c) => Scaffold(body: Center(child: TextButton(onPressed: () => showCelestialPicker(c, (_) {}), child: const Text('open'))))),
+    ));
+    await tester.tap(find.text('open'));
+    for (var i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+    expect(find.text('Celebrate'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }
