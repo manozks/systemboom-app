@@ -52,7 +52,7 @@ function CallsOrb() {
   const close = () => { clearTimeout(timer.current); viaTap.current = false; setOpen(false); };
   const go = (href: string) => { close(); router.push(href); };
 
-  const R = 400 * geo.u;
+  const R = 330 * geo.u;
   return (
     <>
       <Link
@@ -76,7 +76,6 @@ function CallsOrb() {
       {mounted && createPortal(
         <div className={'orbmenu' + (open ? ' on' : '')} style={{ ['--ox' as string]: `${geo.x}px`, ['--oy' as string]: `${geo.y}px`, ['--ou' as string]: `${geo.u}px`, pointerEvents: open ? 'auto' : 'none' }} aria-hidden={!open}>
           <div className="orbdim" onClick={close} style={{ pointerEvents: open && viaTap.current ? 'auto' : 'none' }} />
-          <div className="orbhalo" />
           <div className="orbring" />
           <div className="orbzone" onPointerEnter={() => clearTimeout(timer.current)} onPointerLeave={(e) => { if (e.pointerType === 'mouse') hideSoon(); }} />
           {FAN.map(({ href, label, Icon, glow, a }, i) => {

@@ -715,3 +715,11 @@ button.lr:active { transform: scale(.985); }
 .orbitem b { font-size: calc(var(--ou) * 32); font-weight: 900; white-space: nowrap; text-shadow: 0 2px 4px rgba(0,0,0,.9); }
 .orbitem:hover b { color: #ffe6b0; }
 @media (prefers-reduced-motion: reduce) { .orbitem, .orbhalo, .orbring { transition-duration: .01s !important; } }
+
+/* smaller, clean buttons: no coloured glow behind the rings */
+.orbbtn { width: calc(var(--ou) * 112); height: calc(var(--ou) * 112); box-shadow: none !important; }
+.orbitem:hover .orbbtn, .orbitem:focus-visible .orbbtn { transform: scale(1.14); box-shadow: none !important; }
+.orbbtn svg { width: 44%; height: 44%; filter: drop-shadow(0 calc(var(--ou) * 3) calc(var(--ou) * 3) rgba(0,0,0,.6)); }
+.orbitem { width: calc(var(--ou) * 230); }
+.orbitem b { font-size: calc(var(--ou) * 28); }
+.orbring { width: calc(var(--ou) * 660); height: calc(var(--ou) * 660); box-shadow: none; border-width: calc(var(--ou) * 3); border-color: rgba(255,214,150,.7); }

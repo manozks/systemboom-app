@@ -135,8 +135,8 @@ class _OrbMenuOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final r = 400 * u; // radius of the fan
-    final item = 168 * u; // button diameter
+    final r = 330 * u; // radius of the fan
+    final item = 112 * u; // button diameter
     return AnimatedBuilder(
       animation: anim,
       builder: (context, _) {
@@ -217,8 +217,7 @@ class _OrbItemState extends State<_OrbItem> {
   @override
   Widget build(BuildContext context) {
     final u = widget.u;
-    final g = widget.m.glow;
-    final on = _hover || _down;
+        final on = _hover || _down;
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hover = true),
@@ -240,13 +239,12 @@ class _OrbItemState extends State<_OrbItem> {
               width: widget.size,
               height: widget.size,
               child: Stack(alignment: Alignment.center, children: [
-                Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: g.withValues(alpha: on ? .85 : .55), blurRadius: (on ? 44 : 30) * u, spreadRadius: 3 * u)]))),
                 Positioned.fill(child: Image.asset('assets/images/share-ring.webp', fit: BoxFit.fill)),
-                Icon(widget.m.icon, size: widget.size * .42, color: const Color(0xFFFFF4DC), shadows: [Shadow(color: g.withValues(alpha: .95), blurRadius: 16 * u), Shadow(color: Colors.black.withValues(alpha: .6), blurRadius: 4 * u, offset: Offset(0, 3 * u))]),
+                Icon(widget.m.icon, size: widget.size * .44, color: const Color(0xFFFFF4DC), shadows: [Shadow(color: Colors.black.withValues(alpha: .6), blurRadius: 4 * u, offset: Offset(0, 3 * u))]),
               ]),
             ),
             SizedBox(height: 8 * u),
-            Text(widget.m.label, maxLines: 1, textAlign: TextAlign.center, style: ts(u, 32, w: FontWeight.w900, c: on ? const Color(0xFFFFE6B0) : Colors.white)),
+            Text(widget.m.label, maxLines: 1, textAlign: TextAlign.center, style: ts(u, 28, w: FontWeight.w900, c: on ? const Color(0xFFFFE6B0) : Colors.white)),
           ]),
         ),
       ),
@@ -254,7 +252,7 @@ class _OrbItemState extends State<_OrbItem> {
   }
 }
 
-/// Soft radial glow + a ring that sweeps open, drawn behind the buttons.
+/// A thin ring that sweeps open behind the buttons.
 class _CirclePainter extends CustomPainter {
   _CirclePainter({required this.progress, required this.u, required this.r});
   final double progress, u, r;
@@ -263,8 +261,6 @@ class _CirclePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final c = size.center(Offset.zero);
     final p = Curves.easeOutCubic.transform(progress.clamp(0.0, 1.0));
-    final rad = (r + 150 * u) * p;
-    canvas.drawCircle(c, rad, Paint()..shader = radialGlow(c, rad));
     // sweeping ring on which the buttons sit
     final ringR = r * .96 * p;
     final rect = Rect.fromCircle(center: c, radius: ringR);
@@ -272,24 +268,10 @@ class _CirclePainter extends CustomPainter {
     canvas.drawArc(rect, -math.pi / 2 - sweep / 2, sweep, false,
         Paint()
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 5 * u
-          ..strokeCap = StrokeCap.round
-          ..color = const Color(0xFFFFB347).withValues(alpha: .75 * p)
-          ..maskFilter = MaskFilter.blur(BlurStyle.normal, 5 * u));
-    canvas.drawArc(rect, -math.pi / 2 - sweep / 2, sweep, false,
-        Paint()
-          ..style = PaintingStyle.stroke
           ..strokeWidth = 2 * u
           ..strokeCap = StrokeCap.round
-          ..color = const Color(0xFFFFF0D0).withValues(alpha: .9 * p));
-    // tiny sparks riding the ring
-    for (var i = 0; i < 18; i++) {
-      final ang = -math.pi / 2 - sweep / 2 + sweep * (i / 17);
-      canvas.drawCircle(c + Offset(math.cos(ang), math.sin(ang)) * ringR, (2.2 + (i % 3)) * u, Paint()..color = const Color(0xFFFFD27A).withValues(alpha: .8 * p));
-    }
+          ..color = const Color(0xFFFFF0D0).withValues(alpha: .8 * p));
   }
-
-  Shader radialGlow(Offset c, double rad) => RadialGradient(colors: const [Color(0x66FF9A2A), Color(0x33FF6A1A), Color(0x00FF6A1A)], stops: const [0, .55, 1]).createShader(Rect.fromCircle(center: c, radius: math.max(rad, 1)));
 
   @override
   bool shouldRepaint(_CirclePainter o) => o.progress != progress || o.r != r || o.u != u;
