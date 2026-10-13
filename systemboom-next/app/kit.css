@@ -723,3 +723,45 @@ button.lr:active { transform: scale(.985); }
 .orbitem { width: calc(var(--ou) * 230); }
 .orbitem b { font-size: calc(var(--ou) * 28); }
 .orbring { width: calc(var(--ou) * 660); height: calc(var(--ou) * 660); box-shadow: none; border-width: calc(var(--ou) * 3); border-color: rgba(255,214,150,.7); }
+
+/* ═════════ Motion v2: snappy, bright, scroll-aware ═════════ */
+@keyframes pageIn { from { opacity: 0; transform: translateY(12px) scale(.992); } to { opacity: 1; transform: none; } }
+@keyframes riseScroll { from { opacity: 0; transform: translateY(38px) scale(.965); } to { opacity: 1; transform: none; } }
+@keyframes bubbleScroll { from { opacity: 0; transform: translateY(22px) scale(.95); } to { opacity: 1; transform: none; } }
+@keyframes scrollProg { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.page-t { animation: pageIn .36s cubic-bezier(.2, .8, .2, 1) both; }
+.stage > header { animation: dropIn .45s cubic-bezier(.2, .85, .25, 1) backwards; }
+.dock { animation: dockIn .5s cubic-bezier(.2, .9, .25, 1.1) .06s backwards; }
+.stage > main > *:not(.dialog):not(.sheet):not(.scrim):not(.thread) { animation: riseIn .5s cubic-bezier(.2, .85, .25, 1) backwards; }
+.stage > main > *:nth-child(1) { animation-delay: .04s; } .stage > main > *:nth-child(2) { animation-delay: .08s; }
+.stage > main > *:nth-child(3) { animation-delay: .12s; } .stage > main > *:nth-child(4) { animation-delay: .16s; }
+.stage > main > *:nth-child(5) { animation-delay: .2s; } .stage > main > *:nth-child(6) { animation-delay: .24s; }
+.stage > main > *:nth-child(7) { animation-delay: .28s; } .stage > main > *:nth-child(8) { animation-delay: .32s; }
+.stage > main > *:nth-child(n+9) { animation-delay: .36s; }
+.thread > * { animation: bubbleIn .4s cubic-bezier(.2, .85, .25, 1) backwards; }
+.thread > *:nth-child(1) { animation-delay: .04s; } .thread > *:nth-child(2) { animation-delay: .08s; } .thread > *:nth-child(3) { animation-delay: .12s; }
+.thread > *:nth-child(4) { animation-delay: .16s; } .thread > *:nth-child(5) { animation-delay: .2s; } .thread > *:nth-child(6) { animation-delay: .24s; }
+.thread > *:nth-child(n+7) { animation-delay: .26s; }
+.scrim { animation: fadein .3s ease both !important; }
+.sheet { animation: slideup .42s cubic-bezier(.2, .9, .25, 1) both !important; }
+.dialog { animation: popIn .36s cubic-bezier(.2, .9, .25, 1.15) both !important; }
+.toast { transition-duration: .3s; }
+.press, .btn, .ibtn, .rbtn, .abtn, .mp, .stile, .sring, .ering, .aring, .ncard, .rowplate, .prow, .icta, .ichip, .irow, .chip, .opick, .nbtn, .lrow, .xbtn, .seg-btn, .calls-orb, .switch, .switch i, .iswitch, .iswitch i, .pf-list button { transition-duration: .26s !important; transition-timing-function: cubic-bezier(.2, .85, .25, 1) !important; }
+.press:hover, .press.pop:hover { transition-duration: .22s !important; }
+.press .shine::before { animation-duration: .8s !important; }
+
+/* scroll-linked: blocks (and chat bubbles) ease in as they enter the viewport; a thin progress line tracks the scroll */
+@supports (animation-timeline: view()) {
+  .stage > main > *:not(.dialog):not(.sheet):not(.scrim):not(.thread) {
+    animation: riseScroll linear both, riseIn .5s cubic-bezier(.2, .85, .25, 1) backwards;
+    animation-timeline: view(), auto;
+    animation-range: entry 0% entry 55%, normal;
+  }
+  .thread > * {
+    animation: bubbleScroll linear both, bubbleIn .4s cubic-bezier(.2, .85, .25, 1) backwards;
+    animation-timeline: view(), auto;
+    animation-range: entry 0% entry 60%, normal;
+  }
+  body::before { content: ''; position: fixed; left: 0; right: 0; top: 0; height: 3px; z-index: 9500; pointer-events: none; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, #ff6a1a, #ffd27a 60%, #fff3d0); box-shadow: 0 0 10px rgba(255, 150, 40, .8); animation: scrollProg linear both; animation-timeline: scroll(root); }
+}
+@media (prefers-reduced-motion: reduce) { body::before, .page-t, .stage > header, .dock, .stage > main > *, .thread > *, .sheet, .dialog, .scrim { animation: none !important; } }

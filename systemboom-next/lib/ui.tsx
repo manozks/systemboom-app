@@ -36,7 +36,7 @@ export function Art({ w, h, src, children, style, className = '' }: { w: number;
   return (
     <div className={`artbox ${className}`} style={{ aspectRatio: `${w} / ${h}`, ['--w' as string]: w, ...style }}>
       <div className="in">
-        {src && <img className="bg" src={img(src)} alt="" draggable={false} />}
+        {src && <img className="bg" src={img(src)} alt="" draggable={false} decoding="async" />}
         {children}
       </div>
     </div>

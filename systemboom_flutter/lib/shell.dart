@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import 'kit.dart' show pageTransition, Rise, ScrollReveal;
 import 'main.dart' show HomePage;
 import 'orb_menu.dart';
 import 'pages/calls_page.dart';
@@ -46,15 +47,9 @@ Widget _pageFor(String route) {
 
 Route<void> _route(String r) => PageRouteBuilder<void>(
       pageBuilder: (_, _, _) => _pageFor(r),
-      transitionDuration: const Duration(milliseconds: 260),
-      reverseTransitionDuration: const Duration(milliseconds: 200),
-      transitionsBuilder: (_, a, _, child) => FadeTransition(
-        opacity: CurvedAnimation(parent: a, curve: Curves.easeOut),
-        child: SlideTransition(
-          position: Tween<Offset>(begin: const Offset(0, .02), end: Offset.zero).animate(CurvedAnimation(parent: a, curve: Curves.easeOutCubic)),
-          child: child,
-        ),
-      ),
+      transitionDuration: const Duration(milliseconds: 340),
+      reverseTransitionDuration: const Duration(milliseconds: 260),
+      transitionsBuilder: (_, a, sa, child) => pageTransition(a, sa, child),
     );
 
 /// Switch between the five main tabs (replaces the current page).
@@ -188,7 +183,7 @@ class _PageShellState extends State<PageShell> with SingleTickerProviderStateMix
                     controller: widget.controller,
                     physics: const BouncingScrollPhysics(),
                     padding: EdgeInsets.fromLTRB(26 * u, 16 * u, 26 * u, (widget.bottomPad ?? (widget.showDock ? 330 : 60)) * u),
-                    children: widget.children,
+                    children: [for (var i = 0; i < widget.children.length; i++) widget.children[i] is Rise ? widget.children[i] : ScrollReveal(index: i, child: widget.children[i])],
                   ),
                 ),
               ),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -7,19 +8,32 @@ import 'shell.dart';
 
 const _gold = Color(0xFFFFB866);
 
-/// Slow, smooth page transition used for every new screen.
+/// Page transition: the new page fades, rises and settles in while the page underneath dims and steps back.
+Widget pageTransition(Animation<double> a, Animation<double> secondary, Widget child) {
+  final enter = CurvedAnimation(parent: a, curve: Curves.easeOutCubic, reverseCurve: Curves.easeInCubic);
+  final cover = CurvedAnimation(parent: secondary, curve: Curves.easeOut);
+  return ScaleTransition(
+    scale: Tween<double>(begin: 1, end: .96).animate(cover),
+    child: FadeTransition(
+      opacity: Tween<double>(begin: 1, end: .55).animate(cover),
+      child: FadeTransition(
+        opacity: enter,
+        child: SlideTransition(
+          position: Tween<Offset>(begin: const Offset(0, .045), end: Offset.zero).animate(enter),
+          child: ScaleTransition(scale: Tween<double>(begin: .985, end: 1).animate(enter), child: child),
+        ),
+      ),
+    ),
+  );
+}
+
+/// Used for every new screen.
 Future<T?> pushScreen<T>(BuildContext context, Widget page) {
   return Navigator.of(context).push<T>(PageRouteBuilder<T>(
     pageBuilder: (_, _, _) => page,
-    transitionDuration: const Duration(milliseconds: 700),
-    reverseTransitionDuration: const Duration(milliseconds: 500),
-    transitionsBuilder: (_, a, _, child) => FadeTransition(
-      opacity: CurvedAnimation(parent: a, curve: Curves.easeOut),
-      child: SlideTransition(
-        position: Tween<Offset>(begin: const Offset(0, .03), end: Offset.zero).animate(CurvedAnimation(parent: a, curve: Curves.easeOutCubic)),
-        child: child,
-      ),
-    ),
+    transitionDuration: const Duration(milliseconds: 420),
+    reverseTransitionDuration: const Duration(milliseconds: 320),
+    transitionsBuilder: (_, a, sa, child) => pageTransition(a, sa, child),
   ));
 }
 
@@ -473,6 +487,54 @@ class FootBar extends StatelessWidget {
       );
 }
 
+/// Eases a block in (fade + rise + settle) the first time it is built. Inside a lazy list that is exactly when it
+/// scrolls into view; revealed blocks are kept alive so they don't replay when scrolling back.
+class ScrollReveal extends StatefulWidget {
+  const ScrollReveal({super.key, required this.child, this.index = 0});
+  final Widget child;
+  final int index;
+  @override
+  State<ScrollReveal> createState() => _ScrollRevealState();
+}
+
+class _ScrollRevealState extends State<ScrollReveal> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 540));
+  Timer? _t;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    final delay = widget.index < 8 ? widget.index * 40 : 0; // first screenful staggers, later blocks come in as you scroll
+    _t = Timer(Duration(milliseconds: delay), () {
+      if (mounted) _c.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _t?.cancel();
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return AnimatedBuilder(
+      animation: _c,
+      child: widget.child,
+      builder: (_, child) {
+        final t = Curves.easeOutCubic.transform(_c.value);
+        if (t >= 1) return child!;
+        return Opacity(opacity: t, child: Transform.translate(offset: Offset(0, 30 * (1 - t)), child: Transform.scale(scale: .97 + .03 * t, child: child)));
+      },
+    );
+  }
+}
+
 /// Slow fade-and-rise entrance for blocks.
 class Rise extends StatelessWidget {
   const Rise({super.key, required this.child, this.i = 0});
@@ -481,7 +543,7 @@ class Rise extends StatelessWidget {
   @override
   Widget build(BuildContext context) => TweenAnimationBuilder<double>(
         tween: Tween(begin: 0, end: 1),
-        duration: Duration(milliseconds: 800 + i.clamp(0, 8) * 70),
+        duration: Duration(milliseconds: 520 + i.clamp(0, 8) * 50),
         curve: Curves.easeOutCubic,
         builder: (_, t, c) => Opacity(opacity: t, child: Transform.translate(offset: Offset(0, 24 * (1 - t)), child: c)),
         child: child,

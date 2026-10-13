@@ -60,6 +60,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <head>
         <style dangerouslySetInnerHTML={{ __html: css }} />
+        {/* start fetching the art every page needs before the page asks for it */}
+        {['carbon-tile', 'dock', 'nav-calls', 'hdr-calls', 'share-ring'].map((n) => <link key={n} rel="preload" as="image" href={`${bp}/img/${n}.webp`} />)}
       </head>
       <body>
         <ToastProvider><ConnectivityProvider><StoreProvider>{children}</StoreProvider></ConnectivityProvider></ToastProvider>
