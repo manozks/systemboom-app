@@ -113,9 +113,10 @@ export default function Home() {
           <Link href="/design/" style={{ display: 'block' }} aria-label="Design System">
             <Press style={{ borderRadius: U(34) }}>
               <Art w={878} h={172} src="cta-blank-wide" style={{ filter: `drop-shadow(0 ${U(8)} ${U(10)} rgba(0,0,0,.6)) drop-shadow(0 0 ${U(14)} rgba(255,140,50,.3))` }}>
-                <At x={78} y={47} w={84} h={78} style={{ filter: `drop-shadow(0 ${K(5)} ${K(6)} rgba(0,0,0,.65))` }}>
-                  <img src={img('ico-ds')} alt="" draggable={false} style={{ width: '100%', height: '100%', borderRadius: K(22), display: 'block' }} />
-                  <div style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}><Palette style={{ width: '56%', height: '56%', color: '#c9f6ff', filter: 'drop-shadow(0 0 6px #3fd2f2)' }} strokeWidth={1.7} /></div>
+                <At x={78} y={47} w={84} h={78} className="tilefx" style={{ filter: `drop-shadow(0 ${K(5)} ${K(6)} rgba(0,0,0,.65))`, ['--ph' as string]: '-1.2s', ['--tg' as string]: '#7fe3ff' }}>
+                  <img className="tile" src={img('ico-ds')} alt="" draggable={false} style={{ width: '100%', height: '100%', borderRadius: K(22), display: 'block' }} />
+                  <span className="tileshine" /><span className="tileorbit" />
+                  <div className="tileicon" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}><Palette style={{ width: '56%', height: '56%', color: '#c9f6ff', filter: 'drop-shadow(0 0 6px #3fd2f2)' }} strokeWidth={1.7} /></div>
                 </At>
                 <At x={204} y={40} style={{ fontSize: K(41), fontWeight: 800, lineHeight: 1 }}>Design System</At>
                 <At x={204} y={86} style={{ fontSize: K(31), lineHeight: 1, color: '#eef3f9' }}>Foundation tokens &amp; components</At>
@@ -135,6 +136,7 @@ export default function Home() {
             <At x={370} y={66}><span className="gold-text" style={{ fontSize: K(35), fontWeight: 800, lineHeight: 1, whiteSpace: 'nowrap' }}>Eos - Your Digital Strategist</span></At>
             <At x={371} y={102} style={{ fontSize: K(30), lineHeight: 1.3, fontWeight: 500, color: '#f6f8fa', textShadow: `0 ${K(2)} ${K(3)} rgba(0,0,0,.8)` }}>Optimizing your day, every day.<br />Last sync: 3 mins ago</At>
             <At x={368} y={210} w={452} h={82}>
+              <span className="btnglow" /><span className="btnshine" /><span className="btnorbit" />
               <Press flat shine={false} label="Configure Avatar" onClick={() => toast('Configure Avatar')} style={{ width: '100%', height: '100%', borderRadius: K(42), display: 'flex', alignItems: 'center', paddingLeft: K(70), fontSize: K(30), fontWeight: 800, textShadow: `0 ${K(2)} 0 #06102e, 0 0 ${K(8)} rgba(130,180,255,.9)` }}>
                 Configure Avatar
               </Press>

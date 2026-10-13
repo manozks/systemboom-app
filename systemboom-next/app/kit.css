@@ -802,3 +802,15 @@ button.lr:active { transform: scale(.985); }
 @keyframes arrowpush { 0% { transform: translateX(-30%); } 45% { transform: translateX(32%); } 100% { transform: translateX(-30%); } }
 @keyframes orbping { 0% { transform: scale(1); opacity: .85; } 100% { transform: scale(1.85); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .tilefx, .tileshine::before, .tileorbit, .tileicon svg, .ctaarrow svg, .orbping::before, .orbping::after { animation: none !important; } }
+
+/* ───────── Home: Configure Avatar pill — glow, sweep and a light running around its edge ───────── */
+.btnglow { position: absolute; inset: 0; border-radius: calc(42 * var(--k, 1px)); pointer-events: none; animation: btnglow 2.6s ease-in-out infinite; }
+.btnshine { position: absolute; inset: 0; border-radius: calc(42 * var(--k, 1px)); overflow: hidden; pointer-events: none; z-index: 1; }
+.btnshine::before { content: ''; position: absolute; top: -10%; bottom: -10%; width: 22%; left: -40%; transform: skewX(-20deg); background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent); animation: btnshine 3.6s ease-in-out infinite; }
+.btnorbit { position: absolute; inset: 0; border-radius: calc(42 * var(--k, 1px)); pointer-events: none; padding: 2px; z-index: 1;
+  background: conic-gradient(from var(--oa), transparent 0 230deg, rgba(111,182,255,.5) 300deg, #fff 355deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: tileorbit 3.2s linear infinite; }
+@keyframes btnglow { 0%, 100% { box-shadow: 0 0 calc(14 * var(--k, 1px)) rgba(90,160,255,.12); } 50% { box-shadow: 0 0 calc(28 * var(--k, 1px)) calc(2 * var(--k, 1px)) rgba(90,160,255,.45); } }
+@keyframes btnshine { 0%, 62% { left: -40%; opacity: 0; } 68% { opacity: 1; } 100% { left: 125%; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .btnglow, .btnshine::before, .btnorbit { animation: none !important; } }

@@ -615,24 +615,37 @@ class _Stage extends StatelessWidget {
             top: 47 * u,
             width: 84 * u,
             height: 78 * u,
-            child: Wobble(s: s, child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(22 * u),
-                boxShadow: [BoxShadow(color: const Color(0xFF3FD2F2).withValues(alpha: .35), blurRadius: 18 * u)],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(22 * u),
-                child: Stack(fit: StackFit.expand, children: [
-                  Image.asset('assets/images/ico-ds.webp', fit: BoxFit.fill),
-                  Center(
-                    child: Icon(Icons.palette_outlined, size: 44 * u, color: const Color(0xFFC9F6FF), shadows: [
-                      Shadow(color: const Color(0xFF3FD2F2), blurRadius: 10 * u),
-                      Shadow(color: const Color(0xB328AAFF), blurRadius: 20 * u),
+            child: Transform.translate(
+              offset: Offset(0, -2.6 * u * math.sin(t * 2 * math.pi / 3.4 + 1.3)),
+              child: Wobble(s: s, child: Stack(clipBehavior: Clip.none, children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(22 * u),
+                    boxShadow: [BoxShadow(color: const Color(0xFF3FD2F2).withValues(alpha: .25 + .2 * (.5 + .5 * math.sin(t * 2 * math.pi / 3.4))), blurRadius: 18 * u)],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(22 * u),
+                    child: Stack(fit: StackFit.expand, children: [
+                      Image.asset('assets/images/ico-ds.webp', fit: BoxFit.fill),
+                      Center(
+                        child: Transform.rotate(
+                          angle: .1 * math.sin(t * 2 * math.pi / 2.4 + 2),
+                          child: Transform.scale(
+                            scale: 1 + .07 * math.sin(t * 2 * math.pi / 1.8 + 1),
+                            child: Icon(Icons.palette_outlined, size: 44 * u, color: const Color(0xFFC9F6FF), shadows: [
+                              Shadow(color: const Color(0xFF3FD2F2), blurRadius: 10 * u),
+                              Shadow(color: const Color(0xB328AAFF), blurRadius: 20 * u),
+                            ]),
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _ShinePainter(((t + 1.2) % 4.6) / 4.6)))),
                     ]),
                   ),
-                ]),
-              ),
-            )),
+                ),
+                Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _OrbitPainter(((t + 1.1) % 3.8) / 3.8, 22 * u, u, const Color(0xFF3FD2F2))))),
+              ])),
+            ),
           ),
           Positioned(
             left: 204 * u,
@@ -796,16 +809,22 @@ class _Stage extends StatelessWidget {
           scaleUp: 1,
           lift: 0,
           onTap: () => onTap('Configure Avatar'),
-          child: Align(
-            alignment: const Alignment(-.2, 0),
-            child: Text('Configure Avatar',
-                style: TextStyle(
-                  fontSize: (30 * u).clamp(13, 17),
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                  shadows: [Shadow(color: const Color(0xFF06102E), offset: Offset(0, 2 * u)), Shadow(color: const Color(0xE682B4FF), blurRadius: 8 * u)],
-                )),
-          ),
+          child: Stack(clipBehavior: Clip.none, children: [
+            // breathing blue glow, a sweep of light, and a light running around the pill's edge
+            Positioned.fill(child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(borderRadius: BorderRadius.circular(42 * u), boxShadow: [BoxShadow(color: const Color(0xFF5AA0FF).withValues(alpha: .12 + .22 * (.5 + .5 * math.sin(t * 2 * math.pi / 2.6))), blurRadius: 20 * u, spreadRadius: 1 * u)])))),
+            Positioned.fill(child: IgnorePointer(child: ClipRRect(borderRadius: BorderRadius.circular(42 * u), child: CustomPaint(painter: _ShinePainter((t % 3.6) / 3.6))))),
+            Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _OrbitPainter((t % 3.2) / 3.2, 42 * u, u, const Color(0xFF6FB6FF))))),
+            Align(
+              alignment: const Alignment(-.2, 0),
+              child: Text('Configure Avatar',
+                  style: TextStyle(
+                    fontSize: (30 * u).clamp(13, 17),
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    shadows: [Shadow(color: const Color(0xFF06102E), offset: Offset(0, 2 * u)), Shadow(color: const Color(0xE682B4FF), blurRadius: 8 * u)],
+                  )),
+            ),
+          ]),
         ),
       ),
       // bottom navigation
