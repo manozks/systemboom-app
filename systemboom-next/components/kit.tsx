@@ -19,9 +19,9 @@ export function Btn({ kind = 'steel', size, block, icon, children, ...rest }: { 
 
 /** Action button with a glowing circular icon badge: the icon has its own little motion, a light orbits the badge and a shine
  *  sweeps the button now and then. `vertical` stacks badge over label (3-across rows). */
-export function ActionBtn({ icon, children, accent = '#ffb347', motion = 'pulse', vertical, phase = 0, red, ...rest }: { icon: ReactNode; accent?: string; motion?: 'ring' | 'pulse' | 'orbit' | 'wobble' | 'wave' | 'pop'; vertical?: boolean; phase?: number; red?: boolean } & ButtonHTMLAttributes<HTMLButtonElement>) {
+export function ActionBtn({ icon, children, accent = '#ffb347', motion = 'pulse', vertical, phase = 0, red, plain, ...rest }: { icon: ReactNode; accent?: string; motion?: 'ring' | 'pulse' | 'orbit' | 'wobble' | 'wave' | 'pop'; vertical?: boolean; phase?: number; red?: boolean; plain?: boolean } & ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button {...rest} className={cx('abtn2', vertical && 'v', red && 'red', rest.className)} style={{ ['--ac' as string]: accent, ['--ph' as string]: `${-phase * 3.6}s`, ...rest.style }}>
+    <button {...rest} className={cx('abtn2', vertical && 'v', red && 'red', plain && 'plain', rest.className)} style={{ ['--ac' as string]: accent, ['--ph' as string]: `${-phase * 3.6}s`, ...rest.style }}>
       <span className="abadge"><span className="aorbit" /><span className={`aico m-${motion}`}>{icon}</span></span>
       <span className="albl">{children}</span>
     </button>

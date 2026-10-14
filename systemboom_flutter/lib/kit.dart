@@ -336,7 +336,9 @@ class MiniBtn extends StatelessWidget {
 /// magnifier circles, the flag waves…), a light orbits the badge, and a shine sweeps across the button now and then.
 /// [vertical] stacks badge over label (for 3-across rows); otherwise badge and label sit side by side.
 class ActionBtn extends StatefulWidget {
-  const ActionBtn({super.key, required this.u, required this.label, required this.icon, required this.onTap, this.accent = const Color(0xFFFFB347), this.vertical = false, this.motion = 'pulse', this.phase = 0, this.red = false});
+  const ActionBtn({super.key, required this.u, required this.label, required this.icon, required this.onTap, this.accent = const Color(0xFFFFB347), this.vertical = false, this.motion = 'pulse', this.phase = 0, this.red = false, this.plain = false, this.badge = 112});
+  final bool plain; // no plate: just the glowing circular badge with its label underneath
+  final double badge; // badge diameter (design units) in plain mode
   final bool red; // destructive: red ring
   final double u;
   final String label, motion;
@@ -407,6 +409,19 @@ class _ActionBtnState extends State<ActionBtn> with SingleTickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     final u = widget.u, ac = widget.accent;
+    if (widget.plain) {
+      return Tap(
+        onTap: widget.onTap,
+        child: AnimatedBuilder(
+          animation: _c,
+          builder: (_, _) => Column(mainAxisSize: MainAxisSize.min, children: [
+            _badge(widget.badge * u, _c.value),
+            SizedBox(height: 10 * u),
+            FittedBox(fit: BoxFit.scaleDown, child: Text(widget.label, maxLines: 1, style: ts(u, 33, w: FontWeight.w900))),
+          ]),
+        ),
+      );
+    }
     final badgeD = (widget.vertical ? 116 : 92) * u;
     final h = (widget.vertical ? 230 : 138) * u;
     return Tap(

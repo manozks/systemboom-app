@@ -866,3 +866,16 @@ button.lr:active { transform: scale(.985); }
 @keyframes icowave { 0%, 100% { transform: rotate(-9deg) translateX(calc(-1.5 * var(--u))); } 25% { transform: rotate(9deg) translateX(calc(1.5 * var(--u))); } 50% { transform: rotate(-9deg) translateX(calc(-1.5 * var(--u))); } 75% { transform: rotate(9deg) translateX(calc(1.5 * var(--u))); } }
 @keyframes icopop { 0%, 60%, 100% { transform: scale(1); } 75% { transform: scale(1.28); } 88% { transform: scale(.94); } }
 @media (prefers-reduced-motion: reduce) { .abtn2::after, .abadge::before, .aorbit, .aico { animation: none !important; } }
+
+/* plain: no plate — just the glowing circular badge with its label underneath */
+.abtn2.plain { min-height: 0; padding: 0; flex-direction: column; gap: calc(10 * var(--u)); filter: none; font-size: calc(33 * var(--u)); }
+.abtn2.plain::before, .abtn2.plain::after { display: none; }
+.abtn2.plain:hover { transform: translateY(-4px) scale(1.06); filter: brightness(1.15); }
+.abtn2.plain .abadge { width: calc(114 * var(--u)); height: calc(114 * var(--u)); }
+.abtn2.plain .aico svg { width: calc(52 * var(--u)); height: calc(52 * var(--u)); }
+.abtn2.plain[class*="plain"]:not(.v) .abadge { width: calc(104 * var(--u)); height: calc(104 * var(--u)); }
+.abtn2.plain .albl { white-space: nowrap; }
+.abtn2.plain.v { min-height: 0; padding: 0; }
+.abtn2.plain.v .abadge { width: calc(142 * var(--u)); height: calc(142 * var(--u)); }
+.abtn2.plain.v .aico svg { width: calc(64 * var(--u)); height: calc(64 * var(--u)); }
+.abtn2.plain.v { font-size: calc(36 * var(--u)); }

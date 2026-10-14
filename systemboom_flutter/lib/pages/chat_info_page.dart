@@ -82,11 +82,11 @@ class _ChatInfoPageState extends State<ChatInfoPage> {
         Center(child: Text(chat.group ? '4 members' : (peer?.about ?? ''), style: ts(u, 36, c: const Color(0xFFB9C9EE), w: FontWeight.w400, sh: const []))),
         SizedBox(height: 14 * u),
         Row(children: [
-          Expanded(child: ActionBtn(u: u, vertical: true, label: 'Audio', icon: Icons.call_rounded, accent: const Color(0xFFFFA23A), motion: 'ring', phase: 0, onTap: () => pushScreen(context, CallPage(chat.title, photo: peer?.photo)))),
+          Expanded(child: ActionBtn(u: u, plain: true, badge: 142, label: 'Audio', icon: Icons.call_rounded, accent: const Color(0xFFFFA23A), motion: 'ring', phase: 0, onTap: () => pushScreen(context, CallPage(chat.title, photo: peer?.photo)))),
           SizedBox(width: 12 * u),
-          Expanded(child: ActionBtn(u: u, vertical: true, label: 'Video', icon: Icons.videocam_rounded, accent: const Color(0xFFFF6FA3), motion: 'pulse', phase: .25, onTap: () => pushScreen(context, CallPage(chat.title, video: true, photo: peer?.photo)))),
+          Expanded(child: ActionBtn(u: u, plain: true, badge: 142, label: 'Video', icon: Icons.videocam_rounded, accent: const Color(0xFFFF6FA3), motion: 'pulse', phase: .25, onTap: () => pushScreen(context, CallPage(chat.title, video: true, photo: peer?.photo)))),
           SizedBox(width: 12 * u),
-          Expanded(child: ActionBtn(u: u, vertical: true, label: 'Search', icon: Icons.search_rounded, accent: const Color(0xFF5AB8F2), motion: 'orbit', phase: .5, onTap: () => pushScreen(context, ChatSearchPage(chat.id)))),
+          Expanded(child: ActionBtn(u: u, plain: true, badge: 142, label: 'Search', icon: Icons.search_rounded, accent: const Color(0xFF5AB8F2), motion: 'orbit', phase: .5, onTap: () => pushScreen(context, ChatSearchPage(chat.id)))),
         ]),
         SizedBox(height: 14 * u),
         if (!chat.group && !chat.private && peer != null) CtaBtn(u: u, label: 'Continue privately', icon: Icons.lock_outline_rounded, onTap: () => pushScreen(context, ConversationPage(s.openOrCreate(peer.id, private: true).id))),
@@ -112,28 +112,24 @@ class _ChatInfoPageState extends State<ChatInfoPage> {
         if (tab == 1 && pinned.isEmpty) _empty(u, Icons.push_pin_outlined, 'No pinned messages'),
         if (tab == 1) for (final m in pinned) SteelPlate(u: u, child: Text(m.text ?? m.type.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: ts(u, 38, w: FontWeight.w800))),
         if (tab == 2) _empty(u, Icons.search_rounded, 'Search messages in this chat'),
-        Row(children: [
-          Expanded(child: ActionBtn(u: u, label: 'Pinned', icon: Icons.push_pin_outlined, accent: const Color(0xFFFFD27A), motion: 'wobble', phase: .1, onTap: () => pushScreen(context, ChatPinnedPage(chat.id)))),
-          SizedBox(width: 12 * u),
-          Expanded(child: ActionBtn(u: u, label: 'Media & docs', icon: Icons.image_outlined, accent: const Color(0xFF7FE3FF), motion: 'pop', phase: .35, onTap: () => pushScreen(context, ChatMediaPage(chat.id)))),
-        ]),
-        SizedBox(height: 14 * u),
-        if (!chat.group && peer != null)
-          Row(children: [
-            Expanded(child: ActionBtn(u: u, label: 'Block', icon: Icons.block_rounded, red: true, accent: const Color(0xFFFF7A6A), motion: 'pulse', phase: .6, onTap: () async {
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Expanded(child: ActionBtn(u: u, plain: true, badge: 114, label: 'Pinned', icon: Icons.push_pin_outlined, accent: const Color(0xFFFFD27A), motion: 'wobble', phase: .1, onTap: () => pushScreen(context, ChatPinnedPage(chat.id)))),
+          Expanded(child: ActionBtn(u: u, plain: true, badge: 114, label: 'Media & docs', icon: Icons.image_outlined, accent: const Color(0xFF7FE3FF), motion: 'pop', phase: .35, onTap: () => pushScreen(context, ChatMediaPage(chat.id)))),
+          if (!chat.group && peer != null) ...[
+            Expanded(child: ActionBtn(u: u, plain: true, badge: 114, label: 'Block', icon: Icons.block_rounded, red: true, accent: const Color(0xFFFF7A6A), motion: 'pulse', phase: .6, onTap: () async {
               if (await confirmDialog(context, title: 'Block ${peer.name.split(' ').first}?', text: 'They won’t be able to message or call you.', confirm: 'Block') && context.mounted) showToast(context, '${peer.name} blocked');
             })),
-            SizedBox(width: 12 * u),
-            Expanded(child: ActionBtn(u: u, label: 'Report', icon: Icons.flag_outlined, accent: const Color(0xFFFFB02E), motion: 'wave', phase: .85, onTap: () => showToast(context, 'Report submitted'))),
-          ])
-        else
-          ActionBtn(u: u, label: 'Leave group', icon: Icons.logout_rounded, red: true, accent: const Color(0xFFFF7A6A), motion: 'wobble', onTap: () async {
-            final nav = Navigator.of(context);
-            if (await confirmDialog(context, title: 'Leave group?', text: 'You’ll stop receiving messages.', confirm: 'Leave')) {
-              s.deleteChat(chat);
-              nav.popUntil((r) => r.isFirst);
-            }
-          }),
+            Expanded(child: ActionBtn(u: u, plain: true, badge: 114, label: 'Report', icon: Icons.flag_outlined, accent: const Color(0xFFFFB02E), motion: 'wave', phase: .85, onTap: () => showToast(context, 'Report submitted'))),
+          ] else
+            Expanded(child: ActionBtn(u: u, plain: true, badge: 114, label: 'Leave group', icon: Icons.logout_rounded, red: true, accent: const Color(0xFFFF7A6A), motion: 'wobble', onTap: () async {
+              final nav = Navigator.of(context);
+              if (await confirmDialog(context, title: 'Leave group?', text: 'You’ll stop receiving messages.', confirm: 'Leave')) {
+                s.deleteChat(chat);
+                nav.popUntil((r) => r.isFirst);
+              }
+            })),
+        ]),
+        SizedBox(height: 18 * u),
         CtaBtn(
           u: u,
           label: 'Delete conversation',

@@ -73,9 +73,9 @@ function Info() {
       </div>
 
       <div className="grid2" style={{ gridTemplateColumns: 'repeat(3,1fr)', margin: `${U(6)} 0 ${U(22)}` }}>
-        <ActionBtn vertical accent="#ffa23a" motion="ring" phase={0} icon={<Phone />} onClick={() => router.push(`${callBase}&kind=voice`)}>Audio</ActionBtn>
-        <ActionBtn vertical accent="#ff6fa3" motion="pulse" phase={0.25} icon={<Video />} onClick={() => router.push(`${callBase}&kind=video`)}>Video</ActionBtn>
-        <ActionBtn vertical accent="#5ab8f2" motion="orbit" phase={0.5} icon={<Search />} onClick={() => router.push(`/chat-search/?id=${id}`)}>Search</ActionBtn>
+        <ActionBtn plain vertical accent="#ffa23a" motion="ring" phase={0} icon={<Phone />} onClick={() => router.push(`${callBase}&kind=voice`)}>Audio</ActionBtn>
+        <ActionBtn plain vertical accent="#ff6fa3" motion="pulse" phase={0.25} icon={<Video />} onClick={() => router.push(`${callBase}&kind=video`)}>Video</ActionBtn>
+        <ActionBtn plain vertical accent="#5ab8f2" motion="orbit" phase={0.5} icon={<Search />} onClick={() => router.push(`/chat-search/?id=${id}`)}>Search</ActionBtn>
       </div>
       {user?.about && !anon && <div className="mp dark lr" style={{ marginBottom: U(20) }}><span className="grow"><span className="lr-s">About</span><span className="lr-t" style={{ fontWeight: 500 }}>{user.about}</span></span></div>}
       {!isE2EE(conv) && !anon && <div style={{ marginBottom: U(20) }}><Banner icon={<ShieldCheck />}><b>Standard conversation.</b> Secured in transit and at rest. Privacy is permanent for this conversation.</Banner></div>}
@@ -124,18 +124,16 @@ function Info() {
         </>)}
       </div>
 
-      <div className="grid2" style={{ gridTemplateColumns: '1fr 1fr', marginBottom: U(6) }}>
-        <ActionBtn accent="#ffd27a" motion="wobble" phase={0.1} icon={<Pin />} onClick={() => router.push(`/chat-pinned/?id=${id}`)}>Pinned</ActionBtn>
-        <ActionBtn accent="#7fe3ff" motion="pop" phase={0.35} icon={<ImageIcon />} onClick={() => router.push(`/chat-media/?id=${id}`)}>Media, links &amp; docs</ActionBtn>
+      <div className="grid2" style={{ gridTemplateColumns: `repeat(${conv.kind === 'private' && !anon ? 4 : conv.kind === 'group' ? 3 : 2}, 1fr)`, margin: `${U(8)} 0 ${U(22)}`, alignItems: 'start' }}>
+        <ActionBtn plain accent="#ffd27a" motion="wobble" phase={0.1} icon={<Pin />} onClick={() => router.push(`/chat-pinned/?id=${id}`)}>Pinned</ActionBtn>
+        <ActionBtn plain accent="#7fe3ff" motion="pop" phase={0.35} icon={<ImageIcon />} onClick={() => router.push(`/chat-media/?id=${id}`)}>Media &amp; docs</ActionBtn>
+        {conv.kind === 'private' && !anon ? (<>
+          <ActionBtn plain red accent="#ff7a6a" motion="pulse" phase={0.6} icon={<Ban />} onClick={() => setConfirm('block')}>Block</ActionBtn>
+          <ActionBtn plain accent="#ffb02e" motion="wave" phase={0.85} icon={<Flag />} onClick={() => toast(`Report submitted for ${user?.name}`)}>Report</ActionBtn>
+        </>) : conv.kind === 'group' ? (
+          <ActionBtn plain red accent="#ff7a6a" motion="wobble" icon={<LogOut />} onClick={() => setConfirm('leave')}>Leave group</ActionBtn>
+        ) : null}
       </div>
-      {conv.kind === 'private' && !anon ? (
-        <div className="grid2" style={{ gridTemplateColumns: '1fr 1fr', marginTop: U(16) }}>
-          <ActionBtn red accent="#ff7a6a" motion="pulse" phase={0.6} icon={<Ban />} onClick={() => setConfirm('block')}>Block {user?.name?.split(' ')[0]}</ActionBtn>
-          <ActionBtn accent="#ffb02e" motion="wave" phase={0.85} icon={<Flag />} onClick={() => toast(`Report submitted for ${user?.name}`)}>Report</ActionBtn>
-        </div>
-      ) : conv.kind === 'group' ? (
-        <div style={{ marginTop: U(16) }}><Btn kind="ghost" block size="sm" icon={<LogOut />} onClick={() => setConfirm('leave')}>Leave group</Btn></div>
-      ) : null}
       <button className="icta red" onClick={() => setConfirm('delete')}><Trash2 />Delete conversation</button>
       <Dialog open={!!confirm} onClose={() => setConfirm(null)}
         title={confirm === 'block' ? `Block ${user?.name?.split(' ')[0]}?` : confirm === 'leave' ? 'Leave group?' : 'Delete conversation?'}
