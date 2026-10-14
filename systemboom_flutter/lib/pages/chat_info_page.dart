@@ -120,14 +120,14 @@ class _ChatInfoPageState extends State<ChatInfoPage> {
         SizedBox(height: 14 * u),
         if (!chat.group && peer != null)
           Row(children: [
-            Expanded(child: ActionBtn(u: u, label: 'Block', icon: Icons.block_rounded, accent: const Color(0xFFFF5A4A), motion: 'pulse', phase: .6, onTap: () async {
+            Expanded(child: ActionBtn(u: u, label: 'Block', icon: Icons.block_rounded, red: true, accent: const Color(0xFFFF7A6A), motion: 'pulse', phase: .6, onTap: () async {
               if (await confirmDialog(context, title: 'Block ${peer.name.split(' ').first}?', text: 'They won’t be able to message or call you.', confirm: 'Block') && context.mounted) showToast(context, '${peer.name} blocked');
             })),
             SizedBox(width: 12 * u),
             Expanded(child: ActionBtn(u: u, label: 'Report', icon: Icons.flag_outlined, accent: const Color(0xFFFFB02E), motion: 'wave', phase: .85, onTap: () => showToast(context, 'Report submitted'))),
           ])
         else
-          ActionBtn(u: u, label: 'Leave group', icon: Icons.logout_rounded, accent: const Color(0xFFFF5A4A), motion: 'wobble', onTap: () async {
+          ActionBtn(u: u, label: 'Leave group', icon: Icons.logout_rounded, red: true, accent: const Color(0xFFFF7A6A), motion: 'wobble', onTap: () async {
             final nav = Navigator.of(context);
             if (await confirmDialog(context, title: 'Leave group?', text: 'You’ll stop receiving messages.', confirm: 'Leave')) {
               s.deleteChat(chat);

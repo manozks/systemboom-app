@@ -336,7 +336,8 @@ class MiniBtn extends StatelessWidget {
 /// magnifier circles, the flag waves…), a light orbits the badge, and a shine sweeps across the button now and then.
 /// [vertical] stacks badge over label (for 3-across rows); otherwise badge and label sit side by side.
 class ActionBtn extends StatefulWidget {
-  const ActionBtn({super.key, required this.u, required this.label, required this.icon, required this.onTap, this.accent = const Color(0xFFFFB347), this.vertical = false, this.motion = 'pulse', this.phase = 0});
+  const ActionBtn({super.key, required this.u, required this.label, required this.icon, required this.onTap, this.accent = const Color(0xFFFFB347), this.vertical = false, this.motion = 'pulse', this.phase = 0, this.red = false});
+  final bool red; // destructive: red ring
   final double u;
   final String label, motion;
   final IconData icon;
@@ -381,33 +382,24 @@ class _ActionBtnState extends State<ActionBtn> with SingleTickerProviderStateMix
     }
     return Transform.translate(
       offset: Offset(dx, dy),
-      child: Transform.rotate(angle: rot, child: Transform.scale(scale: sc, child: Icon(widget.icon, size: d * .5, color: Colors.white, shadows: [Shadow(color: widget.accent, blurRadius: 10 * widget.u), Shadow(color: Colors.black.withValues(alpha: .45), blurRadius: 3 * widget.u, offset: Offset(0, 2 * widget.u))]))),
+      child: Transform.rotate(angle: rot, child: Transform.scale(scale: sc, child: Icon(widget.icon, size: d * .46, color: Color.lerp(widget.accent, Colors.white, .55), shadows: [Shadow(color: widget.accent, blurRadius: 12 * widget.u), Shadow(color: widget.accent.withValues(alpha: .7), blurRadius: 22 * widget.u), Shadow(color: Colors.black.withValues(alpha: .55), blurRadius: 3 * widget.u, offset: Offset(0, 2 * widget.u))]))),
     );
   }
 
   Widget _badge(double d, double v) {
-    final u = widget.u, ac = widget.accent;
-    final light = Color.lerp(ac, Colors.white, .45)!;
-    final dark = Color.lerp(ac, Colors.black, .62)!;
+    final ac = widget.accent;
+    final a = v * math.pi * 2;
     return SizedBox(
       width: d,
       height: d,
       child: Stack(alignment: Alignment.center, clipBehavior: Clip.none, children: [
-        Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(center: const Alignment(-.3, -.4), radius: 1.0, colors: [light, ac, dark], stops: const [0, .5, 1]),
-              border: Border.all(color: const Color(0xFFE6ECF2), width: 3.5 * u),
-              boxShadow: [BoxShadow(color: ac.withValues(alpha: .35 + .25 * (.5 + .5 * math.sin(v * math.pi * 2))), blurRadius: 16 * u), BoxShadow(color: Colors.black.withValues(alpha: .5), blurRadius: 6 * u, offset: Offset(0, 4 * u))],
-            ),
-          ),
-        ),
-        // glossy highlight
-        Positioned(left: d * .17, top: d * .08, width: d * .5, height: d * .26, child: DecoratedBox(decoration: BoxDecoration(borderRadius: BorderRadius.circular(d), gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.white.withValues(alpha: .55), Colors.white.withValues(alpha: 0)])))),
+        // tint inside the dark metal centre so each badge reads in its own colour
+        Positioned.fill(child: Padding(padding: EdgeInsets.all(d * .12), child: DecoratedBox(decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [ac.withValues(alpha: .38 + .14 * math.sin(a)), ac.withValues(alpha: 0)]))))),
+        // the app's chrome ring art (orange glints; the red variant for destructive actions)
+        Positioned.fill(child: Image.asset('assets/images/${widget.red ? 'ring63-red' : 'ring63-act'}.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium)),
         _icon(d, v),
         // light orbiting the rim
-        Positioned.fill(child: Transform.scale(scale: 1.12, child: const RingSweep(inner: .8, period: Duration(milliseconds: 2800)))),
+        Positioned.fill(child: Transform.scale(scale: 1.04, child: const RingSweep(inner: .84, period: Duration(milliseconds: 2800)))),
       ]),
     );
   }
@@ -415,48 +407,47 @@ class _ActionBtnState extends State<ActionBtn> with SingleTickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     final u = widget.u, ac = widget.accent;
-    final badgeD = (widget.vertical ? 96 : 78) * u;
+    final badgeD = (widget.vertical ? 116 : 92) * u;
+    final h = (widget.vertical ? 230 : 138) * u;
     return Tap(
       onTap: widget.onTap,
       child: AnimatedBuilder(
         animation: _c,
         builder: (_, _) {
           final v = _c.value;
-          final label = Text(widget.label, maxLines: 1, style: ts(u, widget.vertical ? 36 : 36, w: FontWeight.w900));
-          return Container(
-            height: (widget.vertical ? 214 : 124) * u,
-            padding: EdgeInsets.all(4 * u),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(36 * u),
-              gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFFF4F7FA), Color(0xFF8E9AA7), Color(0xFF38424D), Color(0xFFC3CCD5)]),
-              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .65), blurRadius: 12 * u, offset: Offset(0, 7 * u)), BoxShadow(color: ac.withValues(alpha: .12 + .1 * (.5 + .5 * math.sin(v * math.pi * 2))), blurRadius: 18 * u)],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(32 * u),
-              child: Stack(fit: StackFit.expand, children: [
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(const Color(0xFF51668A), ac, .12)!, const Color(0xFF223049), const Color(0xFF111A28)], stops: const [0, .5, 1]),
-                  ),
-                ),
-                // top gloss
-                Positioned(left: 0, right: 0, top: 0, height: (widget.vertical ? 214 : 124) * u * .45, child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.white.withValues(alpha: .2), Colors.white.withValues(alpha: 0)])))),
-                // accent underglow line
-                Positioned(left: 24 * u, right: 24 * u, bottom: 0, height: 4 * u, child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(colors: [ac.withValues(alpha: 0), ac, ac.withValues(alpha: 0)])))),
-                Positioned.fill(child: CustomPaint(painter: _BtnShine(((v + widget.phase) % 1) / 1))),
-                Center(
+          final label = Text(widget.label, maxLines: 1, style: ts(u, 36, w: FontWeight.w900));
+          return SizedBox(
+            height: h,
+            child: Stack(fit: StackFit.expand, clipBehavior: Clip.none, children: [
+              // metal plate art (same chamfered chrome button as the notification buttons)
+              Nine('notif-btn', px: const Size(330, 108), slice: 44, u: u * .62, pad: EdgeInsets.zero, child: SizedBox(width: double.infinity, height: h)),
+              // accent glow along the bottom edge + sweeping shine, clipped to the plate
+              Positioned.fill(
+                child: IgnorePointer(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10 * u),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: widget.vertical
-                          ? Column(mainAxisSize: MainAxisSize.min, children: [_badge(badgeD, v), SizedBox(height: 10 * u), label])
-                          : Row(mainAxisSize: MainAxisSize.min, children: [_badge(badgeD, v), SizedBox(width: 18 * u), label]),
+                    padding: EdgeInsets.all(5 * u),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(26 * u),
+                      child: Stack(fit: StackFit.expand, children: [
+                        Positioned(left: 0, right: 0, bottom: 0, height: h * .5, child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [ac.withValues(alpha: .22 + .1 * math.sin(v * math.pi * 2)), ac.withValues(alpha: 0)])))),
+                        CustomPaint(painter: _BtnShine(((v + widget.phase) % 1) / 1)),
+                      ]),
                     ),
                   ),
                 ),
-              ]),
-            ),
+              ),
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 22 * u, vertical: 14 * u),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: widget.vertical
+                        ? Column(mainAxisSize: MainAxisSize.min, children: [_badge(badgeD, v), SizedBox(height: 6 * u), label])
+                        : Row(mainAxisSize: MainAxisSize.min, children: [_badge(badgeD, v), SizedBox(width: 14 * u), label]),
+                  ),
+                ),
+              ),
+            ]),
           );
         },
       ),

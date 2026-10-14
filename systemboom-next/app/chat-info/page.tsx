@@ -130,7 +130,7 @@ function Info() {
       </div>
       {conv.kind === 'private' && !anon ? (
         <div className="grid2" style={{ gridTemplateColumns: '1fr 1fr', marginTop: U(16) }}>
-          <ActionBtn accent="#ff5a4a" motion="pulse" phase={0.6} icon={<Ban />} onClick={() => setConfirm('block')}>Block {user?.name?.split(' ')[0]}</ActionBtn>
+          <ActionBtn red accent="#ff7a6a" motion="pulse" phase={0.6} icon={<Ban />} onClick={() => setConfirm('block')}>Block {user?.name?.split(' ')[0]}</ActionBtn>
           <ActionBtn accent="#ffb02e" motion="wave" phase={0.85} icon={<Flag />} onClick={() => toast(`Report submitted for ${user?.name}`)}>Report</ActionBtn>
         </div>
       ) : conv.kind === 'group' ? (
