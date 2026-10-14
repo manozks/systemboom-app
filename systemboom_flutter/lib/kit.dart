@@ -332,6 +332,159 @@ class MiniBtn extends StatelessWidget {
   }
 }
 
+/// Action button with a glowing circular icon badge. The icon has its own little animation (the phone rings, the
+/// magnifier circles, the flag waves…), a light orbits the badge, and a shine sweeps across the button now and then.
+/// [vertical] stacks badge over label (for 3-across rows); otherwise badge and label sit side by side.
+class ActionBtn extends StatefulWidget {
+  const ActionBtn({super.key, required this.u, required this.label, required this.icon, required this.onTap, this.accent = const Color(0xFFFFB347), this.vertical = false, this.motion = 'pulse', this.phase = 0});
+  final double u;
+  final String label, motion;
+  final IconData icon;
+  final VoidCallback onTap;
+  final Color accent;
+  final bool vertical;
+  final double phase;
+  @override
+  State<ActionBtn> createState() => _ActionBtnState();
+}
+
+class _ActionBtnState extends State<ActionBtn> with SingleTickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 3600))
+    ..value = widget.phase % 1
+    ..repeat();
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  Widget _icon(double d, double v) {
+    final a = v * math.pi * 2;
+    var rot = 0.0, sc = 1.0, dx = 0.0, dy = 0.0;
+    switch (widget.motion) {
+      case 'ring': // phone ringing: a quick shake burst, then rest
+        final f = (v * 1.2) % 1;
+        if (f < .35) rot = math.sin(f / .35 * math.pi * 7) * .3 * (1 - f / .35);
+      case 'pulse':
+        sc = 1 + .1 * math.sin(a);
+      case 'orbit': // magnifier sweeps a small circle
+        dx = math.cos(a) * d * .05;
+        dy = math.sin(a) * d * .05;
+      case 'wobble':
+        rot = math.sin(a) * .22;
+      case 'wave': // flag waving
+        rot = math.sin(a * 2) * .18;
+        dx = math.sin(a * 2) * d * .03;
+      case 'pop':
+        sc = 1 + .13 * math.pow(math.max(0, math.sin(a)), 3);
+    }
+    return Transform.translate(
+      offset: Offset(dx, dy),
+      child: Transform.rotate(angle: rot, child: Transform.scale(scale: sc, child: Icon(widget.icon, size: d * .5, color: Colors.white, shadows: [Shadow(color: widget.accent, blurRadius: 10 * widget.u), Shadow(color: Colors.black.withValues(alpha: .45), blurRadius: 3 * widget.u, offset: Offset(0, 2 * widget.u))]))),
+    );
+  }
+
+  Widget _badge(double d, double v) {
+    final u = widget.u, ac = widget.accent;
+    final light = Color.lerp(ac, Colors.white, .45)!;
+    final dark = Color.lerp(ac, Colors.black, .62)!;
+    return SizedBox(
+      width: d,
+      height: d,
+      child: Stack(alignment: Alignment.center, clipBehavior: Clip.none, children: [
+        Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(center: const Alignment(-.3, -.4), radius: 1.0, colors: [light, ac, dark], stops: const [0, .5, 1]),
+              border: Border.all(color: const Color(0xFFE6ECF2), width: 3.5 * u),
+              boxShadow: [BoxShadow(color: ac.withValues(alpha: .35 + .25 * (.5 + .5 * math.sin(v * math.pi * 2))), blurRadius: 16 * u), BoxShadow(color: Colors.black.withValues(alpha: .5), blurRadius: 6 * u, offset: Offset(0, 4 * u))],
+            ),
+          ),
+        ),
+        // glossy highlight
+        Positioned(left: d * .17, top: d * .08, width: d * .5, height: d * .26, child: DecoratedBox(decoration: BoxDecoration(borderRadius: BorderRadius.circular(d), gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.white.withValues(alpha: .55), Colors.white.withValues(alpha: 0)])))),
+        _icon(d, v),
+        // light orbiting the rim
+        Positioned.fill(child: Transform.scale(scale: 1.12, child: const RingSweep(inner: .8, period: Duration(milliseconds: 2800)))),
+      ]),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final u = widget.u, ac = widget.accent;
+    final badgeD = (widget.vertical ? 96 : 78) * u;
+    return Tap(
+      onTap: widget.onTap,
+      child: AnimatedBuilder(
+        animation: _c,
+        builder: (_, _) {
+          final v = _c.value;
+          final label = Text(widget.label, maxLines: 1, style: ts(u, widget.vertical ? 36 : 36, w: FontWeight.w900));
+          return Container(
+            height: (widget.vertical ? 214 : 124) * u,
+            padding: EdgeInsets.all(4 * u),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(36 * u),
+              gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFFF4F7FA), Color(0xFF8E9AA7), Color(0xFF38424D), Color(0xFFC3CCD5)]),
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .65), blurRadius: 12 * u, offset: Offset(0, 7 * u)), BoxShadow(color: ac.withValues(alpha: .12 + .1 * (.5 + .5 * math.sin(v * math.pi * 2))), blurRadius: 18 * u)],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(32 * u),
+              child: Stack(fit: StackFit.expand, children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.lerp(const Color(0xFF51668A), ac, .12)!, const Color(0xFF223049), const Color(0xFF111A28)], stops: const [0, .5, 1]),
+                  ),
+                ),
+                // top gloss
+                Positioned(left: 0, right: 0, top: 0, height: (widget.vertical ? 214 : 124) * u * .45, child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.white.withValues(alpha: .2), Colors.white.withValues(alpha: 0)])))),
+                // accent underglow line
+                Positioned(left: 24 * u, right: 24 * u, bottom: 0, height: 4 * u, child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(colors: [ac.withValues(alpha: 0), ac, ac.withValues(alpha: 0)])))),
+                Positioned.fill(child: CustomPaint(painter: _BtnShine(((v + widget.phase) % 1) / 1))),
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10 * u),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: widget.vertical
+                          ? Column(mainAxisSize: MainAxisSize.min, children: [_badge(badgeD, v), SizedBox(height: 10 * u), label])
+                          : Row(mainAxisSize: MainAxisSize.min, children: [_badge(badgeD, v), SizedBox(width: 18 * u), label]),
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _BtnShine extends CustomPainter {
+  _BtnShine(this.p);
+  final double p;
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (p < .62) return; // rests for most of the cycle, then sweeps across
+    final k = (p - .62) / .38;
+    final x = -size.width * .3 + size.width * 1.6 * Curves.easeInOut.transform(k);
+    canvas.save();
+    canvas.clipRect(Offset.zero & size);
+    canvas.translate(x, 0);
+    canvas.skew(-.3, 0);
+    final band = Rect.fromLTWH(0, -4, size.width * .22, size.height + 8);
+    canvas.drawRect(band, Paint()..shader = const LinearGradient(colors: [Color(0x00FFFFFF), Color(0x55FFFFFF), Color(0x00FFFFFF)]).createShader(band));
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(_BtnShine o) => o.p != p;
+}
+
 /// Wide orange / red call-to-action (chat info style).
 class CtaBtn extends StatelessWidget {
   const CtaBtn({super.key, required this.u, required this.label, required this.icon, required this.onTap, this.red = false});

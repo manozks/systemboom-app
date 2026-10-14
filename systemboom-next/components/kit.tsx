@@ -16,6 +16,18 @@ export function Btn({ kind = 'steel', size, block, icon, children, ...rest }: { 
   return <button {...rest} className={cls}>{icon}{children}</button>;
 }
 
+
+/** Action button with a glowing circular icon badge: the icon has its own little motion, a light orbits the badge and a shine
+ *  sweeps the button now and then. `vertical` stacks badge over label (3-across rows). */
+export function ActionBtn({ icon, children, accent = '#ffb347', motion = 'pulse', vertical, phase = 0, ...rest }: { icon: ReactNode; accent?: string; motion?: 'ring' | 'pulse' | 'orbit' | 'wobble' | 'wave' | 'pop'; vertical?: boolean; phase?: number } & ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button {...rest} className={cx('abtn2', vertical && 'v', rest.className)} style={{ ['--ac' as string]: accent, ['--ph' as string]: `${-phase * 3.6}s`, ...rest.style }}>
+      <span className="abadge"><span className="aorbit" /><span className={`aico m-${motion}`}>{icon}</span></span>
+      <span className="albl">{children}</span>
+    </button>
+  );
+}
+
 export function IBtn({ children, tone, small, on, label, onClick, style }: { children: ReactNode; tone?: 'gold' | 'hot' | 'danger'; small?: boolean; on?: boolean; label: string; onClick?: () => void; style?: CSSProperties }) {
   return <button aria-label={label} title={label} className={cx('ibtn', tone, small && 'sm', on && 'on')} onClick={onClick} style={style}>{children}</button>;
 }

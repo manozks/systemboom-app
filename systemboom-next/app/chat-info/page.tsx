@@ -4,7 +4,7 @@ import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Archive, BellOff, Ban, Crown, Flag, Lock, LogOut, Megaphone, Phone, Pin, PinOff, Search, ShieldCheck, Trash2, UserPlus, Video, Image as ImageIcon } from 'lucide-react';
 import { PageShell } from '@/components/PageShell';
-import { Avatar, Banner, Btn, Dialog, Field, gradFor } from '@/components/kit';
+import { ActionBtn, Avatar, Banner, Btn, Dialog, Field, gradFor } from '@/components/kit';
 import { conversationTitle, isE2EE, isPrivateMode, useConversation, useMessages, useStore } from '@/lib/data/store';
 import { clockTime } from '@/lib/data/format';
 import { photoOf } from '@/lib/photo';
@@ -73,9 +73,9 @@ function Info() {
       </div>
 
       <div className="grid2" style={{ gridTemplateColumns: 'repeat(3,1fr)', margin: `${U(6)} 0 ${U(22)}` }}>
-        <Btn kind="steel" size="sm" icon={<Phone />} onClick={() => router.push(`${callBase}&kind=voice`)}>Audio</Btn>
-        <Btn kind="steel" size="sm" icon={<Video />} onClick={() => router.push(`${callBase}&kind=video`)}>Video</Btn>
-        <Btn kind="steel" size="sm" icon={<Search />} onClick={() => router.push(`/chat-search/?id=${id}`)}>Search</Btn>
+        <ActionBtn vertical accent="#ffa23a" motion="ring" phase={0} icon={<Phone />} onClick={() => router.push(`${callBase}&kind=voice`)}>Audio</ActionBtn>
+        <ActionBtn vertical accent="#ff6fa3" motion="pulse" phase={0.25} icon={<Video />} onClick={() => router.push(`${callBase}&kind=video`)}>Video</ActionBtn>
+        <ActionBtn vertical accent="#5ab8f2" motion="orbit" phase={0.5} icon={<Search />} onClick={() => router.push(`/chat-search/?id=${id}`)}>Search</ActionBtn>
       </div>
       {user?.about && !anon && <div className="mp dark lr" style={{ marginBottom: U(20) }}><span className="grow"><span className="lr-s">About</span><span className="lr-t" style={{ fontWeight: 500 }}>{user.about}</span></span></div>}
       {!isE2EE(conv) && !anon && <div style={{ marginBottom: U(20) }}><Banner icon={<ShieldCheck />}><b>Standard conversation.</b> Secured in transit and at rest. Privacy is permanent for this conversation.</Banner></div>}
@@ -125,13 +125,13 @@ function Info() {
       </div>
 
       <div className="grid2" style={{ gridTemplateColumns: '1fr 1fr', marginBottom: U(6) }}>
-        <Btn kind="ghost" size="sm" icon={<Pin />} onClick={() => router.push(`/chat-pinned/?id=${id}`)}>Pinned</Btn>
-        <Btn kind="ghost" size="sm" icon={<ImageIcon />} onClick={() => router.push(`/chat-media/?id=${id}`)}>Media, links & docs</Btn>
+        <ActionBtn accent="#ffd27a" motion="wobble" phase={0.1} icon={<Pin />} onClick={() => router.push(`/chat-pinned/?id=${id}`)}>Pinned</ActionBtn>
+        <ActionBtn accent="#7fe3ff" motion="pop" phase={0.35} icon={<ImageIcon />} onClick={() => router.push(`/chat-media/?id=${id}`)}>Media, links &amp; docs</ActionBtn>
       </div>
       {conv.kind === 'private' && !anon ? (
         <div className="grid2" style={{ gridTemplateColumns: '1fr 1fr', marginTop: U(16) }}>
-          <Btn kind="ghost" size="sm" icon={<Ban />} onClick={() => setConfirm('block')}>Block {user?.name?.split(' ')[0]}</Btn>
-          <Btn kind="ghost" size="sm" icon={<Flag />} onClick={() => toast(`Report submitted for ${user?.name}`)}>Report</Btn>
+          <ActionBtn accent="#ff5a4a" motion="pulse" phase={0.6} icon={<Ban />} onClick={() => setConfirm('block')}>Block {user?.name?.split(' ')[0]}</ActionBtn>
+          <ActionBtn accent="#ffb02e" motion="wave" phase={0.85} icon={<Flag />} onClick={() => toast(`Report submitted for ${user?.name}`)}>Report</ActionBtn>
         </div>
       ) : conv.kind === 'group' ? (
         <div style={{ marginTop: U(16) }}><Btn kind="ghost" block size="sm" icon={<LogOut />} onClick={() => setConfirm('leave')}>Leave group</Btn></div>
