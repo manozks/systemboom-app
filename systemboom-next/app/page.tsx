@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, ChevronRight, Store, VenetianMask, Palette } from 'lucide-react';
+import { ArrowRight, Bell, ChevronRight, Store, VenetianMask, Palette } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { Art, At, K, Press, U, img, useToast } from '@/lib/ui';
@@ -58,8 +58,10 @@ function HomeHeader() {
       <div className="hh-glow" />
       <div className="hh-sparks"><Sparks /></div>
       <img className="hh-logo" src={img('logo-lockup')} alt="SYSTEMBOOM" draggable={false} />
-      <span className="badge hh-badge" style={{ animation: 'breathe 4s ease-in-out infinite' }}>14</span>
-      <button className="hh-bell press pop" aria-label="Notifications" onClick={() => toast('Notifications')} />
+      <button className="hh-bell press pop" aria-label="Notifications" onClick={() => toast('Notifications')}>
+        <Bell strokeWidth={2.2} />
+        <span className="badge hh-badge" style={{ animation: 'breathe 4s ease-in-out infinite' }}>14</span>
+      </button>
     </div>
   );
 }

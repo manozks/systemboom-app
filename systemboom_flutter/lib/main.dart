@@ -328,8 +328,9 @@ class _Stage extends StatelessWidget {
     final ov = 12 * au; // overscan so the plate's outer edge reaches the screen edges
     final top = 6 * au;
     final slice = Rect.fromLTRB(130 * au, 40 * au, (878 - 130) * au, (362 - 40) * au);
-    final bell = Offset(w + ov - 81 * au, 108 * au);
-    final badge = Offset(w + ov - 52 * au, 77 * au);
+    final bd = 112 * au; // bell button diameter
+    final bell = Offset(w - 82 * au, 118 * au);
+    final lw = 650 * (.72 - .14 * c) * u;
     return SizedBox(
       height: h,
       child: ClipRect(
@@ -359,9 +360,9 @@ class _Stage extends StatelessWidget {
           ),
           // logo lock-up (bomb + SYSTEMBOOM)
           Positioned(
-            left: 78 * au,
+            left: (w - lw) / 2,
             top: 54 * au,
-            width: 650 * (.72 - .14 * c) * u,
+            width: lw,
             child: IgnorePointer(
               child: ShaderMask(
                 blendMode: BlendMode.dstIn,
@@ -370,9 +371,38 @@ class _Stage extends StatelessWidget {
               ),
             ),
           ),
-          // notification badge (live) + bell hit area over the art's bell
-          Positioned(left: badge.dx - 19 * au, top: badge.dy - 19 * au, width: 38 * au, height: 38 * au, child: IgnorePointer(child: RedBadge(text: '14', size: 38 * au, scale: 1 + .06 * math.max(0, math.sin(t * 2 * math.pi / 5))))),
-          Positioned(left: bell.dx - 50 * au, top: bell.dy - 50 * au, width: 100 * au, height: 100 * au, child: Press(u: u, circle: true, scaleUp: 1.1, onTap: () => onTap('Notifications'), child: const SizedBox.expand())),
+          // live bell button: gold chrome disc + notification badge
+          Positioned(
+            left: bell.dx - bd / 2,
+            top: bell.dy - bd / 2,
+            width: bd,
+            height: bd,
+            child: Press(
+              u: u,
+              circle: true,
+              scaleUp: 1.08,
+              onTap: () => onTap('Notifications'),
+              child: Stack(clipBehavior: Clip.none, children: [
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFFFFE3A6), Color(0xFFFFA928), Color(0xFFB8620A)]),
+                      border: Border.all(color: const Color(0xFFFFF1CC), width: 1.6 * au),
+                      boxShadow: [BoxShadow(color: const Color(0x99FF8A1E), blurRadius: 16 * au), BoxShadow(color: Colors.black54, blurRadius: 8 * au, offset: Offset(0, 4 * au))],
+                    ),
+                    child: Center(
+                      child: Transform.rotate(
+                        angle: .16 * math.sin(t * 2 * math.pi / 5) * math.max(0, math.sin(t * 2 * math.pi / 5)),
+                        child: Icon(Icons.notifications_rounded, size: 64 * au, color: const Color(0xFF2A1700)),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(right: -12 * au, top: -12 * au, child: RedBadge(text: '14', size: 44 * au, scale: 1 + .06 * math.max(0, math.sin(t * 2 * math.pi / 5)))),
+              ]),
+            ),
+          ),
         ]),
       ),
     );
