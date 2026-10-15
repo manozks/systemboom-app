@@ -332,163 +332,179 @@ class MiniBtn extends StatelessWidget {
   }
 }
 
-/// Action button with a glowing circular icon badge. The icon has its own little animation (the phone rings, the
-/// magnifier circles, the flag waves…), a light orbits the badge, and a shine sweeps across the button now and then.
-/// [vertical] stacks badge over label (for 3-across rows); otherwise badge and label sit side by side.
+/// Circular action button (chrome ring badge + label). At rest it is perfectly still. On hover (mouse) or press (touch) the
+/// circle comes alive: ripple rings expand from it, a light orbits its rim, the icon plays its own little motion, and it
+/// grows and brightens slightly.
 class ActionBtn extends StatefulWidget {
-  const ActionBtn({super.key, required this.u, required this.label, required this.icon, required this.onTap, this.accent = const Color(0xFFFFB347), this.vertical = false, this.motion = 'pulse', this.phase = 0, this.red = false, this.plain = false, this.badge = 112});
-  final bool plain; // no plate: just the glowing circular badge with its label underneath
-  final double badge; // badge diameter (design units) in plain mode
+  const ActionBtn({super.key, required this.u, required this.label, required this.icon, required this.onTap, this.accent = const Color(0xFFFFB347), this.vertical = false, this.motion = 'pulse', this.phase = 0, this.red = false, this.plain = true, this.badge = 112});
+  final bool plain, vertical; // kept for call sites; the button is always the plain circle now
+  final double badge; // badge diameter (design units)
   final bool red; // destructive: red ring
-  final double u;
+  final double u, phase;
   final String label, motion;
   final IconData icon;
   final VoidCallback onTap;
   final Color accent;
-  final bool vertical;
-  final double phase;
   @override
   State<ActionBtn> createState() => _ActionBtnState();
 }
 
-class _ActionBtnState extends State<ActionBtn> with SingleTickerProviderStateMixin {
-  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 3600))
-    ..value = widget.phase % 1
-    ..repeat();
+class _ActionBtnState extends State<ActionBtn> with TickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500)); // loops only while active
+  late final AnimationController _hv = AnimationController(vsync: this, duration: const Duration(milliseconds: 260))
+    ..addStatusListener((st) {
+      if (st == AnimationStatus.dismissed) {
+        _c.stop();
+        _c.value = 0;
+      }
+    });
+  bool _hover = false, _down = false;
+
+  void _sync() {
+    if (_hover || _down) {
+      _hv.forward();
+      if (!_c.isAnimating) _c.repeat();
+    } else {
+      _hv.reverse();
+    }
+  }
 
   @override
   void dispose() {
     _c.dispose();
+    _hv.dispose();
     super.dispose();
   }
 
-  Widget _icon(double d, double v) {
+  Widget _icon(double d, double v, double h) {
     final a = v * math.pi * 2;
     var rot = 0.0, sc = 1.0, dx = 0.0, dy = 0.0;
     switch (widget.motion) {
       case 'ring': // phone ringing: a quick shake burst, then rest
-        final f = (v * 1.2) % 1;
-        if (f < .35) rot = math.sin(f / .35 * math.pi * 7) * .3 * (1 - f / .35);
+        final f = (v * 1.3) % 1;
+        if (f < .6) rot = math.sin(f / .6 * math.pi * 7) * .3 * (1 - f / .6);
       case 'pulse':
-        sc = 1 + .1 * math.sin(a);
+        sc = 1 + .14 * math.sin(a);
       case 'orbit': // magnifier sweeps a small circle
-        dx = math.cos(a) * d * .05;
-        dy = math.sin(a) * d * .05;
+        dx = math.cos(a) * d * .06;
+        dy = math.sin(a) * d * .06;
       case 'wobble':
-        rot = math.sin(a) * .22;
+        rot = math.sin(a) * .26;
       case 'wave': // flag waving
-        rot = math.sin(a * 2) * .18;
+        rot = math.sin(a * 2) * .2;
         dx = math.sin(a * 2) * d * .03;
       case 'pop':
-        sc = 1 + .13 * math.pow(math.max(0, math.sin(a)), 3);
+        sc = 1 + .16 * math.pow(math.max(0, math.sin(a)), 2);
     }
+    // motion eases in with the hover amount, so the icon rests perfectly still otherwise
     return Transform.translate(
-      offset: Offset(dx, dy),
-      child: Transform.rotate(angle: rot, child: Transform.scale(scale: sc, child: Icon(widget.icon, size: d * .46, color: Color.lerp(widget.accent, Colors.white, .55), shadows: [Shadow(color: widget.accent, blurRadius: 12 * widget.u), Shadow(color: widget.accent.withValues(alpha: .7), blurRadius: 22 * widget.u), Shadow(color: Colors.black.withValues(alpha: .55), blurRadius: 3 * widget.u, offset: Offset(0, 2 * widget.u))]))),
-    );
-  }
-
-  Widget _badge(double d, double v) {
-    final ac = widget.accent;
-    final a = v * math.pi * 2;
-    return SizedBox(
-      width: d,
-      height: d,
-      child: Stack(alignment: Alignment.center, clipBehavior: Clip.none, children: [
-        // tint inside the dark metal centre so each badge reads in its own colour
-        Positioned.fill(child: Padding(padding: EdgeInsets.all(d * .12), child: DecoratedBox(decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [ac.withValues(alpha: .38 + .14 * math.sin(a)), ac.withValues(alpha: 0)]))))),
-        // the app's chrome ring art (orange glints; the red variant for destructive actions)
-        Positioned.fill(child: Image.asset('assets/images/${widget.red ? 'ring63-red' : 'ring63-act'}.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium)),
-        _icon(d, v),
-        // light orbiting the rim
-        Positioned.fill(child: Transform.scale(scale: 1.04, child: const RingSweep(inner: .84, period: Duration(milliseconds: 2800)))),
-      ]),
+      offset: Offset(dx * h, dy * h),
+      child: Transform.rotate(
+        angle: rot * h,
+        child: Transform.scale(
+          scale: 1 + (sc - 1) * h,
+          child: Icon(widget.icon, size: d * .46, color: Color.lerp(widget.accent, Colors.white, .55), shadows: [Shadow(color: widget.accent, blurRadius: 12 * widget.u), Shadow(color: widget.accent.withValues(alpha: .7), blurRadius: 22 * widget.u), Shadow(color: Colors.black.withValues(alpha: .55), blurRadius: 3 * widget.u, offset: Offset(0, 2 * widget.u))]),
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final u = widget.u, ac = widget.accent;
-    if (widget.plain) {
-      return Tap(
-        onTap: widget.onTap,
-        child: AnimatedBuilder(
-          animation: _c,
-          builder: (_, _) => Column(mainAxisSize: MainAxisSize.min, children: [
-            _badge(widget.badge * u, _c.value),
-            SizedBox(height: 10 * u),
-            FittedBox(fit: BoxFit.scaleDown, child: Text(widget.label, maxLines: 1, style: ts(u, 33, w: FontWeight.w900))),
-          ]),
-        ),
-      );
-    }
-    final badgeD = (widget.vertical ? 116 : 92) * u;
-    final h = (widget.vertical ? 230 : 138) * u;
-    return Tap(
-      onTap: widget.onTap,
-      child: AnimatedBuilder(
-        animation: _c,
-        builder: (_, _) {
-          final v = _c.value;
-          final label = Text(widget.label, maxLines: 1, style: ts(u, 36, w: FontWeight.w900));
-          return SizedBox(
-            height: h,
-            child: Stack(fit: StackFit.expand, clipBehavior: Clip.none, children: [
-              // metal plate art (same chamfered chrome button as the notification buttons)
-              Nine('notif-btn', px: const Size(330, 108), slice: 44, u: u * .62, pad: EdgeInsets.zero, child: SizedBox(width: double.infinity, height: h)),
-              // accent glow along the bottom edge + sweeping shine, clipped to the plate
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: Padding(
-                    padding: EdgeInsets.all(5 * u),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(26 * u),
-                      child: Stack(fit: StackFit.expand, children: [
-                        Positioned(left: 0, right: 0, bottom: 0, height: h * .5, child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.bottomCenter, end: Alignment.topCenter, colors: [ac.withValues(alpha: .22 + .1 * math.sin(v * math.pi * 2)), ac.withValues(alpha: 0)])))),
-                        CustomPaint(painter: _BtnShine(((v + widget.phase) % 1) / 1)),
-                      ]),
-                    ),
-                  ),
-                ),
-              ),
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 22 * u, vertical: 14 * u),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: widget.vertical
-                        ? Column(mainAxisSize: MainAxisSize.min, children: [_badge(badgeD, v), SizedBox(height: 6 * u), label])
-                        : Row(mainAxisSize: MainAxisSize.min, children: [_badge(badgeD, v), SizedBox(width: 14 * u), label]),
-                  ),
-                ),
-              ),
-            ]),
-          );
+    final d = widget.badge * u;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) {
+        _hover = true;
+        _sync();
+      },
+      onExit: (_) {
+        _hover = false;
+        _sync();
+      },
+      child: Listener(
+        onPointerDown: (_) {
+          _down = true;
+          _sync();
         },
+        onPointerUp: (_) => Future<void>.delayed(const Duration(milliseconds: 900), () {
+          if (mounted) {
+            _down = false;
+            _sync();
+          }
+        }),
+        onPointerCancel: (_) {
+          _down = false;
+          _sync();
+        },
+        child: Tap(
+          onTap: widget.onTap,
+          child: AnimatedBuilder(
+            animation: Listenable.merge([_c, _hv]),
+            builder: (_, _) {
+              final h = Curves.easeOut.transform(_hv.value), v = _c.value;
+              return Transform.scale(
+                scale: 1 + .08 * h,
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  SizedBox(
+                    width: d,
+                    height: d,
+                    child: Stack(alignment: Alignment.center, clipBehavior: Clip.none, children: [
+                      // ripple rings + orbiting light: only visible while hovered / pressed
+                      if (h > 0) Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _CircleFxPainter(v, h, ac, u)))),
+                      // tint inside the dark metal centre so each badge reads in its own colour
+                      Positioned.fill(child: Padding(padding: EdgeInsets.all(d * .12), child: DecoratedBox(decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [ac.withValues(alpha: .34 + .22 * h), ac.withValues(alpha: 0)]))))),
+                      // the app's chrome ring art (orange glints; the red variant for destructive actions)
+                      Positioned.fill(child: Image.asset('assets/images/${widget.red ? 'ring63-red' : 'ring63-act'}.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium)),
+                      _icon(d, v, h),
+                    ]),
+                  ),
+                  SizedBox(height: 10 * u),
+                  FittedBox(fit: BoxFit.scaleDown, child: Text(widget.label, maxLines: 1, style: ts(u, 33, w: FontWeight.w900, c: Color.lerp(Colors.white, const Color(0xFFFFE6B0), h)!))),
+                ]),
+              );
+            },
+          ),
+        ),
       ),
     );
   }
 }
 
-class _BtnShine extends CustomPainter {
-  _BtnShine(this.p);
-  final double p;
+/// Two ripple rings expanding from the badge plus a comet of light running around its rim (amount [h] = hover 0..1).
+class _CircleFxPainter extends CustomPainter {
+  _CircleFxPainter(this.v, this.h, this.color, this.u);
+  final double v, h, u;
+  final Color color;
   @override
   void paint(Canvas canvas, Size size) {
-    if (p < .62) return; // rests for most of the cycle, then sweeps across
-    final k = (p - .62) / .38;
-    final x = -size.width * .3 + size.width * 1.6 * Curves.easeInOut.transform(k);
-    canvas.save();
-    canvas.clipRect(Offset.zero & size);
-    canvas.translate(x, 0);
-    canvas.skew(-.3, 0);
-    final band = Rect.fromLTWH(0, -4, size.width * .22, size.height + 8);
-    canvas.drawRect(band, Paint()..shader = const LinearGradient(colors: [Color(0x00FFFFFF), Color(0x55FFFFFF), Color(0x00FFFFFF)]).createShader(band));
-    canvas.restore();
+    final c = size.center(Offset.zero);
+    final rOut = size.width / 2;
+    final hot = Color.lerp(color, Colors.white, .45)!;
+    for (var i = 0; i < 2; i++) {
+      final f = (v + i * .5) % 1;
+      final e = Curves.easeOut.transform(f);
+      canvas.drawCircle(c, rOut * (1.0 + .75 * e), Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3.4 * u * (1 - f) + .6
+        ..color = hot.withValues(alpha: .85 * (1 - f) * h));
+    }
+    final mid = rOut * .9, w = rOut * .2;
+    final ang = v * math.pi * 2;
+    canvas.drawCircle(c, mid, Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = w
+      ..blendMode = BlendMode.plus
+      ..shader = SweepGradient(
+        colors: [const Color(0x00FFE3B0), const Color(0x00FFE3B0), Color.fromRGBO(255, 208, 138, .33 * h), Color.fromRGBO(255, 244, 214, h), const Color(0x00FFE3B0)],
+        stops: const [0, .6, .85, .985, 1],
+        transform: GradientRotation(ang),
+      ).createShader(Rect.fromCircle(center: c, radius: mid)));
   }
 
   @override
-  bool shouldRepaint(_BtnShine o) => o.p != p;
+  bool shouldRepaint(_CircleFxPainter o) => o.v != v || o.h != h;
 }
 
 /// Wide orange / red call-to-action (chat info style).

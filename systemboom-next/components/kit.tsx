@@ -22,7 +22,7 @@ export function Btn({ kind = 'steel', size, block, icon, children, ...rest }: { 
 export function ActionBtn({ icon, children, accent = '#ffb347', motion = 'pulse', vertical, phase = 0, red, plain, ...rest }: { icon: ReactNode; accent?: string; motion?: 'ring' | 'pulse' | 'orbit' | 'wobble' | 'wave' | 'pop'; vertical?: boolean; phase?: number; red?: boolean; plain?: boolean } & ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button {...rest} className={cx('abtn2', vertical && 'v', red && 'red', plain && 'plain', rest.className)} style={{ ['--ac' as string]: accent, ['--ph' as string]: `${-phase * 3.6}s`, ...rest.style }}>
-      <span className="abadge"><span className="aorbit" /><span className={`aico m-${motion}`}>{icon}</span></span>
+      <span className="abadge"><span className="aripple" /><span className="aorbit" /><span className={`aico m-${motion}`}>{icon}</span></span>
       <span className="albl">{children}</span>
     </button>
   );

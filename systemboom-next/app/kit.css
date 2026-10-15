@@ -879,3 +879,26 @@ button.lr:active { transform: scale(.985); }
 .abtn2.plain.v .abadge { width: calc(142 * var(--u)); height: calc(142 * var(--u)); }
 .abtn2.plain.v .aico svg { width: calc(64 * var(--u)); height: calc(64 * var(--u)); }
 .abtn2.plain.v { font-size: calc(36 * var(--u)); }
+
+/* ───────── hover/press only: the circle comes alive (ripples, orbiting light, icon motion); at rest everything is still ───────── */
+.abtn2, .abtn2::after, .abadge, .abadge::before, .aico, .aorbit { animation: none; }
+.abtn2.plain .abadge::before { opacity: .7; transition: opacity .25s; }
+.aorbit { opacity: 0; transition: opacity .25s; }
+.aripple { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; }
+.aripple::before, .aripple::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: calc(3 * var(--u)) solid color-mix(in srgb, var(--ac) 70%, #fff); opacity: 0; }
+.abtn2:hover, .abtn2:focus-visible, .abtn2:active { transform: translateY(-3px) scale(1.08); filter: brightness(1.15); }
+.abtn2:hover .abadge::before, .abtn2:focus-visible .abadge::before, .abtn2:active .abadge::before { opacity: 1; }
+.abtn2:hover .aorbit, .abtn2:focus-visible .aorbit, .abtn2:active .aorbit { opacity: 1; animation: tileorbit 1.5s linear infinite; }
+.abtn2:hover .aripple::before, .abtn2:focus-visible .aripple::before, .abtn2:active .aripple::before { animation: ripplering 1.5s ease-out infinite; }
+.abtn2:hover .aripple::after, .abtn2:focus-visible .aripple::after, .abtn2:active .aripple::after { animation: ripplering 1.5s ease-out infinite; animation-delay: -.75s; }
+.abtn2:hover .aico, .abtn2:focus-visible .aico, .abtn2:active .aico { animation-duration: 1.5s; animation-iteration-count: infinite; animation-delay: 0s; }
+.abtn2:hover .aico.m-ring, .abtn2:active .aico.m-ring { animation-name: icoring; }
+.abtn2:hover .aico.m-pulse, .abtn2:active .aico.m-pulse { animation-name: icopulse; }
+.abtn2:hover .aico.m-orbit, .abtn2:active .aico.m-orbit { animation-name: icoorbit; }
+.abtn2:hover .aico.m-wobble, .abtn2:active .aico.m-wobble { animation-name: icowobble; }
+.abtn2:hover .aico.m-wave, .abtn2:active .aico.m-wave { animation-name: icowave; }
+.abtn2:hover .aico.m-pop, .abtn2:active .aico.m-pop { animation-name: icopop; }
+.abtn2:focus-visible .aico.m-ring { animation-name: icoring; } .abtn2:focus-visible .aico.m-pulse { animation-name: icopulse; } .abtn2:focus-visible .aico.m-orbit { animation-name: icoorbit; }
+.abtn2:focus-visible .aico.m-wobble { animation-name: icowobble; } .abtn2:focus-visible .aico.m-wave { animation-name: icowave; } .abtn2:focus-visible .aico.m-pop { animation-name: icopop; }
+.abtn2:hover .albl { color: #ffe6b0; }
+@keyframes ripplering { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.85); opacity: 0; } }
