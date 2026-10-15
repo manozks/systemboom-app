@@ -35,6 +35,17 @@
   <title>SYSTEMBOOM</title>
   <link rel="manifest" href="manifest.json">
   <!-- start fetching the heaviest art / font while the engine boots -->
+  <script>
+    // Start downloading the CanvasKit engine (the heaviest file) right away, in parallel with the app code.
+    // Picks the same variant Flutter will: the smaller Chromium one where the browser supports it.
+    (function () {
+      var chromium = !!(window.Intl && Intl.v8BreakIterator && Intl.Segmenter);
+      var l = document.createElement('link');
+      l.rel = 'preload'; l.as = 'fetch'; l.crossOrigin = 'anonymous';
+      l.href = 'canvaskit/' + (chromium ? 'chromium/' : '') + 'canvaskit.wasm';
+      document.head.appendChild(l);
+    })();
+  </script>
   <link rel="preload" href="assets/assets/images/bomb-icon.webp" as="image" fetchpriority="high">
   <link rel="preload" href="assets/assets/images/ai-nav.webp" as="image" fetchpriority="high">
   <link rel="preload" href="assets/assets/images/hero-nobomb.webp" as="image" fetchpriority="high">

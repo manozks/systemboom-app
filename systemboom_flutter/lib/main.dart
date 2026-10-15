@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart' show Ticker;
 import 'package:flutter/services.dart';
 
 import 'pages/more_pages.dart' show SplashPage;
@@ -23,6 +24,13 @@ void main() {
   ));
   runApp(const SystemBoomApp());
 }
+
+/// Art decoded up front (started while the splash plays) so the first screens don't pop images in one by one.
+const kPrecacheImages = [
+      'hero-nobomb.webp', 'logo-lockup.webp', 'greeting.webp', 'cta.webp', 'card-base-blue.webp', 'card-base-dark.webp',
+      'ico-chat-ref.webp', 'ico-call-ref.webp', 'ico-mk.webp', 'ico-an.webp', 'ico-ds.webp', 'cta-blank-wide.webp', 'ai-nav.webp',
+      'nav-calls.webp', 'hero-header.webp', 'dock.webp', 'hdr-calls.webp', 'brand-colors.webp', 'typography.webp', 'cta-new.webp', 'greeting-new.webp', 'buttons-panel.webp', 'icons-panel.webp', 'icon-key.webp', 'search-bar.webp', 'tabs-base.webp', 'tabs-key.webp', 'carbon-tile.webp', 'profile.webp', 'cf1.webp', 'cf2.webp', 'cf4.webp', 'cf5.webp', 'me.webp', 'chat-bubble.webp', 'chat-bubble-out.webp', 'chat-bar.webp', 'plate-row.webp', 'btn-steel.webp', 'btn-orange.webp', 'info-row.webp', 'info-chip-on.webp', 'info-chip-off.webp', 'notif-card.webp', 'ring63-act.webp', 'ring63-emoji.webp', 'share-ring.webp', 'ring63-red.webp', 'plate-title.webp', 'plate-tab.webp', 'pframe-photo.webp', 'plate-green.webp', 'pill-status.webp', 'photo-deskmat.webp', 'doc-thumb.webp', 'call-bg.webp', 'info-ring.webp', 'info-cta-orange.webp', 'info-cta-red.webp', 'info-label.webp', 'notif-btn.webp', 'dialog-bg.webp', 'celestial/venus.webp', 'celestial/sun.webp', 'celestial/meteors.webp', 'celestial/comet.webp', 'celestial/jupiter.webp', 'celestial/saturn.webp', 'celestial/moon.webp', 'celestial/mercury.webp', 'asheet-frame.webp', 'asheet-row.webp', 'asheet-row-red.webp', 'panel-frame.webp',
+];
 
 class SystemBoomApp extends StatelessWidget {
   const SystemBoomApp({super.key});
@@ -56,14 +64,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
-  late final AnimationController _loop;
+  // animation clock, ticked at ~30 fps (half the frames) so the big home stage isn't rebuilt 60 times a second
+  late final Ticker _ticker;
+  final ValueNotifier<double> _clock = ValueNotifier<double>(0);
+  int _frame = 0;
   final ValueNotifier<String?> _toast = ValueNotifier<String?>(null);
   int _toastId = 0;
 
   @override
   void initState() {
     super.initState();
-    _loop = AnimationController(vsync: this, duration: const Duration(seconds: 60))..repeat();
+    _ticker = createTicker((d) {
+      if ((_frame++ & 1) == 0) _clock.value = (d.inMicroseconds / 1e6) % 60;
+    })..start();
   }
 
   bool _precached = false;
@@ -74,24 +87,21 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     if (_precached) return;
     _precached = true;
     // decode the art up front so the first frame doesn't pop images in one by one
-    for (final n in const [
-      'hero-nobomb.webp', 'logo-lockup.webp', 'greeting.webp', 'cta.webp', 'card-base-blue.webp', 'card-base-dark.webp',
-      'ico-chat-ref.webp', 'ico-call-ref.webp', 'ico-mk.webp', 'ico-an.webp', 'ico-ds.webp', 'cta-blank-wide.webp', 'ai-nav.webp',
-      'nav-calls.webp', 'hero-header.webp', 'dock.webp', 'hdr-calls.webp', 'brand-colors.webp', 'typography.webp', 'cta-new.webp', 'greeting-new.webp', 'buttons-panel.webp', 'icons-panel.webp', 'icon-key.webp', 'search-bar.webp', 'tabs-base.webp', 'tabs-key.webp', 'carbon-tile.webp', 'profile.webp', 'cf1.webp', 'cf2.webp', 'cf4.webp', 'cf5.webp', 'me.webp', 'chat-bubble.webp', 'chat-bubble-out.webp', 'chat-bar.webp', 'plate-row.webp', 'btn-steel.webp', 'btn-orange.webp', 'info-row.webp', 'info-chip-on.webp', 'info-chip-off.webp', 'notif-card.webp', 'ring63-act.webp', 'ring63-emoji.webp', 'share-ring.webp', 'ring63-red.webp', 'plate-title.webp', 'plate-tab.webp', 'pframe-photo.webp', 'plate-green.webp', 'pill-status.webp', 'photo-deskmat.webp', 'doc-thumb.webp', 'call-bg.webp', 'info-ring.webp', 'info-cta-orange.webp', 'info-cta-red.webp', 'info-label.webp', 'notif-btn.webp', 'dialog-bg.webp', 'celestial/venus.webp', 'celestial/sun.webp', 'celestial/meteors.webp', 'celestial/comet.webp', 'celestial/jupiter.webp', 'celestial/saturn.webp', 'celestial/moon.webp', 'celestial/mercury.webp', 'asheet-frame.webp', 'asheet-row.webp', 'asheet-row-red.webp', 'panel-frame.webp',
-    ]) {
+    for (final n in kPrecacheImages) {
       precacheImage(AssetImage('assets/images/$n'), context);
     }
   }
 
   @override
   void dispose() {
-    _loop.dispose();
+    _ticker.dispose();
+    _clock.dispose();
     _toast.dispose();
     super.dispose();
   }
 
   /// seconds elapsed (looping), used by every animation
-  double get _t => _loop.value * 60;
+  double get _t => _clock.value;
 
   void _tap(String label) {
     HapticFeedback.selectionClick();
@@ -138,7 +148,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   width: w,
                   height: kStageH * u + MediaQuery.paddingOf(context).top,
                   child: AnimatedBuilder(
-                    animation: _loop,
+                    animation: _clock,
                     builder: (context, _) => Padding(padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top), child: _Stage(u: u, t: _t, onTap: _tap, hero: false)),
                   ),
                 ),
@@ -149,7 +159,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 right: 0,
                 top: 0,
                 child: AnimatedBuilder(
-                  animation: _loop,
+                  animation: _clock,
                   builder: (context, _) => Container(
                     color: const Color(0xFF070A0E),
                     padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),

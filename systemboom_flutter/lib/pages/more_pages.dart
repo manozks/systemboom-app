@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../data.dart';
 import '../kit.dart';
-import '../main.dart' show HomePage;
+import '../main.dart' show HomePage, kPrecacheImages;
 import 'chat_extra_pages.dart';
 import '../shell.dart';
 import 'chat_page.dart';
@@ -215,7 +215,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
     super.didChangeDependencies();
     if (_pre) return;
     _pre = true;
-    for (final n in const ['bomb-icon.webp', 'carbon-tile.webp']) {
+    for (final n in const ['bomb-icon.webp', 'carbon-tile.webp', ...kPrecacheImages]) {
       precacheImage(AssetImage('assets/images/$n'), context);
     }
   }
