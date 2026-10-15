@@ -956,7 +956,15 @@ button.lr:active { transform: scale(.985); }
 
 /* ───────── Home header: full-bleed, shorter, shrinks while scrolling (--c = 0..1 set from JS) ───────── */
 .homehdr { --s: calc(.72 - .26 * var(--c, 0)); --au: calc(var(--s) * var(--u)); --sl: calc((.72 - .14 * var(--c, 0)) * var(--u)); position: sticky; top: 0; z-index: 30; height: calc(362 * var(--au)); overflow: hidden; background: #070a0e; }
-.hh-art { position: absolute; left: calc(-12 * var(--au)); right: calc(-12 * var(--au)); top: calc(-6 * var(--au)); bottom: 0; border: solid transparent; border-width: calc(40 * var(--au)) calc(130 * var(--au)); border-image-slice: 40 130 fill; border-image-width: calc(40 * var(--au)) calc(130 * var(--au)); border-image-repeat: stretch; pointer-events: none; }
+.hh-art { position: absolute; inset: 0; pointer-events: none; }
+/* the plate is cut into pieces so the lava platform in the middle keeps its true proportions; only flat metal stretches */
+.hh-art i { position: absolute; top: 0; height: 100%; background-repeat: no-repeat; background-size: calc(878 * var(--au)) 100%; }
+.hh-art .a-l { left: calc(-12 * var(--au)); width: calc(240 * var(--au)); background-position: 0 0; }
+.hh-art .a-r { right: calc(-12 * var(--au)); width: calc(238 * var(--au)); background-position: calc(-640 * var(--au)) 0; }
+.hh-art .a-c { left: calc(50% - 204 * var(--au)); width: calc(408 * var(--au)); background-position: calc(-235 * var(--au)) 0; }
+.hh-art .a-gl { left: calc(228 * var(--au)); right: calc(50% + 203 * var(--au)); background-size: 8780% 100%; background-position: 27.65% 0; }
+.hh-art .a-gr { left: calc(50% + 203 * var(--au)); right: calc(226 * var(--au)); background-size: 8780% 100%; background-position: 72.58% 0; }
+.homehdr { box-shadow: 0 calc(6 * var(--u)) calc(14 * var(--u)) rgba(0,0,0,calc(.55 * var(--c, 0))); }
 .hh-glow { position: absolute; left: 27%; top: 66%; width: 46%; height: 24%; pointer-events: none; background: radial-gradient(ellipse, rgba(255,170,60,.55), rgba(255,120,20,.2) 50%, rgba(255,120,20,0) 72%); animation: breathe 5s ease-in-out infinite; opacity: calc(1 - .5 * var(--c, 0)); }
 .hh-sparks { position: absolute; left: 35%; top: 28%; width: 30%; height: 40%; pointer-events: none; opacity: calc(1 - 1.4 * var(--c, 0)); }
 .hh-logo { position: absolute; left: 50%; transform: translateX(-50%); top: calc(54 * var(--au)); width: calc(650 * var(--sl)); pointer-events: none; -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }

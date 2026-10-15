@@ -44,7 +44,8 @@ function HomeHeader() {
     const update = () => {
       raf = 0;
       const u = el.offsetWidth / 941;
-      el.style.setProperty('--c', String(Math.min(1, Math.max(0, window.scrollY / (95 * u)))));
+      const x = Math.min(1, Math.max(0, window.scrollY / (95 * u)));
+      el.style.setProperty('--c', String(x * x * (3 - 2 * x)));
     };
     const on = () => { if (!raf) raf = requestAnimationFrame(update); };
     update();
@@ -54,7 +55,7 @@ function HomeHeader() {
   }, []);
   return (
     <div ref={ref} className="homehdr" style={{ ['--c' as string]: 0 }}>
-      <div className="hh-art" />
+      <div className="hh-art"><i className="a-l" /><i className="a-gl" /><i className="a-gr" /><i className="a-c" /><i className="a-r" /></div>
       <div className="hh-glow" />
       <div className="hh-sparks"><Sparks /></div>
       <img className="hh-logo" src={img('logo-lockup')} alt="SYSTEMBOOM" draggable={false} />

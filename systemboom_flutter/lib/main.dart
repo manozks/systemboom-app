@@ -5,7 +5,7 @@ import 'package:flutter/scheduler.dart' show Ticker;
 import 'package:flutter/services.dart';
 
 import 'pages/more_pages.dart' show SplashPage;
-import 'kit.dart' show HoverLoop, RingSweep, nineScale;
+import 'kit.dart' show HoverLoop, RingSweep;
 import 'orb_menu.dart';
 import 'shell.dart';
 import 'ui.dart';
@@ -176,11 +176,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 child: ValueListenableBuilder<double>(
                   valueListenable: _off,
                   builder: (context, off, _) {
-                    final cc = (off / (_Stage.shrinkDist * u)).clamp(0.0, 1.0);
+                    final x = (off / (_Stage.shrinkDist * u)).clamp(0.0, 1.0);
+                    final cc = x * x * (3 - 2 * x);
                     return AnimatedBuilder(
                       animation: _clock,
                       builder: (context, _) => Container(
-                        color: const Color(0xFF070A0E),
+                        decoration: BoxDecoration(color: const Color(0xFF070A0E), boxShadow: [BoxShadow(color: Color.fromRGBO(0, 0, 0, .55 * cc), blurRadius: 14 * u, offset: Offset(0, 6 * u))]),
                         padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),
                         child: _Stage(u: u, t: _t, onTap: _tap).header(cc),
                       ),
@@ -319,6 +320,42 @@ class _Stage extends StatelessWidget {
   static double get headerCmpH => 362 * sCmp; // ≈ 166
   static double get shrinkDist => headerExpH - headerCmpH; // scroll distance over which the header shrinks
 
+  /// The plate art, cut into pieces so the lava platform keeps its true proportions; only flat metal stretches.
+  List<Widget> _plate(double au, double w, double h, double ov) {
+    // piece = art columns [a0, a1) drawn into [x, x + width); `stretch` > 1 widens the strip horizontally
+    Widget piece(double x, double width, double a0, double stretch) {
+      return Positioned(
+        left: x,
+        top: 0,
+        width: width,
+        height: h,
+        child: ClipRect(
+          child: OverflowBox(
+            alignment: Alignment.topLeft,
+            minWidth: 0,
+            maxWidth: double.infinity,
+            child: Transform(
+              alignment: Alignment.topLeft,
+              transform: Matrix4.diagonal3Values(stretch, 1, 1)..translateByDouble(-a0 * au, 0, 0, 1),
+              child: Image.asset('assets/images/hero-nobomb.webp', width: 878 * au, height: h, fit: BoxFit.fill, filterQuality: FilterQuality.medium),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final cl = w / 2 - 204 * au; // centre piece (platform) start
+    final cr = w / 2 + 204 * au;
+    final gl = -ov + 240 * au, gr = w + ov - 238 * au;
+    return [
+      piece(gl - 1, cl - gl + 2, 240, (cl - gl + 2) / (10 * au)),
+      piece(cr - 1, gr - cr + 2, 630, (gr - cr + 2) / (10 * au)),
+      piece(cl, 408 * au, 235, 1),
+      piece(-ov, 240 * au, 0, 1),
+      piece(gr, 238 * au, 640, 1),
+    ];
+  }
+
   /// Full-bleed hero header: covers the top, left and right edges, is shorter than the old block, and gets smaller as [c] goes 0 -> 1.
   Widget header(double c) {
     final s = sExp + (sCmp - sExp) * c;
@@ -326,8 +363,6 @@ class _Stage extends StatelessWidget {
     final h = 362 * au;
     final w = 941 * u;
     final ov = 12 * au; // overscan so the plate's outer edge reaches the screen edges
-    final top = 6 * au;
-    final slice = Rect.fromLTRB(130 * au, 40 * au, (878 - 130) * au, (362 - 40) * au);
     final bd = 112 * au; // bell button diameter
     final bell = Offset(w - 82 * au, 118 * au);
     final lw = 650 * (.72 - .14 * c) * u;
@@ -335,13 +370,7 @@ class _Stage extends StatelessWidget {
       height: h,
       child: ClipRect(
         child: Stack(clipBehavior: Clip.hardEdge, children: [
-          Positioned(
-            left: -ov,
-            right: -ov,
-            top: -top,
-            height: h + top,
-            child: Image.asset('assets/images/hero-nobomb.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium, scale: nineScale(878, 362, slice.width, slice.height, 1 / au), centerSlice: slice),
-          ),
+          ..._plate(au, w, h, ov),
           // pulsing glow on the platform
           Positioned(
             left: w * .27,
