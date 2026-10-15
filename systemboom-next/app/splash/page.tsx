@@ -19,7 +19,7 @@ export default function Splash() {
     if (done.current) return;
     done.current = true;
     const r = wrap.current?.getBoundingClientRect();
-    if (r) window.dispatchEvent(new CustomEvent('sb-lava', { detail: { x: r.left + r.width * 0.419, y: r.top + r.height * 0.277 } }));
+    if (r) window.dispatchEvent(new CustomEvent('sb-lava', { detail: { x: r.left + r.width * 0.385, y: r.top + r.height * 0.258 } }));
     router.replace('/welcome/');
   };
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function Splash() {
     <div className="stage center-screen splashfull" onClick={open}>
       <div ref={wrap} className={'bombwrap' + (boom ? ' shake' : '')}>
         <img className="bombicon" src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/img/bomb-icon.webp`} alt="SYSTEMBOOM" draggable={false} />
-        <svg className="bombfx" viewBox="0 0 1254 1254" aria-hidden>
+        <svg className="bombfx" viewBox="140 90 1000 1000" aria-hidden>
           <defs>
             <filter id="bblur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="22" /></filter>
             <filter id="bblur2"><feGaussianBlur stdDeviation="6" /></filter>

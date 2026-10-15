@@ -272,9 +272,9 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                     final blast = ((sec - _start - _burn) / _blast).clamp(0.0, 1.0);
                     final pop = Curves.easeOutBack.transform((sec / .6).clamp(0.0, 1.0));
                     return LayoutBuilder(builder: (context, box) {
-                      final s = box.maxWidth * .9;
+                      final s = box.maxWidth * .95;
                       final rect = Rect.fromCenter(center: Offset(box.maxWidth / 2, box.maxHeight / 2), width: s, height: s);
-                      final shake = blast > 0 ? Offset(math.sin(sec * 120) * 6, math.cos(sec * 97) * 4) * (s / 1254) : Offset.zero;
+                      final shake = blast > 0 ? Offset(math.sin(sec * 120) * 6, math.cos(sec * 97) * 4) * (s / 1000) : Offset.zero;
                       _rect = rect;
                       if (!_gone && blast * _blast >= _peak) WidgetsBinding.instance.addPostFrameCallback((_) => _reveal());
                       return Stack(children: [
@@ -361,13 +361,13 @@ class _FusePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final sc = rect.width / 1254;
+    final sc = rect.width / 1000; // the icon image is the 1000x1000 crop starting at (140, 90) of the original 1254 art
     // the burnt fuse must dissolve together with the icon when the bomb blows (no floating rope left behind)
     final fade = (1 - blast * 6).clamp(0.0, 1.0);
     if (burn > 0 && fade > 0) {
       canvas.saveLayer(null, Paint()..color = Color.fromRGBO(255, 255, 255, fade));
       canvas.save();
-      canvas.translate(rect.left, rect.top);
+      canvas.translate(rect.left - 140 * sc, rect.top - 90 * sc);
       canvas.scale(sc);
       final len = _metric.length;
       final done = _metric.extractPath(0, len * burn);
@@ -400,7 +400,7 @@ class _FusePainter extends CustomPainter {
       canvas.restore();
     }
     if (blast > 0) {
-      final c = rect.topLeft + const Offset(525, 348) * sc;
+      final c = rect.topLeft + const Offset(525 - 140, 348 - 90) * sc;
       final k = rect.width / 400; // ~1 on a phone
       final t = blast * _SplashPageState._blast; // seconds since the blast
       // 1) bright flash that swells and fades
