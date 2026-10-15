@@ -5,7 +5,7 @@ import 'package:flutter/scheduler.dart' show Ticker;
 import 'package:flutter/services.dart';
 
 import 'pages/more_pages.dart' show SplashPage;
-import 'kit.dart' show HoverLoop, RingSweep;
+import 'kit.dart' show HoverLoop, RingSweep, nineScale;
 import 'orb_menu.dart';
 import 'shell.dart';
 import 'ui.dart';
@@ -56,6 +56,9 @@ class SystemBoomApp extends StatelessWidget {
 const double kStageW = 941;
 const double kStageH = 2097;
 
+/// How far (design units) the stage is pulled up now that the header is shorter: 411 (greeting y) - (header 261 + 8 gap).
+const double _kStageShift = 142;
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -65,6 +68,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   // animation clock, ticked at ~30 fps (half the frames) so the big home stage isn't rebuilt 60 times a second
+  final ScrollController _sc = ScrollController();
+  final ValueNotifier<double> _off = ValueNotifier<double>(0);
   late final Ticker _ticker;
   final ValueNotifier<double> _clock = ValueNotifier<double>(0);
   int _frame = 0;
@@ -74,6 +79,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   @override
   void initState() {
     super.initState();
+    _sc.addListener(() => _off.value = _sc.hasClients ? _sc.offset : 0);
     _ticker = createTicker((d) {
       if ((_frame++ & 1) == 0) _clock.value = (d.inMicroseconds / 1e6) % 60;
     })..start();
@@ -94,6 +100,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   void dispose() {
+    _sc.dispose();
+    _off.dispose();
     _ticker.dispose();
     _clock.dispose();
     _toast.dispose();
@@ -143,28 +151,41 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             final u = w / kStageW;
             return Stack(children: [
               SingleChildScrollView(
+                controller: _sc,
                 physics: const BouncingScrollPhysics(),
                 child: SizedBox(
                   width: w,
-                  height: kStageH * u + MediaQuery.paddingOf(context).top,
-                  child: AnimatedBuilder(
-                    animation: _clock,
-                    builder: (context, _) => Padding(padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top), child: _Stage(u: u, t: _t, onTap: _tap, hero: false)),
-                  ),
+                  height: (kStageH - _kStageShift) * u + MediaQuery.paddingOf(context).top,
+                  child: Stack(clipBehavior: Clip.hardEdge, children: [
+                    // the stage's own coordinates start 142 units lower (old, taller header); shift it up under the new, shorter one
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: MediaQuery.paddingOf(context).top - _kStageShift * u,
+                      height: kStageH * u,
+                      child: AnimatedBuilder(animation: _clock, builder: (context, _) => _Stage(u: u, t: _t, onTap: _tap, hero: false)),
+                    ),
+                  ]),
                 ),
               ),
-              // pinned header: stays put while the rest of the home screen scrolls underneath it
+              // pinned header: full-bleed, stays put and shrinks as the rest of the home screen scrolls underneath it
               Positioned(
                 left: 0,
                 right: 0,
                 top: 0,
-                child: AnimatedBuilder(
-                  animation: _clock,
-                  builder: (context, _) => Container(
-                    color: const Color(0xFF070A0E),
-                    padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),
-                    child: _Stage(u: u, t: _t, onTap: _tap).header(),
-                  ),
+                child: ValueListenableBuilder<double>(
+                  valueListenable: _off,
+                  builder: (context, off, _) {
+                    final cc = (off / (_Stage.shrinkDist * u)).clamp(0.0, 1.0);
+                    return AnimatedBuilder(
+                      animation: _clock,
+                      builder: (context, _) => Container(
+                        color: const Color(0xFF070A0E),
+                        padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),
+                        child: _Stage(u: u, t: _t, onTap: _tap).header(cc),
+                      ),
+                    );
+                  },
                 ),
               ),
               Positioned(
@@ -292,19 +313,70 @@ class _Stage extends StatelessWidget {
         ],
       ));
 
-  /// Height of the pinned header in design units (hero art + its 1.038 scale + margin).
-  static const double headerH = 29 + 355 * 1.038 + 10;
+  /// Pinned header geometry (design units). The art is drawn at scale `s` (units per art pixel): 0.72 expanded, 0.46 compact.
+  static const double sExp = .72, sCmp = .46;
+  static double get headerExpH => 362 * sExp; // ≈ 261
+  static double get headerCmpH => 362 * sCmp; // ≈ 166
+  static double get shrinkDist => headerExpH - headerCmpH; // scroll distance over which the header shrinks
 
-  /// The hero header on its own (carbon backing + hero art + bell), used as the pinned top bar.
-  Widget header() => SizedBox(
-        height: headerH * u,
-        child: ClipRect(
-          child: Stack(clipBehavior: Clip.none, children: [
-            Positioned.fill(child: _Background(u: u)),
-            _hero(),
-          ]),
-        ),
-      );
+  /// Full-bleed hero header: covers the top, left and right edges, is shorter than the old block, and gets smaller as [c] goes 0 -> 1.
+  Widget header(double c) {
+    final s = sExp + (sCmp - sExp) * c;
+    final au = s * u; // logical px per art pixel
+    final h = 362 * au;
+    final w = 941 * u;
+    final ov = 12 * au; // overscan so the plate's outer edge reaches the screen edges
+    final top = 6 * au;
+    final slice = Rect.fromLTRB(130 * au, 40 * au, (878 - 130) * au, (362 - 40) * au);
+    final bell = Offset(w + ov - 81 * au, 108 * au);
+    final badge = Offset(w + ov - 52 * au, 77 * au);
+    return SizedBox(
+      height: h,
+      child: ClipRect(
+        child: Stack(clipBehavior: Clip.hardEdge, children: [
+          Positioned(
+            left: -ov,
+            right: -ov,
+            top: -top,
+            height: h + top,
+            child: Image.asset('assets/images/hero-nobomb.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium, scale: nineScale(878, 362, slice.width, slice.height, 1 / au), centerSlice: slice),
+          ),
+          // pulsing glow on the platform
+          Positioned(
+            left: w * .27,
+            top: h * .66,
+            width: w * .46,
+            height: h * .24,
+            child: IgnorePointer(child: Opacity(opacity: (.6 + .4 * math.sin(t * 2 * math.pi / 5)) * (1 - c * .5), child: const DecoratedBox(decoration: BoxDecoration(gradient: RadialGradient(colors: [Color(0x8CFFAA3C), Color(0x33FF7814), Color(0x00FF7814)], stops: [0, .5, .72]))))),
+          ),
+          // spark cloud above the platform (fades out as the header shrinks)
+          Positioned(
+            left: w * .35,
+            top: h * .28,
+            width: w * .30,
+            height: h * .40,
+            child: IgnorePointer(child: Opacity(opacity: (1 - c * 1.4).clamp(0.0, 1.0), child: CustomPaint(painter: _SparkPainter(t: t, u: u * s)))),
+          ),
+          // logo lock-up (bomb + SYSTEMBOOM)
+          Positioned(
+            left: 78 * au,
+            top: 54 * au,
+            width: 650 * (.72 - .14 * c) * u,
+            child: IgnorePointer(
+              child: ShaderMask(
+                blendMode: BlendMode.dstIn,
+                shaderCallback: (r) => const LinearGradient(colors: [Color(0x00000000), Color(0xFF000000), Color(0xFF000000), Color(0x00000000)], stops: [0, .05, .95, 1]).createShader(r),
+                child: Image.asset('assets/images/logo-lockup.webp', fit: BoxFit.fitWidth),
+              ),
+            ),
+          ),
+          // notification badge (live) + bell hit area over the art's bell
+          Positioned(left: badge.dx - 19 * au, top: badge.dy - 19 * au, width: 38 * au, height: 38 * au, child: IgnorePointer(child: RedBadge(text: '14', size: 38 * au, scale: 1 + .06 * math.max(0, math.sin(t * 2 * math.pi / 5))))),
+          Positioned(left: bell.dx - 50 * au, top: bell.dy - 50 * au, width: 100 * au, height: 100 * au, child: Press(u: u, circle: true, scaleUp: 1.1, onTap: () => onTap('Notifications'), child: const SizedBox.expand())),
+        ]),
+      ),
+    );
+  }
 
   Widget _hero() {
     final sparkRect = Rect.fromLTWH(861 * .35, 355 * .28, 861 * .30, 355 * .40);

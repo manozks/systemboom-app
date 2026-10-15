@@ -78,7 +78,7 @@ class _TapState extends State<Tap> {
 /// Nine-slice art. [px] is the image size, [slice] the border in image pixels.
 /// Image scale nudged by a few ulps so Flutter's debug-only 9-slice check (which compares doubles with ==)
 /// doesn't trip on float noise. Mirrors the arithmetic in paintImage; the change is far below a pixel.
-double _nineScale(double w, double h, double cw, double ch, double s) {
+double nineScale(double w, double h, double cw, double ch, double s) {
   bool ok(double c) {
     double fit(double n, double cs) {
       final inp = n - (n / c - cs) * c;
@@ -119,7 +119,7 @@ class Nine extends StatelessWidget {
           final sx = math.min(s, c.maxWidth / 2 - .5), sy = math.min(s, c.maxHeight / 2 - .5);
           if (sx <= 0 || sy <= 0) return const SizedBox.shrink();
           final slice = Rect.fromLTRB(sx, sy, px.width * u - sx, px.height * u - sy);
-          return Image.asset('assets/images/$asset.webp', scale: _nineScale(px.width, px.height, slice.width, slice.height, 1 / u), centerSlice: slice, fit: BoxFit.fill, filterQuality: FilterQuality.medium);
+          return Image.asset('assets/images/$asset.webp', scale: nineScale(px.width, px.height, slice.width, slice.height, 1 / u), centerSlice: slice, fit: BoxFit.fill, filterQuality: FilterQuality.medium);
         }),
       ),
       if (child != null) ConstrainedBox(constraints: BoxConstraints(minHeight: minH ?? 0), child: Padding(padding: pad, child: child)),
@@ -964,7 +964,7 @@ Future<void> showActions(BuildContext context, {String? title, required List<Act
             width: w,
             height: h,
             child: Stack(clipBehavior: Clip.none, children: [
-              Positioned.fill(child: Image.asset('assets/images/asheet-frame.webp', scale: _nineScale(1116, 1296, (w - 80 * k), 1012 * k, 1 / k), centerSlice: Rect.fromLTRB(40 * k, 178 * k, w - 40 * k, 1190 * k), fit: BoxFit.fill, filterQuality: FilterQuality.medium)),
+              Positioned.fill(child: Image.asset('assets/images/asheet-frame.webp', scale: nineScale(1116, 1296, (w - 80 * k), 1012 * k, 1 / k), centerSlice: Rect.fromLTRB(40 * k, 178 * k, w - 40 * k, 1190 * k), fit: BoxFit.fill, filterQuality: FilterQuality.medium)),
               if (title != null) Positioned(left: 0, right: 0, top: 58 * k, child: Center(child: Text(title, style: ts(u, 66 * 889 / 1116, w: FontWeight.w900, c: const Color(0xFFE9EDF3))))),
               for (var i = 0; i < n; i++)
                 Positioned(

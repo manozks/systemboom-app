@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight, ChevronRight, Store, VenetianMask, Palette } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { Art, At, K, Press, U, img, useToast } from '@/lib/ui';
 import { DockContent } from '@/components/Dock';
@@ -31,6 +32,38 @@ function Sparks() {
   );
 }
 
+
+/** Full-bleed, shorter hero header. It stays pinned and shrinks (c: 0 -> 1) over the first ~95 units of scrolling. */
+function HomeHeader() {
+  const toast = useToast();
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const u = el.offsetWidth / 941;
+      el.style.setProperty('--c', String(Math.min(1, Math.max(0, window.scrollY / (95 * u)))));
+    };
+    const on = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', on, { passive: true });
+    window.addEventListener('resize', on);
+    return () => { window.removeEventListener('scroll', on); window.removeEventListener('resize', on); cancelAnimationFrame(raf); };
+  }, []);
+  return (
+    <div ref={ref} className="homehdr" style={{ ['--c' as string]: 0 }}>
+      <div className="hh-art" />
+      <div className="hh-glow" />
+      <div className="hh-sparks"><Sparks /></div>
+      <img className="hh-logo" src={img('logo-lockup')} alt="SYSTEMBOOM" draggable={false} />
+      <span className="badge hh-badge" style={{ animation: 'breathe 4s ease-in-out infinite' }}>14</span>
+      <button className="hh-bell press pop" aria-label="Notifications" onClick={() => toast('Notifications')} />
+    </div>
+  );
+}
+
 type CardDef = { x: number; y: number; base: string; tile: string; tw: number; title: string; sub: string; href: string; badge?: string; badgeBg?: string; badgeFg?: string; icon?: ReactNode };
 
 export default function Home() {
@@ -44,21 +77,11 @@ export default function Home() {
 
   return (
     <div className="stage">
-      <div style={{ position: 'relative', height: U(2110), overflow: 'clip' }}>
-        {/* ── hero: pinned header that stays put while the rest of the page scrolls ── */}
-        <div style={{ position: 'sticky', top: 0, zIndex: 30, height: U(408), backgroundColor: '#070a0e', backgroundImage: `url(${img('carbon-tile')})`, backgroundSize: `${U(18)} ${U(17)}` }}>
-        <Abs x={21} y={29} w={861} scale={1.038}>
-          <Art w={861} h={355} style={{ filter: `drop-shadow(0 ${U(8)} ${U(12)} rgba(0,0,0,.7)) drop-shadow(0 0 ${U(14)} rgba(255,120,20,.3))` }}>
-            <img className="bg" src={img('hero-nobomb')} alt="" draggable={false} style={{ clipPath: 'polygon(0.3% 15.5%,17% 15.5%,24% 0.3%,76% 0.3%,83% 15.5%,99.7% 15.5%,99.7% 83%,94.5% 99.7%,5.5% 99.7%,0.3% 83%)' }} />
-            <div className="podium-glow" />
-            <Sparks />
-            <At x={78} y={62} w={600}><img src={img('logo-lockup')} alt="SYSTEMBOOM" draggable={false} style={{ width: '100%', display: 'block', WebkitMaskImage: 'linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)', maskImage: 'linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)' }} /></At>
-            <At x={790} y={55} w={37} h={37} className="badge" style={{ fontSize: K(25), animation: 'breathe 4s ease-in-out infinite' }}>14</At>
-            <At x={742} y={40} w={100} h={100}><Press pop shine={false} label="Notifications" onClick={() => toast('Notifications')} style={{ width: '100%', height: '100%', borderRadius: '50%' }} /></At>
-          </Art>
-        </Abs>
-        </div>
+      <div style={{ position: 'relative', height: U(2110 - 142), overflow: 'clip' }}>
+        <HomeHeader />
 
+        {/* everything below sits in design units that started under the old, taller header: pull it up under the new one */}
+        <div style={{ position: 'absolute', left: 0, top: U(-142), width: '100%' }}>
         {/* ── greeting ── */}
         <Abs x={21} y={411} w={865} scale={1.025}>
           <Art w={865} h={206} src="greeting-new" style={{ filter: `drop-shadow(0 ${U(8)} ${U(10)} rgba(0,0,0,.65))` }}>
@@ -144,6 +167,7 @@ export default function Home() {
             <DockContent active="home" dy={300} />
           </Art>
         </Abs>
+        </div>
       </div>
     </div>
   );
