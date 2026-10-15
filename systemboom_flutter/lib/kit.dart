@@ -507,6 +507,75 @@ class _CircleFxPainter extends CustomPainter {
   bool shouldRepaint(_CircleFxPainter o) => o.v != v || o.h != h;
 }
 
+/// Gives its child a hover/press amount [h] (0..1, eased) and a looping phase [v] (0..1) that only runs while the pointer
+/// is over it (or for a moment after a touch). Everything built from it is still at rest.
+class HoverLoop extends StatefulWidget {
+  const HoverLoop({super.key, required this.builder, this.period = const Duration(milliseconds: 1600)});
+  final Widget Function(BuildContext context, double h, double v) builder;
+  final Duration period;
+  @override
+  State<HoverLoop> createState() => _HoverLoopState();
+}
+
+class _HoverLoopState extends State<HoverLoop> with TickerProviderStateMixin {
+  late final AnimationController _c = AnimationController(vsync: this, duration: widget.period);
+  late final AnimationController _hv = AnimationController(vsync: this, duration: const Duration(milliseconds: 260))
+    ..addStatusListener((st) {
+      if (st == AnimationStatus.dismissed) {
+        _c.stop();
+        _c.value = 0;
+      }
+    });
+  bool _hover = false, _down = false;
+
+  void _sync() {
+    if (_hover || _down) {
+      _hv.forward();
+      if (!_c.isAnimating) _c.repeat();
+    } else {
+      _hv.reverse();
+    }
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    _hv.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) {
+        _hover = true;
+        _sync();
+      },
+      onExit: (_) {
+        _hover = false;
+        _sync();
+      },
+      child: Listener(
+        onPointerDown: (_) {
+          _down = true;
+          _sync();
+        },
+        onPointerUp: (_) => Future<void>.delayed(const Duration(milliseconds: 900), () {
+          if (mounted) {
+            _down = false;
+            _sync();
+          }
+        }),
+        onPointerCancel: (_) {
+          _down = false;
+          _sync();
+        },
+        child: AnimatedBuilder(animation: Listenable.merge([_c, _hv]), builder: (context, _) => widget.builder(context, Curves.easeOut.transform(_hv.value), _c.value)),
+      ),
+    );
+  }
+}
+
 /// Wide orange / red call-to-action (chat info style).
 class CtaBtn extends StatelessWidget {
   const CtaBtn({super.key, required this.u, required this.label, required this.icon, required this.onTap, this.red = false});

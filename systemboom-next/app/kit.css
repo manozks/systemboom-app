@@ -902,3 +902,32 @@ button.lr:active { transform: scale(.985); }
 .abtn2:focus-visible .aico.m-wobble { animation-name: icowobble; } .abtn2:focus-visible .aico.m-wave { animation-name: icowave; } .abtn2:focus-visible .aico.m-pop { animation-name: icopop; }
 .abtn2:hover .albl { color: #ffe6b0; }
 @keyframes ripplering { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.85); opacity: 0; } }
+
+/* ───────── Home: everything is still at rest; hovering / pressing brings the circle animation ───────── */
+.tilefx, .tileshine::before, .tileorbit, .tileicon svg, .btnglow, .btnshine::before, .btnorbit, .ctaarrow .a1, .ctaarrow .a2, .orbping::before, .orbping::after, .ringsweep.cta, .ringpulse.cta { animation: none; }
+.tileorbit, .btnorbit, .ringsweep.cta { opacity: 0; transition: opacity .25s; }
+.tileshine::before, .btnshine::before, .ctaarrow .a2, .orbping::before, .orbping::after { opacity: 0; }
+.ctaarrow .a1 { transform: none; }
+.tileripple { position: absolute; inset: 0; border-radius: calc(22 * var(--k, 1px)); pointer-events: none; }
+.tileripple::before, .tileripple::after { content: ''; position: absolute; inset: 0; border-radius: inherit; border: calc(3 * var(--k, 1px)) solid rgba(160, 225, 255, .75); opacity: 0; }
+@keyframes tileshineH { 0% { left: -50%; opacity: 0; } 15% { opacity: 1; } 100% { left: 130%; opacity: 0; } }
+@keyframes btnshineH { 0% { left: -40%; opacity: 0; } 15% { opacity: 1; } 100% { left: 125%; opacity: 0; } }
+@keyframes tileripple { 0% { transform: scale(1); opacity: .85; } 100% { transform: scale(1.5, 1.7); opacity: 0; } }
+/* tiles (Explore cards + Design System) */
+.press:hover .tilefx, .press:active .tilefx { animation: tilefloat 1.6s ease-in-out infinite; animation-delay: 0s; }
+.press:hover .tileshine::before, .press:active .tileshine::before { animation: tileshineH 1.4s ease-in-out infinite; }
+.press:hover .tileorbit, .press:active .tileorbit { opacity: 1; animation: tileorbit 1.5s linear infinite; animation-delay: 0s; }
+.press:hover .tileicon svg, .press:active .tileicon svg { animation: tilewiggle 1.1s ease-in-out infinite; animation-delay: 0s; }
+.press:hover .tileripple::before, .press:active .tileripple::before { animation: tileripple 1.5s ease-out infinite; }
+.press:hover .tileripple::after, .press:active .tileripple::after { animation: tileripple 1.5s ease-out infinite; animation-delay: -.75s; }
+/* start-a-conversation orb */
+.artbox:has(.ctalink:hover) .ringsweep.cta, .artbox:has(.ctalink:active) .ringsweep.cta { opacity: 1; animation: tileorbit 1.5s linear infinite; }
+.artbox:has(.ctalink:hover) .ringpulse.cta, .artbox:has(.ctalink:active) .ringpulse.cta { animation: ringglow 1.5s ease-in-out infinite; }
+.artbox:has(.ctalink:hover) .orbping.cta::before, .artbox:has(.ctalink:active) .orbping.cta::before { animation: orbping 1.5s ease-out infinite; }
+.artbox:has(.ctalink:hover) .orbping.cta::after, .artbox:has(.ctalink:active) .orbping.cta::after { animation: orbping 1.5s ease-out infinite; animation-delay: -.75s; }
+.artbox:has(.ctalink:hover) .ctaarrow .a1, .artbox:has(.ctalink:active) .ctaarrow .a1 { animation: arrowpush 1.2s ease-in-out infinite; }
+.artbox:has(.ctalink:hover) .ctaarrow .a2, .artbox:has(.ctalink:active) .ctaarrow .a2 { opacity: .28; animation: arrowpush 1.2s ease-in-out infinite; animation-delay: -.14s; }
+/* Configure Avatar pill */
+.btnwrap:hover .btnglow, .btnwrap:active .btnglow { animation: btnglow 1.6s ease-in-out infinite; }
+.btnwrap:hover .btnshine::before, .btnwrap:active .btnshine::before { animation: btnshineH 1.4s ease-in-out infinite; }
+.btnwrap:hover .btnorbit, .btnwrap:active .btnorbit { opacity: 1; animation: tileorbit 1.6s linear infinite; }

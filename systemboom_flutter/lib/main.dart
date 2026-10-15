@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'pages/more_pages.dart' show SplashPage;
-import 'kit.dart' show RingSweep;
+import 'kit.dart' show HoverLoop, RingSweep;
 import 'orb_menu.dart';
 import 'shell.dart';
 import 'ui.dart';
@@ -453,35 +453,35 @@ class _Stage extends StatelessWidget {
               )),
         ]),
       ),
-      // the orange button: radar ping, light orbiting its neon ring, and a live arrow that keeps pushing forward
-      Positioned(left: (748.5 - 130) * u, top: (110 - 130) * u, width: 260 * u, height: 260 * u, child: IgnorePointer(child: CustomPaint(painter: _PingPainter(t, u)))),
-      Positioned(left: (748.5 - 70) * u, top: (110 - 70) * u, width: 140 * u, height: 140 * u, child: const RingSweep(inner: .8)),
+      // the orange button: still at rest; hovering (or pressing) makes ripples expand, a light run round its neon ring and the arrow push forward
       Positioned(
-        left: (748.5 - 40) * u,
-        top: (110 - 40) * u,
-        width: 80 * u,
-        height: 80 * u,
-        child: IgnorePointer(
-          child: ClipRect(
-            child: Builder(builder: (_) {
-              final f = (t % 1.7) / 1.7; // one push every 1.7 s
-              final push = math.pow(math.sin(math.pi * f), 2).toDouble();
-              Widget arrow(double dx, double a) => Transform.translate(
-                    offset: Offset(dx * u, 0),
-                    child: Icon(Icons.arrow_forward_rounded, size: 52 * u, color: Colors.white.withValues(alpha: a), shadows: [Shadow(color: const Color(0xFFFFB347).withValues(alpha: a), blurRadius: 12 * u), Shadow(color: Colors.black.withValues(alpha: .35 * a), blurRadius: 3 * u, offset: Offset(0, 2 * u))]),
-                  );
-              return Center(child: Stack(alignment: Alignment.center, children: [arrow(-13 + 20 * push, .28), arrow(-4 + 20 * push, 1)]));
-            }),
-          ),
+        left: (748.5 - 70) * u,
+        top: (110 - 70) * u,
+        width: 140 * u,
+        height: 140 * u,
+        child: HoverLoop(
+          builder: (context, h, v) => Stack(alignment: Alignment.center, clipBehavior: Clip.none, children: [
+            if (h > .02) Positioned(left: -60 * u, top: -60 * u, width: 260 * u, height: 260 * u, child: IgnorePointer(child: CustomPaint(painter: _PingPainter(v * 2.6, u, h)))),
+            if (h > .02) Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _OrbitPainter(v, 70 * u, u, const Color(0xFFFFB347), h)))),
+            IgnorePointer(
+              child: SizedBox(
+                width: 80 * u,
+                height: 80 * u,
+                child: ClipRect(
+                  child: Builder(builder: (_) {
+                    final push = math.pow(math.sin(math.pi * v), 2).toDouble() * h;
+                    Widget arrow(double dx, double a) => Transform.translate(
+                          offset: Offset(dx * u, 0),
+                          child: Icon(Icons.arrow_forward_rounded, size: 52 * u, color: Colors.white.withValues(alpha: a), shadows: [Shadow(color: const Color(0xFFFFB347).withValues(alpha: a), blurRadius: 12 * u), Shadow(color: Colors.black.withValues(alpha: .35 * a), blurRadius: 3 * u, offset: Offset(0, 2 * u))]),
+                        );
+                    return Center(child: Stack(alignment: Alignment.center, children: [if (h > .02) arrow(-13 + 20 * push - 0, .28 * h), arrow(-2 + 6 * push + 14 * push, 1)]));
+                  }),
+                ),
+              ),
+            ),
+            Positioned.fill(child: Press(u: u, circle: true, scaleUp: 1.07, onTap: () => onTap('Starting a conversation'), child: const SizedBox.expand())),
+          ]),
         ),
-      ),
-      // tap area over the art's orange button
-      Positioned(
-        left: 672 * u,
-        top: 38 * u,
-        width: 138 * u,
-        height: 138 * u,
-        child: Press(u: u, circle: true, scaleUp: 1.07, onTap: () => onTap('Starting a conversation'), child: const SizedBox.expand()),
       ),
     ]);
   }
@@ -502,7 +502,6 @@ class _Stage extends StatelessWidget {
     Color? badgeText,
     Color glow = const Color(0xFFFF9632),
   }) {
-    final pulse = .85 + .15 * math.sin(t * 2 * math.pi / 3.4 + x);
     return Positioned(
       left: x * u,
       top: y * u,
@@ -530,12 +529,13 @@ class _Stage extends StatelessWidget {
             width: tileW * u,
             height: 80 * u,
             child: Transform.translate(
-              offset: Offset(0, -2.6 * u * math.sin(t * 2 * math.pi / 3.4 + x * .01)),
+              offset: Offset(0, -3 * u * math.sin(t * 2 * math.pi / 1.6 + x * .01) * g.clamp(0.0, 1.0)),
               child: Wobble(s: s, child: Stack(clipBehavior: Clip.none, children: [
+                if (g > .02) Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _RRectRipplePainter(t, u, 22 * u, glow, g)))),
                 DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(22 * u),
-                    boxShadow: [BoxShadow(color: glow.withValues(alpha: .35 * pulse), blurRadius: 18 * u)],
+                    boxShadow: [BoxShadow(color: glow.withValues(alpha: .3 + .15 * g.clamp(0.0, 1.0)), blurRadius: 18 * u)],
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(22 * u),
@@ -544,9 +544,9 @@ class _Stage extends StatelessWidget {
                       if (icon != null)
                         Center(
                           child: Transform.rotate(
-                            angle: .1 * math.sin(t * 2 * math.pi / 2.4 + x),
+                            angle: .14 * math.sin(t * 2 * math.pi / 1.2 + x) * g.clamp(0.0, 1.0),
                             child: Transform.scale(
-                              scale: 1 + .07 * math.sin(t * 2 * math.pi / 1.8 + y),
+                              scale: 1 + .1 * math.sin(t * 2 * math.pi / 0.9 + y) * g.clamp(0.0, 1.0),
                               child: Icon(icon, size: 50 * u, color: Colors.white, shadows: [Shadow(color: iconColor, blurRadius: 3 * u),
                                 Shadow(color: glow, blurRadius: 12 * u),
                                 Shadow(color: glow.withValues(alpha: .7), blurRadius: 22 * u),
@@ -554,11 +554,11 @@ class _Stage extends StatelessWidget {
                             ),
                           ),
                         ),
-                      Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _ShinePainter(((t + x * .004) % 4.6) / 4.6)))),
+                      if (g > .02) Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _ShinePainter(((t * .8 + x * .004) % 1) * .32)))),
                     ]),
                   ),
                 ),
-                Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _OrbitPainter(((t + x * .003 + y * .001) % 3.8) / 3.8, 22 * u, u, glow)))),
+                if (g > .02) Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _OrbitPainter((t * .6 + x * .003) % 1, 22 * u, u, glow, g)))),
               ])),
             ),
           ),
@@ -616,12 +616,13 @@ class _Stage extends StatelessWidget {
             width: 84 * u,
             height: 78 * u,
             child: Transform.translate(
-              offset: Offset(0, -2.6 * u * math.sin(t * 2 * math.pi / 3.4 + 1.3)),
+              offset: Offset(0, -3 * u * math.sin(t * 2 * math.pi / 1.6 + 1.3) * g.clamp(0.0, 1.0)),
               child: Wobble(s: s, child: Stack(clipBehavior: Clip.none, children: [
+                if (g > .02) Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _RRectRipplePainter(t, u, 22 * u, const Color(0xFF3FD2F2), g)))),
                 DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(22 * u),
-                    boxShadow: [BoxShadow(color: const Color(0xFF3FD2F2).withValues(alpha: .25 + .2 * (.5 + .5 * math.sin(t * 2 * math.pi / 3.4))), blurRadius: 18 * u)],
+                    boxShadow: [BoxShadow(color: const Color(0xFF3FD2F2).withValues(alpha: .28 + .17 * g.clamp(0.0, 1.0)), blurRadius: 18 * u)],
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(22 * u),
@@ -629,9 +630,9 @@ class _Stage extends StatelessWidget {
                       Image.asset('assets/images/ico-ds.webp', fit: BoxFit.fill),
                       Center(
                         child: Transform.rotate(
-                          angle: .1 * math.sin(t * 2 * math.pi / 2.4 + 2),
+                          angle: .14 * math.sin(t * 2 * math.pi / 1.2 + 2) * g.clamp(0.0, 1.0),
                           child: Transform.scale(
-                            scale: 1 + .07 * math.sin(t * 2 * math.pi / 1.8 + 1),
+                            scale: 1 + .1 * math.sin(t * 2 * math.pi / 0.9 + 1) * g.clamp(0.0, 1.0),
                             child: Icon(Icons.palette_outlined, size: 44 * u, color: const Color(0xFFC9F6FF), shadows: [
                               Shadow(color: const Color(0xFF3FD2F2), blurRadius: 10 * u),
                               Shadow(color: const Color(0xB328AAFF), blurRadius: 20 * u),
@@ -639,11 +640,11 @@ class _Stage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _ShinePainter(((t + 1.2) % 4.6) / 4.6)))),
+                      if (g > .02) Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _ShinePainter(((t * .8 + .2) % 1) * .32)))),
                     ]),
                   ),
                 ),
-                Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _OrbitPainter(((t + 1.1) % 3.8) / 3.8, 22 * u, u, const Color(0xFF3FD2F2))))),
+                if (g > .02) Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _OrbitPainter((t * .6 + .3) % 1, 22 * u, u, const Color(0xFF3FD2F2), g)))),
               ])),
             ),
           ),
@@ -809,11 +810,11 @@ class _Stage extends StatelessWidget {
           scaleUp: 1,
           lift: 0,
           onTap: () => onTap('Configure Avatar'),
-          child: Stack(clipBehavior: Clip.none, children: [
+          builder: (context, g, s) => Stack(clipBehavior: Clip.none, children: [
             // breathing blue glow, a sweep of light, and a light running around the pill's edge
-            Positioned.fill(child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(borderRadius: BorderRadius.circular(42 * u), boxShadow: [BoxShadow(color: const Color(0xFF5AA0FF).withValues(alpha: .12 + .22 * (.5 + .5 * math.sin(t * 2 * math.pi / 2.6))), blurRadius: 20 * u, spreadRadius: 1 * u)])))),
-            Positioned.fill(child: IgnorePointer(child: ClipRRect(borderRadius: BorderRadius.circular(42 * u), child: CustomPaint(painter: _ShinePainter((t % 3.6) / 3.6))))),
-            Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _OrbitPainter((t % 3.2) / 3.2, 42 * u, u, const Color(0xFF6FB6FF))))),
+            Positioned.fill(child: IgnorePointer(child: DecoratedBox(decoration: BoxDecoration(borderRadius: BorderRadius.circular(42 * u), boxShadow: [BoxShadow(color: const Color(0xFF5AA0FF).withValues(alpha: .06 + .3 * g.clamp(0.0, 1.0)), blurRadius: 20 * u, spreadRadius: 1 * u)])))),
+            if (g > .02) Positioned.fill(child: IgnorePointer(child: ClipRRect(borderRadius: BorderRadius.circular(42 * u), child: CustomPaint(painter: _ShinePainter(((t * .7) % 1) * .32))))),
+            if (g > .02) Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _OrbitPainter((t * .45) % 1, 42 * u, u, const Color(0xFF6FB6FF), g)))),
             Align(
               alignment: const Alignment(-.2, 0),
               child: Text('Configure Avatar',
@@ -999,8 +1000,8 @@ class _ShinePainter extends CustomPainter {
 
 /// A comet of light running around the rounded edge of an icon tile.
 class _OrbitPainter extends CustomPainter {
-  _OrbitPainter(this.p, this.radius, this.u, this.color);
-  final double p, radius, u;
+  _OrbitPainter(this.p, this.radius, this.u, this.color, [this.alpha = 1]);
+  final double p, radius, u, alpha;
   final Color color;
   @override
   void paint(Canvas canvas, Size size) {
@@ -1019,31 +1020,52 @@ class _OrbitPainter extends CustomPainter {
     for (var i = 0; i < n; i++) {
       final a = head - tail * (i + 1) / n, b = head - tail * i / n;
       final al = math.pow(1 - i / n, 1.6).toDouble();
-      canvas.drawPath(seg(a, b), Paint()..style = PaintingStyle.stroke..strokeWidth = 3.4 * u..strokeCap = StrokeCap.round..color = hot.withValues(alpha: .9 * al));
+      canvas.drawPath(seg(a, b), Paint()..style = PaintingStyle.stroke..strokeWidth = 3.4 * u..strokeCap = StrokeCap.round..color = hot.withValues(alpha: .9 * al * alpha.clamp(0.0, 1.0)));
     }
     final pos = m.getTangentForOffset(head)!.position;
-    canvas.drawCircle(pos, 6 * u, Paint()..color = color.withValues(alpha: .8)..maskFilter = MaskFilter.blur(BlurStyle.normal, 5 * u));
-    canvas.drawCircle(pos, 2.6 * u, Paint()..color = Colors.white);
+    canvas.drawCircle(pos, 6 * u, Paint()..color = color.withValues(alpha: .8 * alpha.clamp(0.0, 1.0))..maskFilter = MaskFilter.blur(BlurStyle.normal, 5 * u));
+    canvas.drawCircle(pos, 2.6 * u, Paint()..color = Colors.white.withValues(alpha: alpha.clamp(0.0, 1.0)));
   }
 
   @override
-  bool shouldRepaint(_OrbitPainter o) => o.p != p;
+  bool shouldRepaint(_OrbitPainter o) => o.p != p || o.alpha != alpha;
 }
 
 /// Soft rings that expand from the "start a conversation" button and fade out.
 class _PingPainter extends CustomPainter {
-  _PingPainter(this.t, this.u);
-  final double t, u;
+  _PingPainter(this.t, this.u, [this.alpha = 1]);
+  final double t, u, alpha;
   @override
   void paint(Canvas canvas, Size size) {
     final c = size.center(Offset.zero);
     for (var i = 0; i < 2; i++) {
       final f = ((t / 2.6) + i * .5) % 1;
       final r = 72 * u + 56 * u * Curves.easeOut.transform(f);
-      canvas.drawCircle(c, r, Paint()..style = PaintingStyle.stroke..strokeWidth = 3 * u * (1 - f) + .5..color = Color.fromRGBO(255, 160, 60, .55 * (1 - f)));
+      canvas.drawCircle(c, r, Paint()..style = PaintingStyle.stroke..strokeWidth = 3 * u * (1 - f) + .5..color = Color.fromRGBO(255, 160, 60, .55 * (1 - f) * alpha.clamp(0.0, 1.0)));
     }
   }
 
   @override
-  bool shouldRepaint(_PingPainter o) => o.t != t;
+  bool shouldRepaint(_PingPainter o) => o.t != t || o.alpha != alpha;
+}
+
+/// Two rounded outlines that expand from an icon tile and fade (shown while hovered).
+class _RRectRipplePainter extends CustomPainter {
+  _RRectRipplePainter(this.t, this.u, this.radius, this.color, this.h);
+  final double t, u, radius, h;
+  final Color color;
+  @override
+  void paint(Canvas canvas, Size size) {
+    final hot = Color.lerp(color, Colors.white, .45)!;
+    for (var i = 0; i < 2; i++) {
+      final f = ((t / 1.5) + i * .5) % 1;
+      final e = Curves.easeOut.transform(f);
+      final grow = 18 * u * e;
+      final rr = RRect.fromRectAndRadius((Offset.zero & size).inflate(grow), Radius.circular(radius + grow));
+      canvas.drawRRect(rr, Paint()..style = PaintingStyle.stroke..strokeWidth = 3.2 * u * (1 - f) + .6..color = hot.withValues(alpha: .8 * (1 - f) * h.clamp(0.0, 1.0)));
+    }
+  }
+
+  @override
+  bool shouldRepaint(_RRectRipplePainter o) => o.t != t || o.h != h;
 }
