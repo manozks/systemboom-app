@@ -369,33 +369,47 @@ class _Stage extends StatelessWidget {
     final w = 941 * u;
     final ov = 12 * au; // overscan so the plate's outer edge reaches the screen edges
     final bd = 78 * u; // bell keeps a fixed size so its badge stays readable while the header shrinks // bell button diameter
-    final bell = Offset(w - 65 * u, 114 * au);
+    final bell = Offset(w - 65 * u, h / 2);
     final lw = 650 * (.72 - .14 * c) * u;
+    // planet orbit round the logo (an ellipse seen at a slant): angle advances with the clock, depth = sin(angle)
+    List<Widget> orbit({required bool back}) {
+      const names = ['saturn', 'moon', 'jupiter', 'venus'];
+      final rx = .54 * lw, ry = .15 * lw, d = .13 * lw;
+      final out = <Widget>[];
+      for (var i = 0; i < names.length; i++) {
+        final ang = 2 * math.pi * (t / 16 + i / names.length);
+        final depth = math.sin(ang); // > 0: near side (in front of the logo)
+        if ((depth <= 0) != back) continue;
+        final sc = .8 + .3 * (depth + 1) / 2;
+        out.add(Positioned(
+          left: w / 2 + rx * math.cos(ang) - d / 2,
+          top: h / 2 + ry * depth - d / 2,
+          width: d,
+          height: d,
+          child: IgnorePointer(
+            child: Transform.scale(
+              scale: sc,
+              child: DecoratedBox(
+                decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: const Color(0x66FFBE64), blurRadius: d * .35)]),
+                child: Opacity(opacity: back ? .85 : 1, child: Image.asset('assets/images/celestial/${names[i]}.webp', fit: BoxFit.contain, filterQuality: FilterQuality.medium)),
+              ),
+            ),
+          ),
+        ));
+      }
+      return out;
+    }
     return SizedBox(
       height: h,
       child: ClipRect(
         child: Stack(clipBehavior: Clip.hardEdge, children: [
           ..._plate(au, w, h, ov),
-          // pulsing glow on the platform
-          Positioned(
-            left: w * .27,
-            top: h * .66,
-            width: w * .46,
-            height: h * .24,
-            child: IgnorePointer(child: Opacity(opacity: (.6 + .4 * math.sin(t * 2 * math.pi / 5)) * (1 - c * .5), child: const DecoratedBox(decoration: BoxDecoration(gradient: RadialGradient(colors: [Color(0x8CFFAA3C), Color(0x33FF7814), Color(0x00FF7814)], stops: [0, .5, .72]))))),
-          ),
-          // spark cloud above the platform (fades out as the header shrinks)
-          Positioned(
-            left: w * .35,
-            top: h * .28,
-            width: w * .30,
-            height: h * .40,
-            child: IgnorePointer(child: Opacity(opacity: (1 - c * 1.4).clamp(0.0, 1.0), child: CustomPaint(painter: _SparkPainter(t: t, u: u * s)))),
-          ),
+          // planets orbiting the logo: the ones on the far side of the orbit pass behind it, the near ones in front
+          ...orbit(back: true),
           // logo lock-up (bomb + SYSTEMBOOM)
           Positioned(
             left: (w - lw) / 2,
-            top: 54 * au,
+            top: h / 2 - lw * 193 / 863 / 2,
             width: lw,
             child: IgnorePointer(
               child: ShaderMask(
@@ -405,6 +419,7 @@ class _Stage extends StatelessWidget {
               ),
             ),
           ),
+          ...orbit(back: false),
           // live bell: same gold chrome button as the other pages
           Positioned(
             left: bell.dx - bd / 2,

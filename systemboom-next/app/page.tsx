@@ -58,8 +58,14 @@ function HomeHeader() {
   return (
     <div ref={ref} className="homehdr" style={{ ['--c' as string]: 0 }}>
       <div className="hh-art"><i className="a-l" /><i className="a-gl" /><i className="a-gr" /><i className="a-c" /><i className="a-r" /></div>
-      <div className="hh-glow" />
-      <div className="hh-sparks"><Sparks /></div>
+      <div className="hh-orbit" aria-hidden>
+        <i className="hh-oring" />
+        {['saturn', 'moon', 'jupiter', 'venus'].map((n, i) => (
+          <span key={n} className="hh-pl" style={{ ['--ph' as string]: i / 4 }}>
+            <img src={img(`celestial/${n}`)} alt="" draggable={false} />
+          </span>
+        ))}
+      </div>
       <img className="hh-logo" src={img('logo-lockup')} alt="SYSTEMBOOM" draggable={false} />
       <div className="hh-bell">
         <ChromeBtn label="Notifications" gold badge="14" onClick={() => router.push('/notifications/')}>
