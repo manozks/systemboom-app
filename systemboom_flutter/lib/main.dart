@@ -368,8 +368,8 @@ class _Stage extends StatelessWidget {
     final h = 362 * au;
     final w = 941 * u;
     final ov = 12 * au; // overscan so the plate's outer edge reaches the screen edges
-    final bd = 104 * au; // bell button diameter
-    final bell = Offset(w - 78 * au, 114 * au);
+    final bd = 78 * u; // bell keeps a fixed size so its badge stays readable while the header shrinks // bell button diameter
+    final bell = Offset(w - 65 * u, 114 * au);
     final lw = 650 * (.72 - .14 * c) * u;
     return SizedBox(
       height: h,
@@ -411,7 +411,7 @@ class _Stage extends StatelessWidget {
             top: bell.dy - bd / 2,
             width: bd,
             height: bd,
-            child: ChromeBtn(u: au * 100 / 92, gold: true, badge: '14', onTap: () => onTap('Notifications'), child: Icon(Icons.notifications_none_rounded, size: 46 * au * 100 / 92, color: const Color(0xFFFFD27A))),
+            child: ChromeBtn(u: u * 78 / 92, gold: true, badge: '14', onTap: () => onTap('Notifications'), child: Icon(Icons.notifications_none_rounded, size: 46 * u * 78 / 92, color: const Color(0xFFFFD27A))),
           ),
         ]),
       ),

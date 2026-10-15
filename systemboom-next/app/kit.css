@@ -968,4 +968,4 @@ button.lr:active { transform: scale(.985); }
 .hh-glow { position: absolute; left: 27%; top: 66%; width: 46%; height: 24%; pointer-events: none; background: radial-gradient(ellipse, rgba(255,170,60,.55), rgba(255,120,20,.2) 50%, rgba(255,120,20,0) 72%); animation: breathe 5s ease-in-out infinite; opacity: calc(1 - .5 * var(--c, 0)); }
 .hh-sparks { position: absolute; left: 35%; top: 28%; width: 30%; height: 40%; pointer-events: none; opacity: calc(1 - 1.4 * var(--c, 0)); }
 .hh-logo { position: absolute; left: 50%; transform: translateX(-50%); top: calc(54 * var(--au)); width: calc(650 * var(--sl)); pointer-events: none; -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); }
-.hh-bell { position: absolute; right: calc(26 * var(--au)); top: calc(62 * var(--au)); width: calc(104 * var(--au)); height: calc(104 * var(--au)); }
+.hh-bell { position: absolute; right: calc(26 * var(--u)); top: calc(114 * var(--au) - 39 * var(--u)); width: calc(78 * var(--u)); height: calc(78 * var(--u)); }
