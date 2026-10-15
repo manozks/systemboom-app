@@ -59,6 +59,7 @@ function HomeHeader() {
     <div ref={ref} className="homehdr" style={{ ['--c' as string]: 0 }}>
       <div className="hh-scale">
         <Art w={854} h={209} src="hdr-home">
+          <div className="hh-in">
           <At x={207} y={104 - 49} w={440} style={{ zIndex: 2 }}>
             <img className="hh-logo" src={img('logo-lockup')} alt="SYSTEMBOOM" draggable={false} />
           </At>
@@ -70,11 +71,12 @@ function HomeHeader() {
               </span>
             ))}
           </At>
-          <At x={724} y={52} w={92} h={92} style={{ zIndex: 4 }}>
+          <At x={724} y={52} w={92} h={92} className="hh-bellw" style={{ zIndex: 4 }}>
             <ChromeBtn label="Notifications" gold badge="14" onClick={() => router.push('/notifications/')}>
               <Bell style={{ width: '54%', height: '54%' }} strokeWidth={1.8} />
             </ChromeBtn>
           </At>
+          </div>
         </Art>
       </div>
     </div>

@@ -956,7 +956,10 @@ button.lr:active { transform: scale(.985); }
 
 /* ───────── Home header: the same metal card as the Calls page; the whole card shrinks a little while scrolling (--c = 0..1 set from JS) ───────── */
 .homehdr { --sc: calc(1 - .2 * var(--c, 0)); position: sticky; top: 0; z-index: 30; height: calc(230.3 * var(--u) * var(--sc)); background: linear-gradient(#070a0e 78%, rgba(7,10,14,0)); }
-.hh-scale { transform-origin: 50% 0; transform: scale(var(--sc)); will-change: transform; }
+.homehdr .artbox > .in > img.bg { transform-origin: 50% 0; transform: scaleY(var(--sc)); }
+/* the card keeps the full width; only its height shrinks, and the logo / planets / bell scale with it (the bell stays at the right edge) */
+.hh-in { position: absolute; inset: 0; transform-origin: 50% 0; transform: scale(var(--sc)); }
+.hh-bellw { translate: calc(343 * (1 - var(--sc)) / var(--sc) * var(--k)) 0; }
 .hh-logo { width: 100%; display: block; pointer-events: none; filter: drop-shadow(0 calc(3 * var(--k)) calc(6 * var(--k)) rgba(0,0,0,.55)); }
 .hh-orbit { --Lw: calc(440 * var(--k)); --rx: calc(.54 * var(--Lw)); --ry: calc(.15 * var(--Lw)); --T: 16s; pointer-events: none; }
 

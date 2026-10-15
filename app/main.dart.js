@@ -84833,13 +84833,14 @@ o.push(s.a55())
 o.push(s.a2Y())
 o.push(A.aG(0,A.bM(A.bE(r,new A.a7(r,r,r,r,r,B.Wj,B.v),B.G),!0,r)))
 return A.azN(A.aV(B.B,o,B.l,B.z),B.I)},
-amk(a){var s=null,r=941*this.d,q=r*(1-0.19999999999999996*a),p=q/854,o=209*p,n=(r-q)/2,m=new A.avv(this,p,n),l=A.a([A.ag(s,A.ba("assets/images/hdr-home.webp",s,B.y,B.F,s,s,s),o,s,n,s,0,q)],t.p)
-B.b.N(l,m.$1$back(!0))
-l.push(A.ag(s,A.bM(A.ba("assets/images/logo-lockup.webp",s,B.y,B.nY,s,s,s),!0,s),s,s,n+207*p,s,55*p,440*p))
-B.b.N(l,m.$1$back(!1))
-m=92*p
-l.push(A.ag(s,new A.i3(p,A.al(B.cZ,B.bX,s,s,46*p),new A.avu(this),!0,"14",s),m,s,n+724*p,s,52*p,m))
-return A.aW(s,A.aV(B.B,l,B.l,B.z),B.l,s,s,B.DV,s,o,s,s,s,s,s)},
+amk(a){var s,r=null,q=941*this.d,p=q/854,o=p*(1-0.19999999999999996*a),n=209*o,m=q/2,l=new A.avv(this,o,m),k=A.a([A.ag(r,A.ba("assets/images/hdr-home.webp",r,B.y,B.F,r,r,r),n,r,0,r,0,q)],t.p)
+B.b.N(k,l.$1$back(!0))
+k.push(A.ag(r,A.bM(A.ba("assets/images/logo-lockup.webp",r,B.y,B.nY,r,r,r),!0,r),r,r,m-220*o,r,55*o,440*o))
+B.b.N(k,l.$1$back(!1))
+l=46*o
+s=92*o
+k.push(A.ag(r,new A.i3(o,A.al(B.cZ,B.bX,r,r,l),new A.avu(this),!0,"14",r),s,r,m+343*p-l,r,52*o,s))
+return A.aW(r,A.aV(B.B,k,B.l,B.z),B.l,r,r,B.DV,r,n,r,r,r,r,r)},
 aae(){var s=this,r=null,q=s.e,p=q*2*3.141592653589793/5,o=Math.sin(p),n=s.d,m=37*n,l=100*n
 return s.va(21,29,861,355,1.038,A.a([A.aG(0,A.Ju(A.ba("assets/images/hero-nobomb.webp",r,B.y,B.F,r,r,r),B.bO,new A.Sx())),A.ag(r,A.bM(A.ll(B.KQ,0.6+0.4*o),!0,r),85.2*n,r,232.47000000000003*n,r,234.3*n,396.06*n),A.ag(r,A.bM(A.cx(r,r,r,new A.Wh(q,n,r),B.D),!0,r),142*n,r,301.34999999999997*n,r,99.4*n,258.3*n),A.ag(r,A.bM(A.BX(B.nP,A.ba("assets/images/logo-lockup.webp",r,B.y,B.nY,r,r,r),new A.avs()),!0,r),r,r,78*n,r,62*n,600*n),A.ag(r,A.bM(new A.nm("14",m,r,B.e,1+0.06*Math.max(0,Math.sin(p)),r),!0,r),m,r,790*n,r,55*n,m),A.ag(r,A.cX(r,B.d4,!0,3,new A.avt(s),0,1.1,!0,n),l,r,742*n,r,40*n,l)],t.p))},
 a72(){var s=null,r=this.d,q=150*r,p=184*r,o=3*r
@@ -84856,7 +84857,7 @@ a2Y(){var s=this,r=null,q=new A.avi(s),p=new A.avf(s),o=s.d,n=370*o,m=t.q,l=148*
 return s.va(0,1562,896,515,1.0502,A.a([A.aG(0,A.ba("assets/images/ai-nav.webp",r,B.y,B.F,r,r,r)),A.ag(r,A.D("MY AI COMPANION",r,r,r,A.ak(r,r,B.p3,r,r,r,r,r,r,r,r,B.d.ag(27*o,11,15),r,r,B.t,r,r,!0,r,1.3,r,r,r,A.a([new A.b4(B.q,new A.h(0,-1*o),0),new A.b4(B.pq,new A.h(0,1.5*o),0)],m),r,r),r,r),r,r,n,r,33*o,r),A.ag(r,A.pp("Eos - Your Digital Strategist",B.m2,B.e1,B.iC,A.ak(r,r,r,r,r,r,r,r,r,r,r,B.d.ag(35*o,14,21),r,r,B.t,r,1,!0,r,r,r,r,r,r,r,r),o),r,r,n,r,66*o,r),A.ag(r,A.D("Optimizing your day, every day.\nLast sync: 3 mins ago",r,r,r,A.ak(r,r,B.Im,r,r,r,r,r,r,r,r,B.d.ag(30*o,12,17),r,r,B.V,r,1.3,!0,r,r,r,r,r,A.a([new A.b4(B.oT,new A.h(0,2*o),3*o)],m),r,r),r,r),r,r,371*o,r,102*o,r),A.ag(r,A.cX(new A.avc(s),r,!1,0,new A.avd(s),42,1,!0,o),82*o,r,368*o,r,210*o,452*o),p.$9(38,360,104,118,9,14,"home","Home",0),p.$9(205,372,105,106,15,5,"chats","Chats",0.25),p.$9(575,368,112,110,15,9,"market","Market",0.5),p.$9(752,372,96,106,10,5,"profile","Profile",0.75),q.$2(23,"Home"),q.$2(197,"Chats"),q.$4$color$glow(380,"Calls",B.ot,!0),q.$2(568,"Market"),q.$2(740,"Profile"),A.ag(r,new A.tp(new A.ave(s),r),l,r,374*o,r,302*o,l)],t.p))}}
 A.avv.prototype={
 $1$back(a){var s,r,q,p,o,n,m,l,k,j,i,h=null,g=this.b,f=237.60000000000002*g,e=66*g,d=57.2*g,c=A.a([],t.p)
-for(s=this.c+427*g,r=d/2,g=104*g,q=d*0.35,p=t.V,o=this.a.e/16,n=0;n<4;++n){m=6.283185307179586*(o+n/4)
+for(s=this.c,r=d/2,g=104*g,q=d*0.35,p=t.V,o=this.a.e/16,n=0;n<4;++n){m=6.283185307179586*(o+n/4)
 l=Math.sin(m)
 if(l<=0!==a)continue
 k=Math.cos(m)

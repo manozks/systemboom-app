@@ -326,10 +326,11 @@ class _Stage extends StatelessWidget {
   /// Home header card: SYSTEMBOOM logo in the middle, planets orbiting it, notification bell on the right. [c] goes 0 -> 1 while scrolling.
   Widget header(double c) {
     final w = 941 * u;
-    final wc = w * (1 - (1 - kCmp) * c); // card width
-    final ka = wc / 854; // logical px per art unit
+    final sc = 1 - (1 - kCmp) * c; // the card keeps the full width; only its height (and the content) shrinks
+    final kx = w / 854;
+    final ka = kx * sc; // logical px per art unit for the content
     final h = 209 * ka;
-    final left = (w - wc) / 2;
+    final cx = w / 2;
     // planet orbit round the logo (an ellipse seen at a slant): angle advances with the clock, depth = sin(angle)
     List<Widget> orbit({required bool back}) {
       const names = ['saturn', 'moon', 'jupiter', 'venus'];
@@ -341,7 +342,7 @@ class _Stage extends StatelessWidget {
         if ((depth <= 0) != back) continue;
         final sc = .8 + .3 * (depth + 1) / 2;
         out.add(Positioned(
-          left: left + 427 * ka + rx * math.cos(ang) - d / 2,
+          left: cx + rx * math.cos(ang) - d / 2,
           top: 104 * ka + ry * depth - d / 2,
           width: d,
           height: d,
@@ -363,11 +364,11 @@ class _Stage extends StatelessWidget {
       height: h,
       decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF070A0E), Color(0xFF070A0E), Color(0x00070A0E)], stops: [0, .78, 1])),
       child: Stack(clipBehavior: Clip.none, children: [
-        Positioned(left: left, top: 0, width: wc, height: h, child: Image.asset('assets/images/hdr-home.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium)),
+        Positioned(left: 0, top: 0, width: w, height: h, child: Image.asset('assets/images/hdr-home.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium)),
         ...orbit(back: true),
         // logo lock-up (transparent bomb + SYSTEMBOOM)
         Positioned(
-          left: left + 207 * ka,
+          left: cx - 220 * ka,
           top: 55 * ka,
           width: 440 * ka,
           child: IgnorePointer(child: Image.asset('assets/images/logo-lockup.webp', fit: BoxFit.fitWidth, filterQuality: FilterQuality.medium)),
@@ -375,7 +376,7 @@ class _Stage extends StatelessWidget {
         ...orbit(back: false),
         // live bell: same gold chrome button as the Calls page
         Positioned(
-          left: left + 724 * ka,
+          left: cx + 343 * kx - 46 * ka,
           top: 52 * ka,
           width: 92 * ka,
           height: 92 * ka,
