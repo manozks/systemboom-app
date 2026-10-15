@@ -26,7 +26,6 @@ const css = `
 .abtn2::before{border-image-source:url('${bp}/img/notif-btn.webp')}
 .abadge{background-image:url('${bp}/img/ring63-act.webp')}
 .abtn2.red .abadge{background-image:url('${bp}/img/ring63-red.webp')}
-.hh-art i{background-image:url('${bp}/img/hero-nobomb.webp')}
 .thread .bubble{border-image-source:url('${bp}/img/chat-bubble.webp')}
 .dialog.pf{border-image-source:url('${bp}/img/panel-frame.webp')}
 .rowplate{border-image-source:url('${bp}/img/chat-bubble.webp')}

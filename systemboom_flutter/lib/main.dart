@@ -28,7 +28,7 @@ void main() {
 
 /// Art decoded up front (started while the splash plays) so the first screens don't pop images in one by one.
 const kPrecacheImages = [
-      'hero-nobomb.webp', 'logo-lockup.webp', 'greeting.webp', 'cta.webp', 'card-base-blue.webp', 'card-base-dark.webp',
+      'hdr-home.webp', 'logo-lockup.webp', 'greeting.webp', 'cta.webp', 'card-base-blue.webp', 'card-base-dark.webp',
       'ico-chat-ref.webp', 'ico-call-ref.webp', 'ico-mk.webp', 'ico-an.webp', 'ico-ds.webp', 'cta-blank-wide.webp', 'ai-nav.webp',
       'nav-calls.webp', 'hero-header.webp', 'dock.webp', 'hdr-calls.webp', 'brand-colors.webp', 'typography.webp', 'cta-new.webp', 'greeting-new.webp', 'buttons-panel.webp', 'icons-panel.webp', 'icon-key.webp', 'search-bar.webp', 'tabs-base.webp', 'tabs-key.webp', 'carbon-tile.webp', 'profile.webp', 'cf1.webp', 'cf2.webp', 'cf4.webp', 'cf5.webp', 'me.webp', 'chat-bubble.webp', 'chat-bubble-out.webp', 'chat-bar.webp', 'plate-row.webp', 'btn-steel.webp', 'btn-orange.webp', 'info-row.webp', 'info-chip-on.webp', 'info-chip-off.webp', 'notif-card.webp', 'ring63-act.webp', 'ring63-emoji.webp', 'share-ring.webp', 'ring63-red.webp', 'plate-title.webp', 'plate-tab.webp', 'pframe-photo.webp', 'plate-green.webp', 'pill-status.webp', 'photo-deskmat.webp', 'doc-thumb.webp', 'call-bg.webp', 'info-ring.webp', 'info-cta-orange.webp', 'info-cta-red.webp', 'info-label.webp', 'notif-btn.webp', 'dialog-bg.webp', 'celestial/venus.webp', 'celestial/sun.webp', 'celestial/meteors.webp', 'celestial/comet.webp', 'celestial/jupiter.webp', 'celestial/saturn.webp', 'celestial/moon.webp', 'celestial/mercury.webp', 'asheet-frame.webp', 'asheet-row.webp', 'asheet-row-red.webp', 'panel-frame.webp',
 ];
@@ -57,8 +57,8 @@ class SystemBoomApp extends StatelessWidget {
 const double kStageW = 941;
 const double kStageH = 2097;
 
-/// How far (design units) the stage is pulled up now that the header is shorter: 411 (greeting y) - (header 261 + 8 gap).
-const double _kStageShift = 142;
+/// How far (design units) the stage is pulled up now that the header is shorter: 411 (greeting y) - (header 230 + 8 gap).
+const double _kStageShift = 173;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -185,11 +185,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     final cc = x * x * (3 - 2 * x);
                     return AnimatedBuilder(
                       animation: _clock,
-                      builder: (context, _) => Container(
-                        decoration: BoxDecoration(color: const Color(0xFF070A0E), boxShadow: [BoxShadow(color: Color.fromRGBO(0, 0, 0, .55 * cc), blurRadius: 14 * u, offset: Offset(0, 6 * u))]),
-                        padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top),
-                        child: _Stage(u: u, t: _t, onTap: _tap).header(cc),
-                      ),
+                      builder: (context, _) => Column(mainAxisSize: MainAxisSize.min, children: [
+                        Container(height: MediaQuery.paddingOf(context).top, color: const Color(0xFF070A0E)),
+                        _Stage(u: u, t: _t, onTap: _tap).header(cc),
+                      ]),
                     );
                   },
                 ),
@@ -319,62 +318,22 @@ class _Stage extends StatelessWidget {
         ],
       ));
 
-  /// Pinned header geometry (design units). The art is drawn at scale `s` (units per art pixel): 0.72 expanded, 0.46 compact.
-  static const double sExp = .72, sCmp = .46;
-  static double get headerExpH => 362 * sExp; // ≈ 261
-  static double get headerCmpH => 362 * sCmp; // ≈ 166
-  static double get shrinkDist => headerExpH - headerCmpH; // scroll distance over which the header shrinks
+  /// Pinned header geometry (design units): the same metal card as the Calls page (854x209 art, full width), which
+  /// shrinks to [kCmp] of its size as the page scrolls.
+  static const double kCmp = .8;
+  static const double shrinkDist = 60; // scroll distance (units) over which the header shrinks
 
-  /// The plate art, cut into pieces so the lava platform keeps its true proportions; only flat metal stretches.
-  List<Widget> _plate(double au, double w, double h, double ov) {
-    // piece = art columns [a0, a1) drawn into [x, x + width); `stretch` > 1 widens the strip horizontally
-    Widget piece(double x, double width, double a0, double stretch) {
-      return Positioned(
-        left: x,
-        top: 0,
-        width: width,
-        height: h,
-        child: ClipRect(
-          child: OverflowBox(
-            alignment: Alignment.topLeft,
-            minWidth: 0,
-            maxWidth: double.infinity,
-            child: Transform(
-              alignment: Alignment.topLeft,
-              transform: Matrix4.diagonal3Values(stretch, 1, 1)..translateByDouble(-a0 * au, 0, 0, 1),
-              child: Image.asset('assets/images/hero-nobomb.webp', width: 878 * au, height: h, fit: BoxFit.fill, filterQuality: FilterQuality.medium),
-            ),
-          ),
-        ),
-      );
-    }
-
-    final cl = w / 2 - 204 * au; // centre piece (platform) start
-    final cr = w / 2 + 204 * au;
-    final gl = -ov + 240 * au, gr = w + ov - 238 * au;
-    return [
-      piece(gl - 1, cl - gl + 2, 240, (cl - gl + 2) / (10 * au)),
-      piece(cr - 1, gr - cr + 2, 630, (gr - cr + 2) / (10 * au)),
-      piece(cl, 408 * au, 235, 1),
-      piece(-ov, 240 * au, 0, 1),
-      piece(gr, 238 * au, 640, 1),
-    ];
-  }
-
-  /// Full-bleed hero header: covers the top, left and right edges, is shorter than the old block, and gets smaller as [c] goes 0 -> 1.
+  /// Home header card: SYSTEMBOOM logo in the middle, planets orbiting it, notification bell on the right. [c] goes 0 -> 1 while scrolling.
   Widget header(double c) {
-    final s = sExp + (sCmp - sExp) * c;
-    final au = s * u; // logical px per art pixel
-    final h = 362 * au;
     final w = 941 * u;
-    final ov = 12 * au; // overscan so the plate's outer edge reaches the screen edges
-    final bd = 78 * u; // bell keeps a fixed size so its badge stays readable while the header shrinks // bell button diameter
-    final bell = Offset(w - 65 * u, h / 2);
-    final lw = 650 * (.72 - .14 * c) * u;
+    final wc = w * (1 - (1 - kCmp) * c); // card width
+    final ka = wc / 854; // logical px per art unit
+    final h = 209 * ka;
+    final left = (w - wc) / 2;
     // planet orbit round the logo (an ellipse seen at a slant): angle advances with the clock, depth = sin(angle)
     List<Widget> orbit({required bool back}) {
       const names = ['saturn', 'moon', 'jupiter', 'venus'];
-      final rx = .54 * lw, ry = .15 * lw, d = .13 * lw;
+      final rx = .54 * 440 * ka, ry = .15 * 440 * ka, d = .13 * 440 * ka;
       final out = <Widget>[];
       for (var i = 0; i < names.length; i++) {
         final ang = 2 * math.pi * (t / 16 + i / names.length);
@@ -382,8 +341,8 @@ class _Stage extends StatelessWidget {
         if ((depth <= 0) != back) continue;
         final sc = .8 + .3 * (depth + 1) / 2;
         out.add(Positioned(
-          left: w / 2 + rx * math.cos(ang) - d / 2,
-          top: h / 2 + ry * depth - d / 2,
+          left: left + 427 * ka + rx * math.cos(ang) - d / 2,
+          top: 104 * ka + ry * depth - d / 2,
           width: d,
           height: d,
           child: IgnorePointer(
@@ -399,37 +358,30 @@ class _Stage extends StatelessWidget {
       }
       return out;
     }
-    return SizedBox(
+
+    return Container(
       height: h,
-      child: ClipRect(
-        child: Stack(clipBehavior: Clip.hardEdge, children: [
-          ..._plate(au, w, h, ov),
-          // planets orbiting the logo: the ones on the far side of the orbit pass behind it, the near ones in front
-          ...orbit(back: true),
-          // logo lock-up (bomb + SYSTEMBOOM)
-          Positioned(
-            left: (w - lw) / 2,
-            top: h / 2 - lw * 193 / 863 / 2,
-            width: lw,
-            child: IgnorePointer(
-              child: ShaderMask(
-                blendMode: BlendMode.dstIn,
-                shaderCallback: (r) => const LinearGradient(colors: [Color(0x00000000), Color(0xFF000000), Color(0xFF000000), Color(0x00000000)], stops: [0, .05, .95, 1]).createShader(r),
-                child: Image.asset('assets/images/logo-lockup.webp', fit: BoxFit.fitWidth),
-              ),
-            ),
-          ),
-          ...orbit(back: false),
-          // live bell: same gold chrome button as the other pages
-          Positioned(
-            left: bell.dx - bd / 2,
-            top: bell.dy - bd / 2,
-            width: bd,
-            height: bd,
-            child: ChromeBtn(u: u * 78 / 92, gold: true, badge: '14', onTap: () => onTap('Notifications'), child: Icon(Icons.notifications_none_rounded, size: 46 * u * 78 / 92, color: const Color(0xFFFFD27A))),
-          ),
-        ]),
-      ),
+      decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF070A0E), Color(0xFF070A0E), Color(0x00070A0E)], stops: [0, .78, 1])),
+      child: Stack(clipBehavior: Clip.none, children: [
+        Positioned(left: left, top: 0, width: wc, height: h, child: Image.asset('assets/images/hdr-home.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium)),
+        ...orbit(back: true),
+        // logo lock-up (transparent bomb + SYSTEMBOOM)
+        Positioned(
+          left: left + 207 * ka,
+          top: 55 * ka,
+          width: 440 * ka,
+          child: IgnorePointer(child: Image.asset('assets/images/logo-lockup.webp', fit: BoxFit.fitWidth, filterQuality: FilterQuality.medium)),
+        ),
+        ...orbit(back: false),
+        // live bell: same gold chrome button as the Calls page
+        Positioned(
+          left: left + 724 * ka,
+          top: 52 * ka,
+          width: 92 * ka,
+          height: 92 * ka,
+          child: ChromeBtn(u: ka, gold: true, badge: '14', onTap: () => onTap('Notifications'), child: Icon(Icons.notifications_none_rounded, size: 46 * ka, color: const Color(0xFFFFD27A))),
+        ),
+      ]),
     );
   }
 

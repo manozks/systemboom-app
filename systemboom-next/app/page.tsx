@@ -46,7 +46,7 @@ function HomeHeader() {
     const update = () => {
       raf = 0;
       const u = el.offsetWidth / 941;
-      const x = Math.min(1, Math.max(0, window.scrollY / (95 * u)));
+      const x = Math.min(1, Math.max(0, window.scrollY / (60 * u)));
       el.style.setProperty('--c', String(x * x * (3 - 2 * x)));
     };
     const on = () => { if (!raf) raf = requestAnimationFrame(update); };
@@ -57,20 +57,25 @@ function HomeHeader() {
   }, []);
   return (
     <div ref={ref} className="homehdr" style={{ ['--c' as string]: 0 }}>
-      <div className="hh-art"><i className="a-l" /><i className="a-gl" /><i className="a-gr" /><i className="a-c" /><i className="a-r" /></div>
-      <div className="hh-orbit" aria-hidden>
-        <i className="hh-oring" />
-        {['saturn', 'moon', 'jupiter', 'venus'].map((n, i) => (
-          <span key={n} className="hh-pl" style={{ ['--ph' as string]: i / 4 }}>
-            <img src={img(`celestial/${n}`)} alt="" draggable={false} />
-          </span>
-        ))}
-      </div>
-      <img className="hh-logo" src={img('logo-lockup')} alt="SYSTEMBOOM" draggable={false} />
-      <div className="hh-bell">
-        <ChromeBtn label="Notifications" gold badge="14" onClick={() => router.push('/notifications/')}>
-          <Bell style={{ width: '54%', height: '54%' }} strokeWidth={1.8} />
-        </ChromeBtn>
+      <div className="hh-scale">
+        <Art w={854} h={209} src="hdr-home">
+          <At x={207} y={104 - 49} w={440} style={{ zIndex: 2 }}>
+            <img className="hh-logo" src={img('logo-lockup')} alt="SYSTEMBOOM" draggable={false} />
+          </At>
+          <At x={427} y={104} w={0} h={0} className="hh-orbit">
+            <i className="hh-oring" />
+            {['saturn', 'moon', 'jupiter', 'venus'].map((n, i) => (
+              <span key={n} className="hh-pl" style={{ ['--ph' as string]: i / 4 }}>
+                <img src={img(`celestial/${n}`)} alt="" draggable={false} />
+              </span>
+            ))}
+          </At>
+          <At x={724} y={52} w={92} h={92} style={{ zIndex: 4 }}>
+            <ChromeBtn label="Notifications" gold badge="14" onClick={() => router.push('/notifications/')}>
+              <Bell style={{ width: '54%', height: '54%' }} strokeWidth={1.8} />
+            </ChromeBtn>
+          </At>
+        </Art>
       </div>
     </div>
   );
@@ -89,11 +94,11 @@ export default function Home() {
 
   return (
     <div className="stage">
-      <div style={{ position: 'relative', height: U(2110 - 142), overflow: 'clip' }}>
+      <div style={{ position: 'relative', height: U(2110 - 173), overflow: 'clip' }}>
         <HomeHeader />
 
         {/* everything below sits in design units that started under the old, taller header: pull it up under the new one */}
-        <div style={{ position: 'absolute', left: 0, top: U(-142), width: '100%' }}>
+        <div style={{ position: 'absolute', left: 0, top: U(-173), width: '100%' }}>
         {/* ── greeting ── */}
         <Abs x={21} y={411} w={865} scale={1.025}>
           <Art w={865} h={206} src="greeting-new" style={{ filter: `drop-shadow(0 ${U(8)} ${U(10)} rgba(0,0,0,.65))` }}>
