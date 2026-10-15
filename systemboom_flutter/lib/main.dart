@@ -5,7 +5,8 @@ import 'package:flutter/scheduler.dart' show Ticker;
 import 'package:flutter/services.dart';
 
 import 'pages/more_pages.dart' show SplashPage;
-import 'kit.dart' show HoverLoop, RingSweep;
+import 'kit.dart' show HoverLoop, RingSweep, pushScreen;
+import 'pages/chat_page.dart' show NotificationsLazy;
 import 'orb_menu.dart';
 import 'shell.dart';
 import 'ui.dart';
@@ -124,6 +125,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       'Design System': 'design',
       'Anonymous': 'anonymous',
     };
+    if (kEnableNav && label == 'Notifications') {
+      pushScreen(context, const NotificationsLazy());
+      return;
+    }
     final r = routes[label];
     if (kEnableNav && r != null) {
       if (r == 'design' || r == 'anonymous') {
@@ -363,8 +368,8 @@ class _Stage extends StatelessWidget {
     final h = 362 * au;
     final w = 941 * u;
     final ov = 12 * au; // overscan so the plate's outer edge reaches the screen edges
-    final bd = 112 * au; // bell button diameter
-    final bell = Offset(w - 82 * au, 118 * au);
+    final bd = 104 * au; // bell button diameter
+    final bell = Offset(w - 78 * au, 114 * au);
     final lw = 650 * (.72 - .14 * c) * u;
     return SizedBox(
       height: h,
@@ -400,37 +405,13 @@ class _Stage extends StatelessWidget {
               ),
             ),
           ),
-          // live bell button: gold chrome disc + notification badge
+          // live bell: same gold chrome button as the other pages
           Positioned(
             left: bell.dx - bd / 2,
             top: bell.dy - bd / 2,
             width: bd,
             height: bd,
-            child: Press(
-              u: u,
-              circle: true,
-              scaleUp: 1.08,
-              onTap: () => onTap('Notifications'),
-              child: Stack(clipBehavior: Clip.none, children: [
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFFFFE3A6), Color(0xFFFFA928), Color(0xFFB8620A)]),
-                      border: Border.all(color: const Color(0xFFFFF1CC), width: 1.6 * au),
-                      boxShadow: [BoxShadow(color: const Color(0x99FF8A1E), blurRadius: 16 * au), BoxShadow(color: Colors.black54, blurRadius: 8 * au, offset: Offset(0, 4 * au))],
-                    ),
-                    child: Center(
-                      child: Transform.rotate(
-                        angle: .16 * math.sin(t * 2 * math.pi / 5) * math.max(0, math.sin(t * 2 * math.pi / 5)),
-                        child: Icon(Icons.notifications_rounded, size: 64 * au, color: const Color(0xFF2A1700)),
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(right: -12 * au, top: -12 * au, child: RedBadge(text: '14', size: 44 * au, scale: 1 + .06 * math.max(0, math.sin(t * 2 * math.pi / 5)))),
-              ]),
-            ),
+            child: ChromeBtn(u: au * 100 / 92, gold: true, badge: '14', onTap: () => onTap('Notifications'), child: Icon(Icons.notifications_none_rounded, size: 46 * au * 100 / 92, color: const Color(0xFFFFD27A))),
           ),
         ]),
       ),

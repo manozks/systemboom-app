@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowRight, Bell, ChevronRight, Store, VenetianMask, Palette } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { Art, At, K, Press, U, img, useToast } from '@/lib/ui';
 import { DockContent } from '@/components/Dock';
+import { ChromeBtn } from '@/components/PageShell';
 
 /** A block placed in page design units (941 per stage width) and optionally scaled from its top-left corner. */
 function Abs({ x, y, w, h, scale = 1, children, style }: { x: number; y: number; w: number; h?: number; scale?: number; children: ReactNode; style?: CSSProperties }) {
@@ -35,7 +37,7 @@ function Sparks() {
 
 /** Full-bleed, shorter hero header. It stays pinned and shrinks (c: 0 -> 1) over the first ~95 units of scrolling. */
 function HomeHeader() {
-  const toast = useToast();
+  const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
@@ -59,10 +61,11 @@ function HomeHeader() {
       <div className="hh-glow" />
       <div className="hh-sparks"><Sparks /></div>
       <img className="hh-logo" src={img('logo-lockup')} alt="SYSTEMBOOM" draggable={false} />
-      <button className="hh-bell press pop" aria-label="Notifications" onClick={() => toast('Notifications')}>
-        <Bell strokeWidth={2.2} />
-        <span className="badge hh-badge" style={{ animation: 'breathe 4s ease-in-out infinite' }}>14</span>
-      </button>
+      <div className="hh-bell">
+        <ChromeBtn label="Notifications" gold badge="14" onClick={() => router.push('/notifications/')}>
+          <Bell style={{ width: '54%', height: '54%' }} strokeWidth={1.8} />
+        </ChromeBtn>
+      </div>
     </div>
   );
 }
