@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowDownLeft, ArrowUpRight, Clock, MoreVertical, Phone, PhoneMissed, Star, Video } from 'lucide-react';
+import { ArrowDownLeft, ArrowRight, ArrowUpRight, Clock, MoreVertical, Phone, PhoneMissed, Star, Video } from 'lucide-react';
 import { PageShell } from '@/components/PageShell';
 import { ListHeading, SearchBar, SegTabs } from '@/components/Controls';
 import { useRouter } from 'next/navigation';
@@ -57,14 +57,14 @@ export default function CallsPage() {
       <div style={{ height: 'calc(26 * var(--u))' }} />
 
       {/* Make a Call */}
-      <Press onClick={() => router.push('/new-chat/')} style={{ borderRadius: 'calc(34 * var(--u))' }}>
+      <Press className="hovcta" onClick={() => router.push('/new-chat/')} style={{ borderRadius: 'calc(34 * var(--u))' }}>
         <Art w={852} h={222} src="makecall-bg" style={{ filter: 'drop-shadow(0 10px 12px rgba(0,0,0,.7)) drop-shadow(0 0 16px rgba(255,120,30,.35))' }}>
-          <At x={34} y={16} w={192} h={192}><img className="ring-spin" src={img('makecall-ring')} alt="" draggable={false} style={{ width: '100%', height: '100%' }} /></At>
+          <At x={34} y={16} w={192} h={192} className="hovring"><span className="hripple" /><span className="horbit" /><img className="ring-spin" src={img('makecall-ring')} alt="" draggable={false} style={{ width: '100%', height: '100%' }} /></At>
           <At x={300} y={50} r={176} style={{ left: K(300) }}>
             <div className="gold-text" style={{ fontSize: K(58), fontWeight: 800, lineHeight: 1.1 }}>Make a Call</div>
             <div style={{ fontSize: K(29), lineHeight: 1.22, marginTop: K(8) }}>Connect with anyone, anywhere in the world.</div>
           </At>
-          <At x={682} y={46} w={132} h={132}><img src={img('makecall-orb')} alt="" draggable={false} style={{ width: '100%', height: '100%' }} /></At>
+          <At x={682} y={46} w={132} h={132} className="hovring"><span className="hripple" /><span className="horbit" /><img src={img('makecall-orb')} alt="" draggable={false} style={{ width: '100%', height: '100%' }} /><span className="harrow"><ArrowRight strokeWidth={2.4} className="a2" /><ArrowRight strokeWidth={2.4} className="a1" /></span></At>
         </Art>
       </Press>
 

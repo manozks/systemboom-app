@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../data.dart' as d;
-import '../kit.dart' show pushScreen;
+import '../kit.dart' show pushScreen, HoverLoop, CircleFxPainter, pushArrow;
 import '../shell.dart';
 import 'chat_page.dart';
 import 'more_pages.dart';
@@ -126,21 +126,25 @@ class _ChatsPageState extends State<ChatsPage> {
       final k = c.maxWidth / 856;
       return SizedBox(
         height: 215 * k,
-        child: Press(
+        child: HoverLoop(builder: (context, h, v) => Press(
           u: u,
           radius: 34,
           lift: 3,
           onTap: () => pushScreen(context, const NewChatPage()).then((_) => setState(() {})),
           builder: (context, g, s) => Stack(clipBehavior: Clip.none, children: [
             Positioned.fill(child: Image.asset('assets/images/cta.webp', fit: BoxFit.fill)),
+            // hover: ripples + a light round the chat circle
+            if (h > .02) Positioned(left: 40 * k, top: 24 * k, width: 168 * k, height: 168 * k, child: IgnorePointer(child: CustomPaint(painter: CircleFxPainter(v, h, const Color(0xFFFF9A2A), u)))),
             Positioned(
               left: 40 * k,
               top: 24 * k,
               width: 168 * k,
               height: 168 * k,
               child: Transform.rotate(
-                angle: .1 * math.sin(s * math.pi * 3) * (1 - s),
-                child: Container(
+                angle: .12 * math.sin(v * math.pi * 4) * h,
+                child: Transform.scale(
+                  scale: 1 + .06 * math.sin(v * math.pi * 4) * h,
+                  child: Container(
                   padding: EdgeInsets.all(9 * k),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
@@ -160,6 +164,7 @@ class _ChatsPageState extends State<ChatsPage> {
                       child: Center(child: Icon(Icons.chat_bubble_rounded, size: 72 * k, color: const Color(0xFFFFC978), shadows: [Shadow(color: const Color(0xFFFF8C28), blurRadius: 14 * k)])),
                     ),
                   ),
+                ),
                 ),
               ),
             ),
@@ -185,10 +190,13 @@ class _ChatsPageState extends State<ChatsPage> {
               top: 42 * k,
               width: 132 * k,
               height: 132 * k,
-              child: Center(child: Transform.translate(offset: Offset(10 * k * math.sin(s * math.pi), 0), child: Icon(Icons.arrow_forward_rounded, size: 60 * k, color: Colors.white, shadows: const [Shadow(color: Color(0xCC5A1400), offset: Offset(0, 2), blurRadius: 2)]))),
+              child: Stack(clipBehavior: Clip.none, children: [
+                if (h > .02) Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: CircleFxPainter(v, h, const Color(0xFFFFB347), u)))),
+                IgnorePointer(child: pushArrow(size: 60 * k, h: h, v: v)),
+              ]),
             ),
           ]),
-        ),
+        )),
       );
     });
   }

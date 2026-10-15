@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../kit.dart' show pushScreen;
+import '../kit.dart' show pushScreen, HoverLoop, CircleFxPainter, pushArrow;
 import '../shell.dart';
 import 'call_page.dart';
 import 'chat_page.dart' show NotificationsLazy;
@@ -191,19 +191,22 @@ class _CallsPageState extends State<CallsPage> {
       final k = w / 852;
       return SizedBox(
         height: 222 * k,
-        child: Press(
+        child: HoverLoop(builder: (context, h, v) => Press(
           u: u,
           radius: 34,
           lift: 3,
           onTap: () => pushScreen(context, const CallPage('New call')),
           builder: (context, g, s) => Stack(clipBehavior: Clip.none, children: [
             Positioned.fill(child: Image.asset('assets/images/makecall-bg.webp', fit: BoxFit.fill)),
+            // hover: ripples + a light round the phone ring and the arrow button
+            if (h > .02) Positioned(left: 34 * k, top: 16 * k, width: 192 * k, height: 192 * k, child: IgnorePointer(child: CustomPaint(painter: CircleFxPainter(v, h, const Color(0xFFFF9A2A), u)))),
+            if (h > .02) Positioned(left: 682 * k, top: 46 * k, width: 132 * k, height: 132 * k, child: IgnorePointer(child: CustomPaint(painter: CircleFxPainter(v, h, const Color(0xFFFFB347), u)))),
             Positioned(
               left: 34 * k,
               top: 16 * k,
               width: 192 * k,
               height: 192 * k,
-              child: Transform.rotate(angle: .12 * math.sin(s * math.pi * 3) * (1 - s), child: Image.asset('assets/images/makecall-ring.webp', fit: BoxFit.fill)),
+              child: Transform.rotate(angle: .12 * math.sin(v * math.pi * 4) * h, child: Transform.scale(scale: 1 + .05 * math.sin(v * math.pi * 4) * h, child: Image.asset('assets/images/makecall-ring.webp', fit: BoxFit.fill))),
             ),
             Positioned(
               left: 300 * k,
@@ -227,10 +230,13 @@ class _CallsPageState extends State<CallsPage> {
               top: 46 * k,
               width: 132 * k,
               height: 132 * k,
-              child: Transform.scale(scale: 1 + .05 * g.clamp(0.0, 1.0), child: Image.asset('assets/images/makecall-orb.webp', fit: BoxFit.fill)),
+              child: Stack(clipBehavior: Clip.none, children: [
+                Transform.scale(scale: 1 + .05 * g.clamp(0.0, 1.0), child: Image.asset('assets/images/makecall-orb.webp', fit: BoxFit.fill)),
+                IgnorePointer(child: pushArrow(size: 58 * k, h: h, v: v)),
+              ]),
             ),
           ]),
-        ),
+        )),
       );
     });
   }

@@ -931,3 +931,25 @@ button.lr:active { transform: scale(.985); }
 .btnwrap:hover .btnglow, .btnwrap:active .btnglow { animation: btnglow 1.6s ease-in-out infinite; }
 .btnwrap:hover .btnshine::before, .btnwrap:active .btnshine::before { animation: btnshineH 1.4s ease-in-out infinite; }
 .btnwrap:hover .btnorbit, .btnwrap:active .btnorbit { opacity: 1; animation: tileorbit 1.6s linear infinite; }
+
+/* ───────── New Chat / Make a Call banners: icons are still at rest; hover / press brings the circle animation ───────── */
+.hovring { border-radius: 50%; }
+.hripple { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; z-index: 2; }
+.hripple::before, .hripple::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: calc(3 * var(--k, 1px)) solid rgba(255, 190, 110, .8); opacity: 0; }
+.horbit { position: absolute; inset: calc(-1 * var(--k, 1px)); border-radius: 50%; pointer-events: none; z-index: 2; mix-blend-mode: screen; opacity: 0; transition: opacity .25s;
+  background: conic-gradient(from var(--oa), transparent 0 220deg, rgba(255,208,138,.35) 300deg, #fff 354deg, transparent 360deg);
+  -webkit-mask: radial-gradient(closest-side, transparent 86%, #000 88%, #000 99%, transparent 100%); mask: radial-gradient(closest-side, transparent 86%, #000 88%, #000 99%, transparent 100%); }
+.harrow { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 3; }
+.harrow svg { grid-area: 1 / 1; width: 46%; height: 46%; color: #fff; filter: drop-shadow(0 0 calc(8 * var(--k, 1px)) rgba(255,179,71,.95)) drop-shadow(0 calc(2 * var(--k, 1px)) calc(2 * var(--k, 1px)) rgba(0,0,0,.35)); }
+.harrow .a2 { opacity: 0; }
+.hovcta .ring-spin { animation: none !important; }
+@keyframes ringwob { 0%, 100% { transform: rotate(-7deg) scale(1); } 50% { transform: rotate(7deg) scale(1.05); } }
+.hovcta:hover .hripple::before, .hovcta:active .hripple::before { animation: tileripple 1.5s ease-out infinite; border-radius: 50%; }
+.hovcta:hover .hripple::after, .hovcta:active .hripple::after { animation: ringrip 1.5s ease-out infinite; animation-delay: -.75s; }
+.hovcta:hover .hripple::before, .hovcta:active .hripple::before { animation-name: ringrip; }
+.hovcta:hover .horbit, .hovcta:active .horbit { opacity: 1; animation: tileorbit 1.5s linear infinite; }
+.hovcta:hover .ring-spin, .hovcta:active .ring-spin { animation: ringwob 1.4s ease-in-out infinite !important; }
+.hovcta:hover .harrow .a1, .hovcta:active .harrow .a1 { animation: arrowpush 1.2s ease-in-out infinite; }
+.hovcta:hover .harrow .a2, .hovcta:active .harrow .a2 { opacity: .28; animation: arrowpush 1.2s ease-in-out infinite; animation-delay: -.14s; }
+@keyframes ringrip { 0% { transform: scale(1); opacity: .85; } 100% { transform: scale(1.7); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .hovcta .ring-spin, .horbit, .hripple::before, .hripple::after, .harrow svg { animation: none !important; } }

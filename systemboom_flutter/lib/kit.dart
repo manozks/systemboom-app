@@ -452,7 +452,7 @@ class _ActionBtnState extends State<ActionBtn> with TickerProviderStateMixin {
                     height: d,
                     child: Stack(alignment: Alignment.center, clipBehavior: Clip.none, children: [
                       // ripple rings + orbiting light: only visible while hovered / pressed
-                      if (h > 0) Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _CircleFxPainter(v, h, ac, u)))),
+                      if (h > 0) Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: CircleFxPainter(v, h, ac, u)))),
                       // tint inside the dark metal centre so each badge reads in its own colour
                       Positioned.fill(child: Padding(padding: EdgeInsets.all(d * .12), child: DecoratedBox(decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [ac.withValues(alpha: .34 + .22 * h), ac.withValues(alpha: 0)]))))),
                       // the app's chrome ring art (orange glints; the red variant for destructive actions)
@@ -473,8 +473,8 @@ class _ActionBtnState extends State<ActionBtn> with TickerProviderStateMixin {
 }
 
 /// Two ripple rings expanding from the badge plus a comet of light running around its rim (amount [h] = hover 0..1).
-class _CircleFxPainter extends CustomPainter {
-  _CircleFxPainter(this.v, this.h, this.color, this.u);
+class CircleFxPainter extends CustomPainter {
+  CircleFxPainter(this.v, this.h, this.color, this.u);
   final double v, h, u;
   final Color color;
   @override
@@ -504,7 +504,7 @@ class _CircleFxPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_CircleFxPainter o) => o.v != v || o.h != h;
+  bool shouldRepaint(CircleFxPainter o) => o.v != v || o.h != h;
 }
 
 /// Gives its child a hover/press amount [h] (0..1, eased) and a looping phase [v] (0..1) that only runs while the pointer
@@ -574,6 +574,17 @@ class _HoverLoopState extends State<HoverLoop> with TickerProviderStateMixin {
       ),
     );
   }
+}
+
+/// A white arrow that stays still at rest and, while hovered ([h] 0..1, loop phase [v] 0..1), pushes forward with a faint
+/// trailing copy. [size] is the icon size in logical pixels.
+Widget pushArrow({required double size, required double h, required double v, Color glow = const Color(0xFFFFB347)}) {
+  final push = math.pow(math.sin(math.pi * v), 2).toDouble() * h;
+  Widget arrow(double dx, double a) => Transform.translate(
+        offset: Offset(dx, 0),
+        child: Icon(Icons.arrow_forward_rounded, size: size, color: Colors.white.withValues(alpha: a), shadows: [Shadow(color: glow.withValues(alpha: a), blurRadius: size * .22), Shadow(color: Colors.black.withValues(alpha: .35 * a), blurRadius: size * .06, offset: Offset(0, size * .04))]),
+      );
+  return Center(child: Stack(alignment: Alignment.center, clipBehavior: Clip.none, children: [if (h > .02) arrow(size * (-.25 + .4 * push), .28 * h), arrow(size * (.0 + .3 * push), 1)]));
 }
 
 /// Wide orange / red call-to-action (chat info style).

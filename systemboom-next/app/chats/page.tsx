@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { conversationTitle, isE2EE, latestMessage, useConversationList, useStore } from '@/lib/data/store';
 import { listTime } from '@/lib/data/format';
 import type { Message } from '@/lib/data/types';
-import { Archive, ArchiveRestore, Bell, BellOff, CheckCheck, MessageCircle, MoreVertical, Mic, Pin, Settings2, Trash2, Users } from 'lucide-react';
+import { Archive, ArchiveRestore, ArrowRight, Bell, BellOff, CheckCheck, MessageCircle, MoreVertical, Mic, Pin, Settings2, Trash2, Users } from 'lucide-react';
 import { ActionSheet, Dialog, Empty } from '@/components/kit';
 import type { Conversation } from '@/lib/data/types';
 import { PageShell } from '@/components/PageShell';
@@ -75,9 +75,10 @@ function ChatsScreen() {
       <SegTabs index={tab} onChange={setTab} items={[{ label: 'All' }, { label: 'Unread' }, { label: 'Groups' }]} />
       <div style={{ height: 'calc(26 * var(--u))' }} />
 
-      {!archivedView && <Press onClick={() => router.push('/new-chat/')} style={{ borderRadius: 'calc(34 * var(--u))' }}>
+      {!archivedView && <Press className="hovcta" onClick={() => router.push('/new-chat/')} style={{ borderRadius: 'calc(34 * var(--u))' }}>
         <Art w={856} h={215} src="cta" style={{ filter: 'drop-shadow(0 10px 12px rgba(0,0,0,.7)) drop-shadow(0 0 16px rgba(255,120,30,.35))' }}>
-          <At x={40} y={24} w={168} h={168}>
+          <At x={40} y={24} w={168} h={168} className="hovring">
+            <span className="hripple" /><span className="horbit" />
             <div className="chrome-ring ring-spin" style={{ width: '100%', height: '100%', padding: K(9), boxShadow: `0 0 ${K(26)} rgba(255,122,26,.6)` }}>
               <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'radial-gradient(circle at 50% 35%,#3a2410,#0a0604)', padding: K(14) }}>
                 <div style={{ width: '100%', height: '100%', borderRadius: '50%', border: `${K(5)} solid #ff8a2a`, boxShadow: `0 0 ${K(16)} #ff7814, inset 0 0 ${K(16)} #ff7814`, display: 'grid', placeItems: 'center', color: '#ffc978' }}>
@@ -86,6 +87,7 @@ function ChatsScreen() {
               </div>
             </div>
           </At>
+          <At x={676} y={42} w={132} h={132} className="hovring" aria-hidden><span className="hripple" /><span className="horbit" /><span className="harrow"><ArrowRight strokeWidth={2.4} className="a2" /><ArrowRight strokeWidth={2.4} className="a1" /></span></At>
           <At x={244} y={38} r={190} style={{ left: K(244) }}>
             <div className="gold-text" style={{ fontSize: K(60), fontWeight: 800, lineHeight: 1.1 }}>New Chat</div>
             <div style={{ fontSize: K(30), lineHeight: 1.2, marginTop: K(6) }}>Message a friend, a group or a store.</div>
