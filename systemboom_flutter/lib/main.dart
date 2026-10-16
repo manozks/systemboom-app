@@ -342,6 +342,7 @@ class _Stage extends StatelessWidget {
       // the orbit flattens and shrinks with the header so the planets circle the small logo inside the slim bar
       final cy = 104 * ka + (kCmpH * u / 2 - 104 * ka) * c;
       final out = <Widget>[];
+      if (back) out.add(Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _PlatePainter(cx: cx, cy: cy, k: ka, c: c, t: t)))));
       for (final (name, rx0, ry0, d0, rx1, ry1, d1, period, ph) in planets) {
         final rx = (rx0 + (rx1 - rx0) * c) * ka, ry = (ry0 + (ry1 - ry0) * c) * ka, d = (d0 + (d1 - d0) * c) * ka;
         final ang = 2 * math.pi * (t / period + ph);
@@ -1213,4 +1214,52 @@ class _RRectRipplePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_RRectRipplePainter o) => o.t != t || o.h != h;
+}
+
+/// A slowly rotating orrery plate under the planets: a disc seen at a slant (flattened with a vertical scale), with a gold rim,
+/// a light sweep that turns round it and a ring of tick marks that turns the other way.
+class _PlatePainter extends CustomPainter {
+  _PlatePainter({required this.cx, required this.cy, required this.k, required this.c, required this.t});
+  final double cx, cy, k, c, t;
+  @override
+  void paint(Canvas canvas, Size size) {
+    final r = (336 + (225 - 336) * c) * k;
+    final sy = .1726 + (.0844 - .1726) * c;
+    canvas.save();
+    canvas.translate(cx, cy);
+    canvas.scale(1, sy);
+    final rect = Rect.fromCircle(center: Offset.zero, radius: r);
+    // base disc: dark glass with gold bands at the orbit radii and a bright rim
+    final base = Paint()
+      ..shader = const RadialGradient(
+        colors: [Color(0x00FFBE5A), Color(0x6B281808), Color(0x33FFB950), Color(0x4DFF9628), Color(0x57281808), Color(0x2EFFBE5A), Color(0x6BFFA032), Color(0x80FFC86E), Color(0x00FFC86E)],
+        stops: [.22, .40, .66, .69, .72, .84, .865, .99, 1],
+      ).createShader(rect);
+    canvas.drawCircle(Offset.zero, r, Paint()..color = const Color(0x66FF9628)..maskFilter = MaskFilter.blur(BlurStyle.normal, 16 * k));
+    canvas.drawCircle(Offset.zero, r, base);
+    // light sweep turning round the plate
+    final a1 = 2 * math.pi * (t / 26);
+    final ring = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = r * .72
+      ..shader = SweepGradient(
+        colors: const [Color(0x00FFD68C), Color(0x8CFFDEA0), Color(0x00FFD68C), Color(0x00FFD68C), Color(0x59FFBE6E), Color(0x00FFD68C), Color(0x00FFD68C)],
+        stops: const [0, .33, .46, .69, .83, .96, 1],
+        transform: GradientRotation(a1),
+      ).createShader(rect);
+    canvas.drawCircle(Offset.zero, r * .62, ring);
+    // tick marks turning the other way
+    final a2 = -2 * math.pi * (t / 70);
+    final tick = Paint()
+      ..strokeWidth = math.max(1, 1.4 * k)
+      ..color = const Color(0xB3FFE2AA);
+    for (var i = 0; i < 60; i++) {
+      final a = a2 + i * 2 * math.pi / 60;
+      canvas.drawLine(Offset(math.cos(a) * r * .915, math.sin(a) * r * .915), Offset(math.cos(a) * r * .96, math.sin(a) * r * .96), tick);
+    }
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _PlatePainter old) => old.t != t || old.c != c || old.cx != cx || old.cy != cy || old.k != k;
 }

@@ -1,7 +1,7 @@
 1:"$Sreact.fragment"
 c:I[6225,[],""]
 :HL["/systemboom-app/next/_next/static/css/96b3b7728c2fb3b6.css","style"]
-:HL["/systemboom-app/next/_next/static/css/f7e1cc7398486d70.css","style"]
+:HL["/systemboom-app/next/_next/static/css/f9cd8354ec7ce6f1.css","style"]
 2:Tbd3,
 @font-face{font-family:'Figtree';src:url('/systemboom-app/next/fonts/Figtree.ttf') format('truetype');font-weight:300 900;font-display:swap}
 .stage{background-image:radial-gradient(120% 40% at 50% 0%,rgba(255,122,26,.08),transparent 60%),url('/systemboom-app/next/img/carbon-tile.webp');background-size:auto,calc(18*var(--u)) calc(17*var(--u));background-repeat:no-repeat,repeat}
@@ -40,7 +40,7 @@ c:I[6225,[],""]
 .xbtn.danger{--bz:url('/systemboom-app/next/img/info-cta-red.webp')}
 .ringart{background-image:url('/systemboom-app/next/img/share-ring.webp')}
 .thread .bubble.out{border-image-source:url('/systemboom-app/next/img/chat-bubble-out.webp')}
-0:{"P":null,"b":"B2kg6rgSLClXmxiMX0CXK","p":"/systemboom-app/next","c":["","new-chat",""],"i":false,"f":[[["",{"children":["new-chat",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/systemboom-app/next/_next/static/css/96b3b7728c2fb3b6.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/systemboom-app/next/_next/static/css/f7e1cc7398486d70.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$L3","$L4","$L5","$L6","$L7"]]}],"$L8"]}]]}],{"children":["new-chat","$L9",{"children":["__PAGE__","$La",{},null,false]},null,false]},null,false],"$Lb",false]],"m":"$undefined","G":["$c",[]],"s":false,"S":true}
+0:{"P":null,"b":"mCW5w0so80jZGQkU3Nk-y","p":"/systemboom-app/next","c":["","new-chat",""],"i":false,"f":[[["",{"children":["new-chat",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/systemboom-app/next/_next/static/css/96b3b7728c2fb3b6.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/systemboom-app/next/_next/static/css/f9cd8354ec7ce6f1.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$L3","$L4","$L5","$L6","$L7"]]}],"$L8"]}]]}],{"children":["new-chat","$L9",{"children":["__PAGE__","$La",{},null,false]},null,false]},null,false],"$Lb",false]],"m":"$undefined","G":["$c",[]],"s":false,"S":true}
 d:I[2437,["7049","static/chunks/7049-64b12eb28c02c1ae.js","7177","static/chunks/app/layout-d786e78141460d3d.js"],"ToastProvider"]
 e:I[4542,["7049","static/chunks/7049-64b12eb28c02c1ae.js","7177","static/chunks/app/layout-d786e78141460d3d.js"],"ConnectivityProvider"]
 f:I[7049,["7049","static/chunks/7049-64b12eb28c02c1ae.js","7177","static/chunks/app/layout-d786e78141460d3d.js"],"StoreProvider"]
