@@ -341,9 +341,6 @@ class _Stage extends StatelessWidget {
       ('saturn', 336.0, 58.0, 50.0, 24.0, 0.5),
       ];
       final out = <Widget>[];
-      if (back) {
-        out.add(Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _OrbitRingsPainter(cx: cx, cy: 104 * ka, k: ka, rings: const [(232.0, 38.0), (284.0, 48.0), (336.0, 58.0)])))));
-      }
       for (final (name, rxa, rya, da, period, ph) in planets) {
         final rx = rxa * ka, ry = rya * ka, d = da * ka;
         final ang = 2 * math.pi * (t / period + ph);
@@ -1167,24 +1164,4 @@ class _RRectRipplePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_RRectRipplePainter o) => o.t != t || o.h != h;
-}
-
-/// Faint elliptical orbit paths round the logo (art units scaled by [k]).
-class _OrbitRingsPainter extends CustomPainter {
-  _OrbitRingsPainter({required this.cx, required this.cy, required this.k, required this.rings});
-  final double cx, cy, k;
-  final List<(double, double)> rings;
-  @override
-  void paint(Canvas canvas, Size size) {
-    final p = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1
-      ..color = const Color(0x33FFC882);
-    for (final (rx, ry) in rings) {
-      canvas.drawOval(Rect.fromCenter(center: Offset(cx, cy), width: 2 * rx * k, height: 2 * ry * k), p);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _OrbitRingsPainter old) => old.cx != cx || old.cy != cy || old.k != k;
 }
