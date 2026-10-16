@@ -331,24 +331,26 @@ class _Stage extends StatelessWidget {
     final cx = w / 2;
     final fade = (1 - 2.4 * c).clamp(0.0, 1.0); // bell + planets go away quickly
     // a small solar system round the logo: each planet runs on its own slanted ellipse and speed; depth = sin(angle)
-    List<Widget> orbit({required bool back, required double fade}) {
+    List<Widget> orbit({required bool back}) {
       const planets = [
-      ('mercury', 232.0, 38.0, 30.0, 9.0, 0.0),
-      ('venus', 232.0, 38.0, 34.0, 9.0, 0.5),
-      ('moon', 284.0, 48.0, 36.0, 15.0, 0.2),
-      ('jupiter', 336.0, 58.0, 46.0, 24.0, 0.0),
-      ('saturn', 336.0, 58.0, 50.0, 24.0, 0.5),
+        ('mercury', 232.0, 38.0, 30.0, 125.0, 11.0, 15.0, 9.0, 0.0),
+        ('venus', 232.0, 38.0, 34.0, 125.0, 11.0, 17.0, 9.0, 0.5),
+        ('moon', 284.0, 48.0, 36.0, 160.0, 14.0, 17.0, 15.0, 0.2),
+        ('jupiter', 336.0, 58.0, 46.0, 200.0, 16.0, 19.0, 24.0, 0.0),
+        ('saturn', 336.0, 58.0, 50.0, 200.0, 16.0, 20.0, 24.0, 0.5),
       ];
+      // the orbit flattens and shrinks with the header so the planets circle the small logo inside the slim bar
+      final cy = 104 * ka + (kCmpH * u / 2 - 104 * ka) * c;
       final out = <Widget>[];
-      for (final (name, rxa, rya, da, period, ph) in planets) {
-        final rx = rxa * ka, ry = rya * ka, d = da * ka;
+      for (final (name, rx0, ry0, d0, rx1, ry1, d1, period, ph) in planets) {
+        final rx = (rx0 + (rx1 - rx0) * c) * ka, ry = (ry0 + (ry1 - ry0) * c) * ka, d = (d0 + (d1 - d0) * c) * ka;
         final ang = 2 * math.pi * (t / period + ph);
         final depth = math.sin(ang); // > 0: near side (in front of the logo)
         if ((depth <= 0) != back) continue;
         final sc = .8 + .3 * (depth + 1) / 2;
         out.add(Positioned(
           left: cx + rx * math.cos(ang) - d / 2,
-          top: 104 * ka + ry * depth - d / 2,
+          top: cy + ry * depth - d / 2,
           width: d,
           height: d,
           child: IgnorePointer(
@@ -356,7 +358,7 @@ class _Stage extends StatelessWidget {
               scale: sc,
               child: DecoratedBox(
                 decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: const Color(0x66FFBE64), blurRadius: d * .35)]),
-                child: Opacity(opacity: (back ? .85 : 1) * fade, child: Image.asset('assets/images/celestial/$name.webp', fit: BoxFit.contain, filterQuality: FilterQuality.medium)),
+                child: Opacity(opacity: back ? .85 : 1, child: Image.asset('assets/images/celestial/$name.webp', fit: BoxFit.contain, filterQuality: FilterQuality.medium)),
               ),
             ),
           ),
@@ -379,14 +381,13 @@ class _Stage extends StatelessWidget {
             child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xF71A1F26), Color(0xF7090C10)]),
-                border: Border(bottom: BorderSide(color: const Color(0x8CFFAA46), width: 1)),
                 boxShadow: [BoxShadow(color: const Color(0x8C000000), blurRadius: 14 * u, offset: Offset(0, 5 * u))],
               ),
             ),
           ),
         ),
         if (c < 1) Positioned(left: 0, top: 0, width: w, height: h, child: Opacity(opacity: (1 - 1.7 * c).clamp(0.0, 1.0), child: Image.asset('assets/images/hdr-home.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium))),
-        if (fade > 0) ...orbit(back: true, fade: fade),
+        ...orbit(back: true),
         // logo lock-up (transparent bomb + SYSTEMBOOM); shrinks to the top centre
         Positioned(
           left: cx - logoW / 2,
@@ -394,7 +395,39 @@ class _Stage extends StatelessWidget {
           width: logoW,
           child: IgnorePointer(child: Image.asset('assets/images/logo-lockup.webp', fit: BoxFit.fitWidth, filterQuality: FilterQuality.medium)),
         ),
-        if (fade > 0) ...orbit(back: false, fade: fade),
+        ...orbit(back: false),
+        // glossy chrome rim along the bottom of the slim bar, with a sweeping light
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: 7 * u,
+          child: IgnorePointer(
+            child: Opacity(
+              opacity: (c * 2).clamp(0.0, 1.0),
+              child: ClipRect(
+                child: Stack(children: [
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFFFFFFF), Color(0xFFDFE5EC), Color(0xFF8B95A1), Color(0xFF1B2128), Color(0xFF5D6772), Color(0xFFC3CBD4), Color(0xFFF6F9FC)], stops: [0, .16, .4, .52, .66, .84, 1]),
+                        boxShadow: [BoxShadow(color: const Color(0x80FF8C1E), blurRadius: 9 * u, offset: Offset(0, 3 * u))],
+                      ),
+                    ),
+                  ),
+                  Positioned(left: 0, right: 0, top: 0, height: 7 * u * .38, child: const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xBFFFFFFF), Color(0x00FFFFFF)])))),
+                  Positioned(
+                    left: (((t / 5.5) % 1) * 1.4 - .3) * w,
+                    top: 0,
+                    bottom: 0,
+                    width: w * .22,
+                    child: const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0x00FFC878), Color(0xF2FFE6B4), Color(0x00FFC878)]))),
+                  ),
+                ]),
+              ),
+            ),
+          ),
+        ),
         // live bell: same gold chrome button as the Calls page; hidden once the header collapses
         if (c < .4)
           Positioned(

@@ -36,11 +36,11 @@ function Sparks() {
 
 
 const HH_PLANETS = [
-  { n: 'mercury', rx: 232, ry: 38, d: 30, T: 9, ph: 0.0 },
-  { n: 'venus', rx: 232, ry: 38, d: 34, T: 9, ph: 0.5 },
-  { n: 'moon', rx: 284, ry: 48, d: 36, T: 15, ph: 0.2 },
-  { n: 'jupiter', rx: 336, ry: 58, d: 46, T: 24, ph: 0.0 },
-  { n: 'saturn', rx: 336, ry: 58, d: 50, T: 24, ph: 0.5 },
+  { n: 'mercury', rx: 232, ry: 38, d: 30, rx1: 125, ry1: 11, d1: 15, T: 9, ph: 0.0 },
+  { n: 'venus', rx: 232, ry: 38, d: 34, rx1: 125, ry1: 11, d1: 17, T: 9, ph: 0.5 },
+  { n: 'moon', rx: 284, ry: 48, d: 36, rx1: 160, ry1: 14, d1: 17, T: 15, ph: 0.2 },
+  { n: 'jupiter', rx: 336, ry: 58, d: 46, rx1: 200, ry1: 16, d1: 19, T: 24, ph: 0.0 },
+  { n: 'saturn', rx: 336, ry: 58, d: 50, rx1: 200, ry1: 16, d1: 20, T: 24, ph: 0.5 },
 ];
 
 /** Full-bleed, shorter hero header. It stays pinned and shrinks (c: 0 -> 1) over the first ~95 units of scrolling. */
@@ -75,7 +75,7 @@ function HomeHeader() {
           </At>
           <At x={427} y={104} w={0} h={0} className="hh-orbit">
             {HH_PLANETS.map((p) => (
-              <span key={p.n} className="hh-pl" style={{ ['--rx' as string]: p.rx, ['--ry' as string]: p.ry, ['--d' as string]: p.d, ['--T' as string]: `${p.T}s`, ['--ph' as string]: p.ph }}>
+              <span key={p.n} className="hh-pl" style={{ ['--rx0' as string]: p.rx, ['--ry0' as string]: p.ry, ['--d0' as string]: p.d, ['--rx1' as string]: p.rx1, ['--ry1' as string]: p.ry1, ['--d1' as string]: p.d1, ['--T' as string]: `${p.T}s`, ['--ph' as string]: p.ph }}>
                 <img src={img(`celestial/${p.n}`)} alt="" draggable={false} />
               </span>
             ))}
@@ -88,6 +88,7 @@ function HomeHeader() {
           </div>
         </Art>
       </div>
+      <i className="hh-rim" aria-hidden />
     </div>
   );
 }
