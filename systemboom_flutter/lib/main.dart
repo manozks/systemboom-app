@@ -1232,10 +1232,10 @@ class _PlatePainter extends CustomPainter {
     // base disc: dark glass with gold bands at the orbit radii and a bright rim
     final base = Paint()
       ..shader = const RadialGradient(
-        colors: [Color(0x00FFBE5A), Color(0x6B281808), Color(0x33FFB950), Color(0x4DFF9628), Color(0x57281808), Color(0x2EFFBE5A), Color(0x6BFFA032), Color(0x80FFC86E), Color(0x00FFC86E)],
-        stops: [.22, .40, .66, .69, .72, .84, .865, .99, 1],
+        colors: [Color(0x00FFCD82), Color(0x0DFFCD82), Color(0x1AFFCD82), Color(0x61FFC878), Color(0x0DFFCD82), Color(0x12FFCD82), Color(0x6BFFC878), Color(0x0DFFCD82), Color(0x1FFFD796), Color(0xB3FFE1AA), Color(0x00FFE1AA)],
+        stops: [.22, .40, .66, .686, .696, .84, .856, .866, .97, .993, 1],
       ).createShader(rect);
-    canvas.drawCircle(Offset.zero, r, Paint()..color = const Color(0x66FF9628)..maskFilter = MaskFilter.blur(BlurStyle.normal, 16 * k));
+    canvas.drawCircle(Offset.zero, r, Paint()..color = const Color(0x38FFA032)..maskFilter = MaskFilter.blur(BlurStyle.normal, 12 * k));
     canvas.drawCircle(Offset.zero, r, base);
     // light sweep turning round the plate
     final a1 = 2 * math.pi * (t / 26);
@@ -1243,7 +1243,7 @@ class _PlatePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = r * .72
       ..shader = SweepGradient(
-        colors: const [Color(0x00FFD68C), Color(0x8CFFDEA0), Color(0x00FFD68C), Color(0x00FFD68C), Color(0x59FFBE6E), Color(0x00FFD68C), Color(0x00FFD68C)],
+        colors: const [Color(0x00FFD68C), Color(0x57FFDEA0), Color(0x00FFD68C), Color(0x00FFD68C), Color(0x33FFBE6E), Color(0x00FFD68C), Color(0x00FFD68C)],
         stops: const [0, .33, .46, .69, .83, .96, 1],
         transform: GradientRotation(a1),
       ).createShader(rect);
@@ -1252,7 +1252,7 @@ class _PlatePainter extends CustomPainter {
     final a2 = -2 * math.pi * (t / 70);
     final tick = Paint()
       ..strokeWidth = math.max(1, 1.4 * k)
-      ..color = const Color(0xB3FFE2AA);
+      ..color = const Color(0x8CFFE2AA);
     for (var i = 0; i < 60; i++) {
       final a = a2 + i * 2 * math.pi / 60;
       canvas.drawLine(Offset(math.cos(a) * r * .915, math.sin(a) * r * .915), Offset(math.cos(a) * r * .96, math.sin(a) * r * .96), tick);

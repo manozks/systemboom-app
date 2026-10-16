@@ -991,11 +991,11 @@ button.lr:active { transform: scale(.985); }
 /* a slowly rotating orrery plate under the planets: a disc seen at a slant (the circle is flattened with scaleY), so its rotation reads as a tilted turntable */
 .hh-plate { --R: calc(336 + (225 - 336) * var(--c, 0)); --sy: calc(.1726 + (.0844 - .1726) * var(--c, 0)); position: absolute; left: calc(-1 * var(--R) * var(--k)); top: calc(-1 * var(--R) * var(--k)); width: calc(2 * var(--R) * var(--k)); height: calc(2 * var(--R) * var(--k)); transform: scaleY(var(--sy)); pointer-events: none; }
 .hh-plate i { position: absolute; inset: 0; border-radius: 50%; }
-.pl-base { background: radial-gradient(circle, rgba(255,190,90,.0) 0 22%, rgba(40,24,8,.42) 40%, rgba(255,185,80,.20) 66%, rgba(255,150,40,.30) 69%, rgba(40,24,8,.34) 72%, rgba(255,190,90,.18) 84%, rgba(255,160,50,.42) 86.5%, rgba(255,200,110,.5) 99%, rgba(255,200,110,0) 100%);
-  box-shadow: 0 0 calc(26 * var(--k)) rgba(255,150,40,.4), inset 0 0 calc(30 * var(--k)) rgba(255,150,40,.25); }
-.pl-sweep { background: conic-gradient(rgba(255,214,140,0) 0deg 70deg, rgba(255,222,160,.55) 118deg, rgba(255,214,140,0) 165deg 250deg, rgba(255,190,110,.35) 300deg, rgba(255,214,140,0) 345deg);
+.pl-base { background: radial-gradient(circle, transparent 0 22%, rgba(255,205,130,.05) 40%, rgba(255,205,130,.10) 66%, rgba(255,200,120,.38) 68.6%, rgba(255,205,130,.05) 69.6%, rgba(255,205,130,.07) 84%, rgba(255,200,120,.42) 85.6%, rgba(255,205,130,.05) 86.6%, rgba(255,215,150,.12) 97%, rgba(255,225,170,.7) 99.3%, transparent 100%);
+  box-shadow: 0 0 calc(16 * var(--k)) rgba(255,160,50,.22), inset 0 0 calc(20 * var(--k)) rgba(255,170,70,.12); }
+.pl-sweep { background: conic-gradient(rgba(255,214,140,0) 0deg 70deg, rgba(255,222,160,.34) 118deg, rgba(255,214,140,0) 165deg 250deg, rgba(255,190,110,.2) 300deg, rgba(255,214,140,0) 345deg);
   -webkit-mask: radial-gradient(circle, transparent 0 24%, #000 26% 98%, transparent 100%); mask: radial-gradient(circle, transparent 0 24%, #000 26% 98%, transparent 100%); animation: plspin 26s linear infinite; mix-blend-mode: screen; }
-.pl-ticks { background: repeating-conic-gradient(rgba(255,226,170,.7) 0deg .7deg, transparent .7deg 6deg);
+.pl-ticks { background: repeating-conic-gradient(rgba(255,226,170,.55) 0deg .6deg, transparent .7deg 6deg);
   -webkit-mask: radial-gradient(circle, transparent 0 91%, #000 91.5% 96%, transparent 96.5%); mask: radial-gradient(circle, transparent 0 91%, #000 91.5% 96%, transparent 96.5%); animation: plspin 70s linear infinite reverse; }
 @keyframes plspin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .pl-sweep, .pl-ticks { animation: none; } }
