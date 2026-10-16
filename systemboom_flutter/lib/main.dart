@@ -342,6 +342,10 @@ class _Stage extends StatelessWidget {
       // the orbit flattens and shrinks with the header so the planets circle the small logo inside the slim bar
       final cy = 104 * ka + (kCmpH * u / 2 - 104 * ka) * c;
       final out = <Widget>[];
+      if (back) {
+        // glowing gold orbit paths, drawn behind every planet
+        out.add(Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _OrbitRingsPainter(cx: cx, cy: cy, k: ka, c: c)))));
+      }
       for (final (name, rx0, ry0, d0, rx1, ry1, d1, period, ph) in planets) {
         final rx = (rx0 + (rx1 - rx0) * c) * ka, ry = (ry0 + (ry1 - ry0) * c) * ka, d = (d0 + (d1 - d0) * c) * ka;
         final ang = 2 * math.pi * (t / period + ph);
@@ -1213,4 +1217,32 @@ class _RRectRipplePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_RRectRipplePainter o) => o.t != t || o.h != h;
+}
+
+/// Soft glowing elliptical orbit paths round the logo; they shrink (art units, scaled by [k]) as the header collapses ([c] 0..1).
+class _OrbitRingsPainter extends CustomPainter {
+  _OrbitRingsPainter({required this.cx, required this.cy, required this.k, required this.c});
+  final double cx, cy, k, c;
+  static const _rings = [(232.0, 38.0, 140.0, 13.0), (284.0, 48.0, 180.0, 16.0), (336.0, 58.0, 225.0, 19.0)];
+  @override
+  void paint(Canvas canvas, Size size) {
+    final glow = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5 * k
+      ..color = const Color(0x1FFFAA46)
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 3.5 * k);
+    final line = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = math.max(1, 1.3 * k)
+      ..color = const Color(0x80FFD08C);
+    for (final (rx0, ry0, rx1, ry1) in _rings) {
+      final rx = (rx0 + (rx1 - rx0) * c) * k, ry = (ry0 + (ry1 - ry0) * c) * k;
+      final r = Rect.fromCenter(center: Offset(cx, cy), width: 2 * rx, height: 2 * ry);
+      canvas.drawOval(r, glow);
+      canvas.drawOval(r, line);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _OrbitRingsPainter old) => old.cx != cx || old.cy != cy || old.k != k || old.c != c;
 }
