@@ -54,8 +54,10 @@ function HomeHeader() {
     const update = () => {
       raf = 0;
       const u = el.offsetWidth / 941;
-      const x = Math.min(1, Math.max(0, window.scrollY / (60 * u)));
-      el.style.setProperty('--c', String(x * x * (3 - 2 * x)));
+      // linear on purpose: the header's bottom edge then tracks the content scrolling up underneath it (no gap)
+      const x = Math.min(1, Math.max(0, window.scrollY / (170.3 * u)));
+      el.style.setProperty('--c', String(x));
+      el.dataset.cmp = x > 0.4 ? '1' : '0';
     };
     const on = () => { if (!raf) raf = requestAnimationFrame(update); };
     update();
@@ -68,7 +70,7 @@ function HomeHeader() {
       <div className="hh-scale">
         <Art w={854} h={209} src="hdr-home">
           <div className="hh-in">
-          <At x={207} y={104 - 49} w={440} style={{ zIndex: 2 }}>
+          <At x={207} y={104 - 49} w={440} className="hh-logoat" style={{ zIndex: 2 }}>
             <img className="hh-logo" src={img('logo-lockup')} alt="SYSTEMBOOM" draggable={false} />
           </At>
           <At x={427} y={104} w={0} h={0} className="hh-orbit">

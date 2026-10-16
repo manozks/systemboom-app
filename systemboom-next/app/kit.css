@@ -955,11 +955,18 @@ button.lr:active { transform: scale(.985); }
 @media (prefers-reduced-motion: reduce) { .hovcta .ring-spin, .horbit, .hripple::before, .hripple::after, .harrow svg { animation: none !important; } }
 
 /* ───────── Home header: the same metal card as the Calls page; the whole card shrinks a little while scrolling (--c = 0..1 set from JS) ───────── */
-.homehdr { --sc: calc(1 - .2 * var(--c, 0)); position: sticky; top: 0; z-index: 30; height: calc(230.3 * var(--u) * var(--sc)); background: linear-gradient(#070a0e 78%, rgba(7,10,14,0)); }
-.homehdr .artbox > .in > img.bg { transform-origin: 50% 0; transform: scaleY(var(--sc)); }
-/* the card keeps the full width; only its height shrinks, and the logo / planets / bell scale with it (the bell stays at the right edge) */
-.hh-in { position: absolute; inset: 0; transform-origin: 50% 0; transform: scale(var(--sc)); }
-.hh-bellw { translate: calc(343 * (1 - var(--sc)) / var(--sc) * var(--k)) 0; }
+.homehdr { position: sticky; top: 0; z-index: 30; height: calc((230.3 - 170.3 * var(--c, 0)) * var(--u)); }
+/* the header collapses into a slim bar: the card art fades out, a dark glass bar with an orange hairline fades in,
+   the logo shrinks to the top centre, and the bell and planets fade away */
+.homehdr::before { content: ''; position: absolute; inset: 0; z-index: -1; opacity: clamp(0, calc(var(--c, 0) * 1.6), 1);
+  background: linear-gradient(180deg, rgba(26,31,38,.97), rgba(9,12,16,.97)); border-bottom: 1px solid rgba(255,170,70,.55);
+  box-shadow: 0 calc(5 * var(--u)) calc(14 * var(--u)) rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.1); }
+.homehdr::after { content: ''; position: absolute; inset: 0; z-index: -2; opacity: calc(1 - var(--c, 0)); background: linear-gradient(#070a0e 78%, rgba(7,10,14,0)); }
+.homehdr .artbox > .in > img.bg { transform-origin: 50% 0; transform: scaleY(calc(1 - .76 * var(--c, 0))); opacity: clamp(0, calc(1 - 1.7 * var(--c, 0)), 1); }
+.hh-in { position: absolute; inset: 0; }
+.hh-logoat { transform: translateY(calc(var(--c, 0) * (30 * var(--u) - 104 * var(--k)))) scale(calc(1 - .64 * var(--c, 0))); will-change: transform; }
+.hh-bellw, .hh-orbit { opacity: clamp(0, calc(1 - 2.4 * var(--c, 0)), 1); }
+.homehdr[data-cmp="1"] .hh-bellw, .homehdr[data-cmp="1"] .hh-orbit { visibility: hidden; }
 .hh-logo { width: 100%; display: block; pointer-events: none; filter: drop-shadow(0 calc(3 * var(--k)) calc(6 * var(--k)) rgba(0,0,0,.55)); }
 .hh-orbit { pointer-events: none; }
 .hh-oring { position: absolute; left: calc(-1 * var(--rx) * var(--k)); top: calc(-1 * var(--ry) * var(--k)); width: calc(2 * var(--rx) * var(--k)); height: calc(2 * var(--ry) * var(--k)); border-radius: 50%; border: 1px solid rgba(255,200,130,.2); box-shadow: 0 0 calc(6 * var(--k)) rgba(255,160,60,.08); }

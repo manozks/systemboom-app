@@ -181,8 +181,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 child: ValueListenableBuilder<double>(
                   valueListenable: _off,
                   builder: (context, off, _) {
-                    final x = (off / (_Stage.shrinkDist * u)).clamp(0.0, 1.0);
-                    final cc = x * x * (3 - 2 * x);
+                    final cc = (off / (_Stage.shrinkDist * u)).clamp(0.0, 1.0); // linear: the header edge tracks the content scrolling up under it
                     return AnimatedBuilder(
                       animation: _clock,
                       builder: (context, _) => Column(mainAxisSize: MainAxisSize.min, children: [
@@ -319,20 +318,20 @@ class _Stage extends StatelessWidget {
       ));
 
   /// Pinned header geometry (design units): the same metal card as the Calls page (854x209 art, full width), which
-  /// shrinks to [kCmp] of its size as the page scrolls.
-  static const double kCmp = .8;
-  static const double shrinkDist = 60; // scroll distance (units) over which the header shrinks
+  /// collapses into a slim bar as the page scrolls.
+  static const double kCmpH = 60; // height of the collapsed (slim bar) header, design units
+  static const double shrinkDist = 170.3; // scroll distance (units) over which the header collapses (= its height change)
 
   /// Home header card: SYSTEMBOOM logo in the middle, planets orbiting it, notification bell on the right. [c] goes 0 -> 1 while scrolling.
   Widget header(double c) {
     final w = 941 * u;
-    final sc = 1 - (1 - kCmp) * c; // the card keeps the full width; only its height (and the content) shrinks
-    final kx = w / 854;
-    final ka = kx * sc; // logical px per art unit for the content
-    final h = 209 * ka;
+    final kx = w / 854; // logical px per art unit
+    final ka = kx;
+    final h = 209 * kx + (kCmpH * u - 209 * kx) * c; // card height -> slim bar height
     final cx = w / 2;
+    final fade = (1 - 2.4 * c).clamp(0.0, 1.0); // bell + planets go away quickly
     // a small solar system round the logo: each planet runs on its own slanted ellipse and speed; depth = sin(angle)
-    List<Widget> orbit({required bool back}) {
+    List<Widget> orbit({required bool back, required double fade}) {
       const planets = [
       ('mercury', 232.0, 38.0, 30.0, 9.0, 0.0),
       ('venus', 232.0, 38.0, 34.0, 9.0, 0.5),
@@ -357,7 +356,7 @@ class _Stage extends StatelessWidget {
               scale: sc,
               child: DecoratedBox(
                 decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: const Color(0x66FFBE64), blurRadius: d * .35)]),
-                child: Opacity(opacity: back ? .85 : 1, child: Image.asset('assets/images/celestial/$name.webp', fit: BoxFit.contain, filterQuality: FilterQuality.medium)),
+                child: Opacity(opacity: (back ? .85 : 1) * fade, child: Image.asset('assets/images/celestial/$name.webp', fit: BoxFit.contain, filterQuality: FilterQuality.medium)),
               ),
             ),
           ),
@@ -366,28 +365,45 @@ class _Stage extends StatelessWidget {
       return out;
     }
 
-    return Container(
+    final logoW = 440 * ka * (1 - .64 * c);
+    final logoCy = 104 * ka + (kCmpH * u / 2 - 104 * ka) * c;
+    return SizedBox(
       height: h,
-      decoration: const BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF070A0E), Color(0xFF070A0E), Color(0x00070A0E)], stops: [0, .78, 1])),
-      child: Stack(clipBehavior: Clip.none, children: [
-        Positioned(left: 0, top: 0, width: w, height: h, child: Image.asset('assets/images/hdr-home.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium)),
-        ...orbit(back: true),
-        // logo lock-up (transparent bomb + SYSTEMBOOM)
+      child: Stack(clipBehavior: Clip.hardEdge, children: [
+        // gradient fade under the card (expanded state)
+        Positioned.fill(child: Opacity(opacity: 1 - c, child: const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF070A0E), Color(0xFF070A0E), Color(0x00070A0E)], stops: [0, .78, 1]))))),
+        // slim bar (collapsed state): dark glass with an orange hairline
+        Positioned.fill(
+          child: Opacity(
+            opacity: (c * 1.6).clamp(0.0, 1.0),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xF71A1F26), Color(0xF7090C10)]),
+                border: Border(bottom: BorderSide(color: const Color(0x8CFFAA46), width: 1)),
+                boxShadow: [BoxShadow(color: const Color(0x8C000000), blurRadius: 14 * u, offset: Offset(0, 5 * u))],
+              ),
+            ),
+          ),
+        ),
+        if (c < 1) Positioned(left: 0, top: 0, width: w, height: h, child: Opacity(opacity: (1 - 1.7 * c).clamp(0.0, 1.0), child: Image.asset('assets/images/hdr-home.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium))),
+        if (fade > 0) ...orbit(back: true, fade: fade),
+        // logo lock-up (transparent bomb + SYSTEMBOOM); shrinks to the top centre
         Positioned(
-          left: cx - 220 * ka,
-          top: 55 * ka,
-          width: 440 * ka,
+          left: cx - logoW / 2,
+          top: logoCy - logoW * 193 / 863 / 2,
+          width: logoW,
           child: IgnorePointer(child: Image.asset('assets/images/logo-lockup.webp', fit: BoxFit.fitWidth, filterQuality: FilterQuality.medium)),
         ),
-        ...orbit(back: false),
-        // live bell: same gold chrome button as the Calls page
-        Positioned(
-          left: cx + 343 * kx - 46 * ka,
-          top: 52 * ka,
-          width: 92 * ka,
-          height: 92 * ka,
-          child: ChromeBtn(u: ka, gold: true, badge: '14', onTap: () => onTap('Notifications'), child: Icon(Icons.notifications_none_rounded, size: 46 * ka, color: const Color(0xFFFFD27A))),
-        ),
+        if (fade > 0) ...orbit(back: false, fade: fade),
+        // live bell: same gold chrome button as the Calls page; hidden once the header collapses
+        if (c < .4)
+          Positioned(
+            left: cx + 343 * kx - 46 * ka,
+            top: 52 * ka,
+            width: 92 * ka,
+            height: 92 * ka,
+            child: Opacity(opacity: fade, child: ChromeBtn(u: ka, gold: true, badge: '14', onTap: () => onTap('Notifications'), child: Icon(Icons.notifications_none_rounded, size: 46 * ka, color: const Color(0xFFFFD27A)))),
+          ),
       ]),
     );
   }
