@@ -74,7 +74,7 @@ function HomeHeader() {
             <img className="hh-logo" src={img('logo-lockup')} alt="SYSTEMBOOM" draggable={false} />
           </At>
           <At x={427} y={104} w={0} h={0} className="hh-orbit">
-            <div className="hh-plate" aria-hidden><i className="pl-base" /><i className="pl-sweep" /><i className="pl-ticks" /></div>
+            <div className="hh-plate" aria-hidden><i className="pl-edge" /><i className="pl-base" /><i className="pl-sweep" /><i className="pl-ticks" /><i className="pl-rim" /><i className="pl-gloss" /></div>
             {HH_PLANETS.map((p) => (
               <span key={p.n} className="hh-pl" style={{ ['--rx0' as string]: p.rx, ['--ry0' as string]: p.ry, ['--d0' as string]: p.d, ['--rx1' as string]: p.rx1, ['--ry1' as string]: p.ry1, ['--d1' as string]: p.d1, ['--T' as string]: `${p.T}s`, ['--ph' as string]: p.ph }}>
                 <img src={img(`celestial/${p.n}`)} alt="" draggable={false} />
