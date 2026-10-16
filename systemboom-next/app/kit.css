@@ -955,7 +955,7 @@ button.lr:active { transform: scale(.985); }
 @media (prefers-reduced-motion: reduce) { .hovcta .ring-spin, .horbit, .hripple::before, .hripple::after, .harrow svg { animation: none !important; } }
 
 /* ───────── Home header: the same metal card as the Calls page; the whole card shrinks a little while scrolling (--c = 0..1 set from JS) ───────── */
-.homehdr { position: sticky; top: 0; z-index: 30; height: calc((230.3 - 170.3 * var(--c, 0)) * var(--u)); }
+.homehdr { position: sticky; top: 0; z-index: 30; height: calc((230.3 - 158.3 * var(--c, 0)) * var(--u)); }
 /* the header collapses into a slim bar: the card art fades out, a dark glass bar with an orange hairline fades in,
    the logo shrinks to the top centre, and the bell and planets fade away */
 .homehdr::before { content: ''; position: absolute; inset: 0; z-index: -1; opacity: clamp(0, calc(var(--c, 0) * 1.6), 1);
@@ -963,19 +963,20 @@ button.lr:active { transform: scale(.985); }
 .homehdr::after { content: ''; position: absolute; inset: 0; z-index: -2; opacity: calc(1 - var(--c, 0)); background: linear-gradient(#070a0e 78%, rgba(7,10,14,0)); }
 .homehdr .artbox > .in > img.bg { transform-origin: 50% 0; transform: scaleY(calc(1 - .76 * var(--c, 0))); opacity: clamp(0, calc(1 - 1.7 * var(--c, 0)), 1); }
 .hh-in { position: absolute; inset: 0; }
-.hh-logoat { transform: translateY(calc(var(--c, 0) * (30 * var(--u) - 104 * var(--k)))) scale(calc(1 - .64 * var(--c, 0))); will-change: transform; }
+.hh-logoat { transform: translateY(calc(var(--c, 0) * (36 * var(--u) - 104 * var(--k)))) scale(calc(1 - .5 * var(--c, 0))); will-change: transform; }
 .hh-bellw { opacity: clamp(0, calc(1 - 2.4 * var(--c, 0)), 1); }
 .homehdr[data-cmp="1"] .hh-bellw { visibility: hidden; }
 /* the planets stay: their orbits flatten and shrink with the header so they circle the small logo inside the slim bar */
-.hh-orbit { transform: translateY(calc(var(--c, 0) * (30 * var(--u) - 104 * var(--k)))); }
+.hh-orbit { transform: translateY(calc(var(--c, 0) * (36 * var(--u) - 104 * var(--k)))); }
 .hh-pl { --rx: calc(var(--rx0) + (var(--rx1) - var(--rx0)) * var(--c, 0)); --ry: calc(var(--ry0) + (var(--ry1) - var(--ry0)) * var(--c, 0)); --d: calc(var(--d0) + (var(--d1) - var(--d0)) * var(--c, 0)); }
 /* glossy chrome rim along the bottom of the slim bar, with a light sweep */
 .hh-rim { position: absolute; left: 0; right: 0; bottom: 0; height: calc(7 * var(--u)); overflow: hidden; pointer-events: none; opacity: clamp(0, calc(var(--c, 0) * 2), 1);
-  background: linear-gradient(180deg, #ffffff 0%, #dfe5ec 16%, #8b95a1 40%, #1b2128 52%, #5d6772 66%, #c3cbd4 84%, #f6f9fc 100%);
-  box-shadow: 0 1px 0 rgba(0,0,0,.85), 0 calc(3 * var(--u)) calc(9 * var(--u)) rgba(255,140,30,.5), inset 0 1px 0 rgba(255,255,255,.9); }
-.hh-rim::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 38%; background: linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,0)); }
-.hh-rim::after { content: ''; position: absolute; top: 0; bottom: 0; width: 22%; left: -30%; background: linear-gradient(90deg, rgba(255,200,120,0), rgba(255,230,180,.95), rgba(255,200,120,0)); mix-blend-mode: screen; animation: rimsweep 5.5s ease-in-out infinite; }
+  background: linear-gradient(180deg, #fff8dc 0%, #ffe28f 16%, #d9971f 40%, #5c3705 52%, #b97a18 66%, #ffd36a 84%, #fff2bf 100%);
+  box-shadow: 0 1px 0 rgba(40,20,0,.9), 0 calc(3 * var(--u)) calc(11 * var(--u)) rgba(255,190,60,.7), 0 0 calc(18 * var(--u)) rgba(255,160,30,.35), inset 0 1px 0 rgba(255,255,255,.95); animation: rimglow 2.8s ease-in-out infinite; }
+.hh-rim::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 38%; background: linear-gradient(180deg, rgba(255,255,255,.8), rgba(255,255,255,0)); }
+.hh-rim::after { content: ''; position: absolute; top: 0; bottom: 0; width: 22%; left: -30%; background: linear-gradient(90deg, rgba(255,215,120,0), rgba(255,246,206,.98), rgba(255,215,120,0)); mix-blend-mode: screen; animation: rimsweep 4.5s ease-in-out infinite; }
 @keyframes rimsweep { 0% { left: -30%; } 55%, 100% { left: 110%; } }
+@keyframes rimglow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.18) saturate(1.1); } }
 @media (prefers-reduced-motion: reduce) { .hh-rim::after { animation: none; } }
 .hh-logo { width: 100%; display: block; pointer-events: none; filter: drop-shadow(0 calc(3 * var(--k)) calc(6 * var(--k)) rgba(0,0,0,.55)); }
 .hh-orbit { pointer-events: none; }

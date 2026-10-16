@@ -36,11 +36,11 @@ function Sparks() {
 
 
 const HH_PLANETS = [
-  { n: 'mercury', rx: 232, ry: 38, d: 30, rx1: 125, ry1: 11, d1: 15, T: 9, ph: 0.0 },
-  { n: 'venus', rx: 232, ry: 38, d: 34, rx1: 125, ry1: 11, d1: 17, T: 9, ph: 0.5 },
-  { n: 'moon', rx: 284, ry: 48, d: 36, rx1: 160, ry1: 14, d1: 17, T: 15, ph: 0.2 },
-  { n: 'jupiter', rx: 336, ry: 58, d: 46, rx1: 200, ry1: 16, d1: 19, T: 24, ph: 0.0 },
-  { n: 'saturn', rx: 336, ry: 58, d: 50, rx1: 200, ry1: 16, d1: 20, T: 24, ph: 0.5 },
+  { n: 'mercury', rx: 232, ry: 38, d: 30, rx1: 140, ry1: 13, d1: 17, T: 9, ph: 0.0 },
+  { n: 'venus', rx: 232, ry: 38, d: 34, rx1: 140, ry1: 13, d1: 19, T: 9, ph: 0.5 },
+  { n: 'moon', rx: 284, ry: 48, d: 36, rx1: 180, ry1: 16, d1: 20, T: 15, ph: 0.2 },
+  { n: 'jupiter', rx: 336, ry: 58, d: 46, rx1: 225, ry1: 19, d1: 22, T: 24, ph: 0.0 },
+  { n: 'saturn', rx: 336, ry: 58, d: 50, rx1: 225, ry1: 19, d1: 24, T: 24, ph: 0.5 },
 ];
 
 /** Full-bleed, shorter hero header. It stays pinned and shrinks (c: 0 -> 1) over the first ~95 units of scrolling. */
@@ -55,7 +55,7 @@ function HomeHeader() {
       raf = 0;
       const u = el.offsetWidth / 941;
       // linear on purpose: the header's bottom edge then tracks the content scrolling up underneath it (no gap)
-      const x = Math.min(1, Math.max(0, window.scrollY / (170.3 * u)));
+      const x = Math.min(1, Math.max(0, window.scrollY / (158.3 * u)));
       el.style.setProperty('--c', String(x));
       el.dataset.cmp = x > 0.4 ? '1' : '0';
     };

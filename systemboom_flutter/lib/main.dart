@@ -319,8 +319,8 @@ class _Stage extends StatelessWidget {
 
   /// Pinned header geometry (design units): the same metal card as the Calls page (854x209 art, full width), which
   /// collapses into a slim bar as the page scrolls.
-  static const double kCmpH = 60; // height of the collapsed (slim bar) header, design units
-  static const double shrinkDist = 170.3; // scroll distance (units) over which the header collapses (= its height change)
+  static const double kCmpH = 72; // height of the collapsed (slim bar) header, design units
+  static const double shrinkDist = 158.3; // scroll distance (units) over which the header collapses (= its height change)
 
   /// Home header card: SYSTEMBOOM logo in the middle, planets orbiting it, notification bell on the right. [c] goes 0 -> 1 while scrolling.
   Widget header(double c) {
@@ -333,11 +333,11 @@ class _Stage extends StatelessWidget {
     // a small solar system round the logo: each planet runs on its own slanted ellipse and speed; depth = sin(angle)
     List<Widget> orbit({required bool back}) {
       const planets = [
-        ('mercury', 232.0, 38.0, 30.0, 125.0, 11.0, 15.0, 9.0, 0.0),
-        ('venus', 232.0, 38.0, 34.0, 125.0, 11.0, 17.0, 9.0, 0.5),
-        ('moon', 284.0, 48.0, 36.0, 160.0, 14.0, 17.0, 15.0, 0.2),
-        ('jupiter', 336.0, 58.0, 46.0, 200.0, 16.0, 19.0, 24.0, 0.0),
-        ('saturn', 336.0, 58.0, 50.0, 200.0, 16.0, 20.0, 24.0, 0.5),
+        ('mercury', 232.0, 38.0, 30.0, 140.0, 13.0, 17.0, 9.0, 0.0),
+        ('venus', 232.0, 38.0, 34.0, 140.0, 13.0, 19.0, 9.0, 0.5),
+        ('moon', 284.0, 48.0, 36.0, 180.0, 16.0, 20.0, 15.0, 0.2),
+        ('jupiter', 336.0, 58.0, 46.0, 225.0, 19.0, 22.0, 24.0, 0.0),
+        ('saturn', 336.0, 58.0, 50.0, 225.0, 19.0, 24.0, 24.0, 0.5),
       ];
       // the orbit flattens and shrinks with the header so the planets circle the small logo inside the slim bar
       final cy = 104 * ka + (kCmpH * u / 2 - 104 * ka) * c;
@@ -367,7 +367,7 @@ class _Stage extends StatelessWidget {
       return out;
     }
 
-    final logoW = 440 * ka * (1 - .64 * c);
+    final logoW = 440 * ka * (1 - .5 * c);
     final logoCy = 104 * ka + (kCmpH * u / 2 - 104 * ka) * c;
     return SizedBox(
       height: h,
@@ -410,8 +410,8 @@ class _Stage extends StatelessWidget {
                   Positioned.fill(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFFFFFFF), Color(0xFFDFE5EC), Color(0xFF8B95A1), Color(0xFF1B2128), Color(0xFF5D6772), Color(0xFFC3CBD4), Color(0xFFF6F9FC)], stops: [0, .16, .4, .52, .66, .84, 1]),
-                        boxShadow: [BoxShadow(color: const Color(0x80FF8C1E), blurRadius: 9 * u, offset: Offset(0, 3 * u))],
+                        gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFFFF8DC), Color(0xFFFFE28F), Color(0xFFD9971F), Color(0xFF5C3705), Color(0xFFB97A18), Color(0xFFFFD36A), Color(0xFFFFF2BF)], stops: [0, .16, .4, .52, .66, .84, 1]),
+                        boxShadow: [BoxShadow(color: Color.fromRGBO(255, 190, 60, .55 + .2 * math.sin(t * 2 * math.pi / 2.8)), blurRadius: 12 * u, offset: Offset(0, 3 * u)), BoxShadow(color: const Color(0x59FFA01E), blurRadius: 20 * u)],
                       ),
                     ),
                   ),
@@ -421,7 +421,7 @@ class _Stage extends StatelessWidget {
                     top: 0,
                     bottom: 0,
                     width: w * .22,
-                    child: const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0x00FFC878), Color(0xF2FFE6B4), Color(0x00FFC878)]))),
+                    child: const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0x00FFD778), Color(0xFAFFF6CE), Color(0x00FFD778)]))),
                   ),
                 ]),
               ),
