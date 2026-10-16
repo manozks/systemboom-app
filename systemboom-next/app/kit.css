@@ -961,14 +961,12 @@ button.lr:active { transform: scale(.985); }
 .hh-in { position: absolute; inset: 0; transform-origin: 50% 0; transform: scale(var(--sc)); }
 .hh-bellw { translate: calc(343 * (1 - var(--sc)) / var(--sc) * var(--k)) 0; }
 .hh-logo { width: 100%; display: block; pointer-events: none; filter: drop-shadow(0 calc(3 * var(--k)) calc(6 * var(--k)) rgba(0,0,0,.55)); }
-.hh-orbit { --Lw: calc(440 * var(--k)); --rx: calc(.54 * var(--Lw)); --ry: calc(.15 * var(--Lw)); --T: 16s; pointer-events: none; }
-
-/* planets orbiting the logo: X and Y are separate half-period sine eases (a slanted ellipse); the near half passes in front of the logo */
-.hh-oring { position: absolute; left: calc(-1 * var(--rx)); top: calc(-1 * var(--ry)); width: calc(2 * var(--rx)); height: calc(2 * var(--ry)); border-radius: 50%; border: 1px solid rgba(255,200,130,.16); }
-.hh-pl { position: absolute; left: calc(-.065 * var(--Lw)); top: calc(-.065 * var(--Lw)); width: calc(.13 * var(--Lw)); height: calc(.13 * var(--Lw)); will-change: transform, translate;
+.hh-orbit { pointer-events: none; }
+.hh-oring { position: absolute; left: calc(-1 * var(--rx) * var(--k)); top: calc(-1 * var(--ry) * var(--k)); width: calc(2 * var(--rx) * var(--k)); height: calc(2 * var(--ry) * var(--k)); border-radius: 50%; border: 1px solid rgba(255,200,130,.2); box-shadow: 0 0 calc(6 * var(--k)) rgba(255,160,60,.08); }
+.hh-pl { position: absolute; left: calc(-.5 * var(--d) * var(--k)); top: calc(-.5 * var(--d) * var(--k)); width: calc(var(--d) * var(--k)); height: calc(var(--d) * var(--k)); will-change: transform, translate;
   animation: hh-x calc(var(--T) / 2) cubic-bezier(.37,0,.63,1) infinite alternate, hh-y calc(var(--T) / 2) cubic-bezier(.37,0,.63,1) infinite alternate;
   animation-delay: calc(var(--ph) * var(--T) * -1), calc(var(--ph) * var(--T) * -1 - var(--T) / 4); }
 .hh-pl img { width: 100%; height: 100%; display: block; filter: drop-shadow(0 0 calc(7 * var(--k)) rgba(255,190,100,.55)); }
-@keyframes hh-x { from { translate: calc(-1 * var(--rx)) 0; } to { translate: var(--rx) 0; } }
-@keyframes hh-y { 0% { transform: translateY(calc(-1 * var(--ry))) scale(.8); z-index: 1; } 49.9% { z-index: 1; } 50% { z-index: 3; } 100% { transform: translateY(var(--ry)) scale(1.1); z-index: 3; } }
+@keyframes hh-x { from { translate: calc(-1 * var(--rx) * var(--k)) 0; } to { translate: calc(var(--rx) * var(--k)) 0; } }
+@keyframes hh-y { 0% { transform: translateY(calc(-1 * var(--ry) * var(--k))) scale(.8); z-index: 1; } 49.9% { z-index: 1; } 50% { z-index: 3; } 100% { transform: translateY(calc(var(--ry) * var(--k))) scale(1.1); z-index: 3; } }
 @media (prefers-reduced-motion: reduce) { .hh-pl { animation: none; } }

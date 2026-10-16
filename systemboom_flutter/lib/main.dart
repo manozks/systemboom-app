@@ -331,13 +331,22 @@ class _Stage extends StatelessWidget {
     final ka = kx * sc; // logical px per art unit for the content
     final h = 209 * ka;
     final cx = w / 2;
-    // planet orbit round the logo (an ellipse seen at a slant): angle advances with the clock, depth = sin(angle)
+    // a small solar system round the logo: each planet runs on its own slanted ellipse and speed; depth = sin(angle)
     List<Widget> orbit({required bool back}) {
-      const names = ['saturn', 'moon', 'jupiter', 'venus'];
-      final rx = .54 * 440 * ka, ry = .15 * 440 * ka, d = .13 * 440 * ka;
+      const planets = [
+      ('mercury', 232.0, 38.0, 30.0, 9.0, 0.0),
+      ('venus', 232.0, 38.0, 34.0, 9.0, 0.5),
+      ('moon', 284.0, 48.0, 36.0, 15.0, 0.2),
+      ('jupiter', 336.0, 58.0, 46.0, 24.0, 0.0),
+      ('saturn', 336.0, 58.0, 50.0, 24.0, 0.5),
+      ];
       final out = <Widget>[];
-      for (var i = 0; i < names.length; i++) {
-        final ang = 2 * math.pi * (t / 16 + i / names.length);
+      if (back) {
+        out.add(Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _OrbitRingsPainter(cx: cx, cy: 104 * ka, k: ka, rings: const [(232.0, 38.0), (284.0, 48.0), (336.0, 58.0)])))));
+      }
+      for (final (name, rxa, rya, da, period, ph) in planets) {
+        final rx = rxa * ka, ry = rya * ka, d = da * ka;
+        final ang = 2 * math.pi * (t / period + ph);
         final depth = math.sin(ang); // > 0: near side (in front of the logo)
         if ((depth <= 0) != back) continue;
         final sc = .8 + .3 * (depth + 1) / 2;
@@ -351,7 +360,7 @@ class _Stage extends StatelessWidget {
               scale: sc,
               child: DecoratedBox(
                 decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [BoxShadow(color: const Color(0x66FFBE64), blurRadius: d * .35)]),
-                child: Opacity(opacity: back ? .85 : 1, child: Image.asset('assets/images/celestial/${names[i]}.webp', fit: BoxFit.contain, filterQuality: FilterQuality.medium)),
+                child: Opacity(opacity: back ? .85 : 1, child: Image.asset('assets/images/celestial/$name.webp', fit: BoxFit.contain, filterQuality: FilterQuality.medium)),
               ),
             ),
           ),
@@ -1158,4 +1167,24 @@ class _RRectRipplePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_RRectRipplePainter o) => o.t != t || o.h != h;
+}
+
+/// Faint elliptical orbit paths round the logo (art units scaled by [k]).
+class _OrbitRingsPainter extends CustomPainter {
+  _OrbitRingsPainter({required this.cx, required this.cy, required this.k, required this.rings});
+  final double cx, cy, k;
+  final List<(double, double)> rings;
+  @override
+  void paint(Canvas canvas, Size size) {
+    final p = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..color = const Color(0x33FFC882);
+    for (final (rx, ry) in rings) {
+      canvas.drawOval(Rect.fromCenter(center: Offset(cx, cy), width: 2 * rx * k, height: 2 * ry * k), p);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _OrbitRingsPainter old) => old.cx != cx || old.cy != cy || old.k != k;
 }
