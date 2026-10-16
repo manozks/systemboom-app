@@ -1246,7 +1246,7 @@ class _PlatePainter extends CustomPainter {
       r,
       Paint()
         ..shader = SweepGradient(
-          colors: const [Color(0xFFFFFFFF), Color(0xFFDFE6EE), Color(0xFF8D9AAB), Color(0xFFF5DBA4), Color(0xFFFFFFFF), Color(0xFFA3B0C0), Color(0xFFFFFFFF)],
+          colors: const [Color(0xFFC9D2DC), Color(0xFF8D9AAB), Color(0xFF4A5563), Color(0xFFB8A27A), Color(0xFFC9D2DC), Color(0xFF6B7686), Color(0xFFC9D2DC)],
           transform: GradientRotation(math.pi / 9),
         ).createShader(edgeRect),
     );
@@ -1260,7 +1260,7 @@ class _PlatePainter extends CustomPainter {
     final glass = Paint()
       ..shader = RadialGradient(
         center: const Alignment(0, -.28),
-        colors: const [Color(0x57FFFFFF), Color(0x24AFD2F8), Color(0x3378A5D7)],
+        colors: const [Color(0x1FFFFFFF), Color(0x0D96B4D7), Color(0x1A5A78A0)],
         stops: const [0, .5, 1],
       ).createShader(rect);
     canvas.drawCircle(Offset.zero, r, glass);
@@ -1271,7 +1271,7 @@ class _PlatePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = r * .72
       ..shader = SweepGradient(
-        colors: const [Color(0x00FFD68C), Color(0x8CFFF4D6), Color(0x00FFD68C), Color(0x00FFD68C), Color(0x40FFD08C), Color(0x00FFD68C), Color(0x00FFD68C)],
+        colors: const [Color(0x00FFD68C), Color(0x66FFECC4), Color(0x00FFD68C), Color(0x00FFD68C), Color(0x33FFD08C), Color(0x00FFD68C), Color(0x00FFD68C)],
         stops: const [0, .33, .46, .69, .83, .96, 1],
         transform: GradientRotation(a1),
       ).createShader(rect);
@@ -1293,16 +1293,16 @@ class _PlatePainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = r * .036
         ..shader = SweepGradient(
-          colors: const [Color(0xFFFFFFFF), Color(0xFFCFD8E3), Color(0xFFFFF2D0), Color(0xFF7F8B99), Color(0xFFFFE3A8), Color(0xFFFFFFFF), Color(0xFFAAB6C4), Color(0xFFFFF6DC), Color(0xFFFFFFFF)],
+          colors: const [Color(0xFFE8EEF5), Color(0xFF9AA6B4), Color(0xFFF1DFBF), Color(0xFF5D6772), Color(0xFFE8CF9C), Color(0xFFE8EEF5), Color(0xFF8793A2), Color(0xFFF3E6CC), Color(0xFFE8EEF5)],
           transform: GradientRotation(math.pi * 10 / 9),
         ).createShader(rect),
     );
     // gloss: a soft sheen over the upper half and a bright glint
     canvas.save();
     canvas.clipPath(Path()..addOval(Rect.fromCircle(center: Offset.zero, radius: r * .96)));
-    canvas.drawRect(Rect.fromLTRB(-r, -r, r, 0), Paint()..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0x6BFFFFFF), Color(0x00FFFFFF)]).createShader(Rect.fromLTRB(-r, -r, r, 0)));
+    canvas.drawRect(Rect.fromLTRB(-r, -r, r, 0), Paint()..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0x2EFFFFFF), Color(0x00FFFFFF)]).createShader(Rect.fromLTRB(-r, -r, r, 0)));
     final glint = Rect.fromCenter(center: Offset(-r * .4, -r * .66), width: r * .68, height: r * .22);
-    canvas.drawOval(glint, Paint()..shader = const RadialGradient(colors: [Color(0xCCFFFFFF), Color(0x00FFFFFF)]).createShader(glint));
+    canvas.drawOval(glint, Paint()..shader = const RadialGradient(colors: [Color(0x8CFFFFFF), Color(0x00FFFFFF)]).createShader(glint));
     canvas.restore();
     canvas.restore();
   }
