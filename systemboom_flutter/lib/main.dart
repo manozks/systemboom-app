@@ -333,9 +333,10 @@ class _Stage extends StatelessWidget {
     final ov = 12 * au;
     final slice = Rect.fromLTRB(130 * au, 40 * au, (878 - 130) * au, (362 - 40) * au);
     // the orbit system sits where the lava coin used to be; it grows to circle the small logo when the header collapses
-    final of = 1.0; // full size, as before
+    final of = .7 + .3 * c; // the orbit system is a little smaller than full size, and grows back round the small logo in the slim bar
+    final orbFade = (1 - (c - .35) * 1.55).clamp(0.0, 1.0); // plate, embers and stars fade away slowly over the last part of the scroll
     final ko = ka * of;
-    final ocy = 168 * u + (kCmpH * u / 2 - 168 * u) * c;
+    final ocy = 185 * u + (kCmpH * u / 2 - 185 * u) * c;
     final cx = w / 2;
     final fade = (1 - 2.4 * c).clamp(0.0, 1.0); // bell + planets go away quickly
     // a small solar system round the logo: each planet runs on its own slanted ellipse and speed; depth = sin(angle)
@@ -351,8 +352,10 @@ class _Stage extends StatelessWidget {
       final cy = ocy;
       final out = <Widget>[];
       if (back) {
-        out.add(Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _PlatePainter(cx: cx, cy: cy, k: ko, c: c, t: t)))));
-        out.add(Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _StarsEmbersPainter(cx: cx, cy: cy, k: ko, c: c, t: t)))));
+        if (orbFade > 0) {
+          out.add(Positioned.fill(child: IgnorePointer(child: Opacity(opacity: orbFade, child: CustomPaint(painter: _PlatePainter(cx: cx, cy: cy, k: ko, c: c, t: t))))));
+          out.add(Positioned.fill(child: IgnorePointer(child: Opacity(opacity: orbFade, child: CustomPaint(painter: _StarsEmbersPainter(cx: cx, cy: cy, k: ko, c: c, t: t))))));
+        }
       }
       for (final (name, rx0, ry0, d0, rx1, ry1, d1, period, ph) in planets) {
         final rx = (rx0 + (rx1 - rx0) * c) * ko, ry = (ry0 + (ry1 - ry0) * c) * ko, d = (d0 + (d1 - d0) * c) * ko;
