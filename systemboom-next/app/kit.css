@@ -959,7 +959,7 @@ button.lr:active { transform: scale(.985); }
 /* the header collapses into a slim bar: the card art fades out, a dark glass bar with an orange hairline fades in,
    the logo shrinks to the top centre, and the bell and planets fade away */
 .homehdr::before { content: ''; position: absolute; inset: 0; z-index: -1; opacity: clamp(0, calc(var(--c, 0) * 1.6), 1);
-  background: linear-gradient(180deg, rgba(26,31,38,.97), rgba(9,12,16,.97));   box-shadow: 0 calc(5 * var(--u)) calc(14 * var(--u)) rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.1); }
+  background: linear-gradient(180deg, rgba(26,31,38,.97) 0%, rgba(11,14,19,.95) 68%, rgba(9,12,16,0) 100%); }
 .homehdr::after { content: ''; position: absolute; inset: 0; z-index: -2; opacity: calc(1 - var(--c, 0)); background: linear-gradient(#070a0e 78%, rgba(7,10,14,0)); }
 .homehdr .artbox > .in > img.bg { transform-origin: 50% 0; transform: scaleY(calc(1 - .76 * var(--c, 0))); opacity: clamp(0, calc(1 - 1.7 * var(--c, 0)), 1); }
 .hh-in { position: absolute; inset: 0; }
@@ -969,15 +969,9 @@ button.lr:active { transform: scale(.985); }
 /* the planets stay: their orbits flatten and shrink with the header so they circle the small logo inside the slim bar */
 .hh-orbit { transform: translateY(calc(var(--c, 0) * (36 * var(--u) - 104 * var(--k)))); }
 .hh-pl { --rx: calc(var(--rx0) + (var(--rx1) - var(--rx0)) * var(--c, 0)); --ry: calc(var(--ry0) + (var(--ry1) - var(--ry0)) * var(--c, 0)); --d: calc(var(--d0) + (var(--d1) - var(--d0)) * var(--c, 0)); }
-/* glossy chrome rim along the bottom of the slim bar, with a light sweep */
-.hh-rim { position: absolute; left: 0; right: 0; bottom: 0; height: calc(7 * var(--u)); overflow: hidden; pointer-events: none; opacity: clamp(0, calc(var(--c, 0) * 2), 1);
-  background: linear-gradient(180deg, #fff8dc 0%, #ffe28f 16%, #d9971f 40%, #5c3705 52%, #b97a18 66%, #ffd36a 84%, #fff2bf 100%);
-  box-shadow: 0 1px 0 rgba(40,20,0,.9), 0 calc(3 * var(--u)) calc(11 * var(--u)) rgba(255,190,60,.7), 0 0 calc(18 * var(--u)) rgba(255,160,30,.35), inset 0 1px 0 rgba(255,255,255,.95); animation: rimglow 2.8s ease-in-out infinite; }
-.hh-rim::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 38%; background: linear-gradient(180deg, rgba(255,255,255,.8), rgba(255,255,255,0)); }
-.hh-rim::after { content: ''; position: absolute; top: 0; bottom: 0; width: 22%; left: -30%; background: linear-gradient(90deg, rgba(255,215,120,0), rgba(255,246,206,.98), rgba(255,215,120,0)); mix-blend-mode: screen; animation: rimsweep 4.5s ease-in-out infinite; }
-@keyframes rimsweep { 0% { left: -30%; } 55%, 100% { left: 110%; } }
-@keyframes rimglow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.18) saturate(1.1); } }
-@media (prefers-reduced-motion: reduce) { .hh-rim::after { animation: none; } }
+/* slim bar: no hard line at the bottom; the bar dissolves into the page and a soft warm glow sits under it */
+.hh-fade { position: absolute; left: 6%; right: 6%; bottom: calc(-6 * var(--u)); height: calc(14 * var(--u)); pointer-events: none; opacity: clamp(0, calc(var(--c, 0) * 2), 1);
+  background: radial-gradient(ellipse at 50% 50%, rgba(255,150,40,.34), rgba(255,150,40,.12) 45%, transparent 72%); }
 .hh-logo { width: 100%; display: block; pointer-events: none; filter: drop-shadow(0 calc(3 * var(--k)) calc(6 * var(--k)) rgba(0,0,0,.55)); }
 .hh-orbit { pointer-events: none; }
 .hh-pl { position: absolute; left: calc(-.5 * var(--d) * var(--k)); top: calc(-.5 * var(--d) * var(--k)); width: calc(var(--d) * var(--k)); height: calc(var(--d) * var(--k)); will-change: transform, translate;
@@ -1011,7 +1005,7 @@ button.lr:active { transform: scale(.985); }
   box-shadow: 0 0 calc(5 * var(--k)) rgba(255,150,40,.95), 0 0 calc(11 * var(--k)) rgba(255,100,10,.5);
   animation: hh-x calc(var(--T) / 2) cubic-bezier(.37,0,.63,1) infinite alternate, hh-y calc(var(--T) / 2) cubic-bezier(.37,0,.63,1) infinite alternate;
   animation-delay: calc(var(--ph) * var(--T) * -1), calc(var(--ph) * var(--T) * -1 - var(--T) / 4); }
-.hh-stars { position: absolute; left: 0; top: 0; width: 0; height: 0; transform: scale(calc(1 - .33 * var(--c, 0)), calc(1 - .55 * var(--c, 0))); pointer-events: none; }
+.hh-stars { position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 3; transform: scale(calc(1 - .33 * var(--c, 0)), calc(1 - .55 * var(--c, 0))); pointer-events: none; }
 .hh-st { position: absolute; width: calc(var(--s) * var(--k)); height: calc(var(--s) * var(--k)); margin: calc(var(--s) * var(--k) / -2) 0 0 calc(var(--s) * var(--k) / -2); border-radius: 50%; opacity: 0; transform: scale(.3);
   background: radial-gradient(circle, #fff 0 16%, rgba(255,232,178,.85) 30%, transparent 62%); animation: hh-tw var(--dur) ease-in-out infinite; animation-delay: var(--dl); }
 .hh-st::before, .hh-st::after { content: ''; position: absolute; left: 50%; top: 50%; background: linear-gradient(90deg, transparent, rgba(255,240,205,.95), transparent); width: 340%; height: 6%; transform: translate(-50%, -50%); }

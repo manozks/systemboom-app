@@ -333,11 +333,11 @@ class _Stage extends StatelessWidget {
     // a small solar system round the logo: each planet runs on its own slanted ellipse and speed; depth = sin(angle)
     List<Widget> orbit({required bool back}) {
       const planets = [
-        ('mercury', 232.0, 38.0, 30.0, 140.0, 13.0, 17.0, 9.0, 0.0),
-        ('venus', 232.0, 38.0, 34.0, 140.0, 13.0, 19.0, 9.0, 0.5),
-        ('moon', 284.0, 48.0, 36.0, 180.0, 16.0, 20.0, 15.0, 0.2),
-        ('jupiter', 336.0, 58.0, 46.0, 225.0, 19.0, 22.0, 24.0, 0.0),
-        ('saturn', 336.0, 58.0, 50.0, 225.0, 19.0, 24.0, 24.0, 0.5),
+        ('mercury', 232.0, 38.0, 30.0, 140.0, 13.0, 17.0, 20.0, 0.0),
+        ('venus', 232.0, 38.0, 34.0, 140.0, 13.0, 19.0, 20.0, 0.5),
+        ('moon', 284.0, 48.0, 36.0, 180.0, 16.0, 20.0, 33.0, 0.2),
+        ('jupiter', 336.0, 58.0, 46.0, 225.0, 19.0, 22.0, 53.0, 0.0),
+        ('saturn', 336.0, 58.0, 50.0, 225.0, 19.0, 24.0, 53.0, 0.5),
       ];
       // the orbit flattens and shrinks with the header so the planets circle the small logo inside the slim bar
       final cy = 104 * ka + (kCmpH * u / 2 - 104 * ka) * c;
@@ -384,8 +384,7 @@ class _Stage extends StatelessWidget {
             opacity: (c * 1.6).clamp(0.0, 1.0),
             child: DecoratedBox(
               decoration: BoxDecoration(
-                gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xF71A1F26), Color(0xF7090C10)]),
-                boxShadow: [BoxShadow(color: const Color(0x8C000000), blurRadius: 14 * u, offset: Offset(0, 5 * u))],
+                gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xF71A1F26), Color(0xF20B0E13), Color(0x00090C10)], stops: [0, .68, 1]),
               ),
             ),
           ),
@@ -400,37 +399,13 @@ class _Stage extends StatelessWidget {
           child: IgnorePointer(child: Image.asset('assets/images/logo-lockup.webp', fit: BoxFit.fitWidth, filterQuality: FilterQuality.medium)),
         ),
         ...orbit(back: false),
-        // glossy chrome rim along the bottom of the slim bar, with a sweeping light
+        // soft warm glow under the slim bar (no hard line)
         Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: 7 * u,
-          child: IgnorePointer(
-            child: Opacity(
-              opacity: (c * 2).clamp(0.0, 1.0),
-              child: ClipRect(
-                child: Stack(children: [
-                  Positioned.fill(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFFFF8DC), Color(0xFFFFE28F), Color(0xFFD9971F), Color(0xFF5C3705), Color(0xFFB97A18), Color(0xFFFFD36A), Color(0xFFFFF2BF)], stops: [0, .16, .4, .52, .66, .84, 1]),
-                        boxShadow: [BoxShadow(color: Color.fromRGBO(255, 190, 60, .55 + .2 * math.sin(t * 2 * math.pi / 2.8)), blurRadius: 12 * u, offset: Offset(0, 3 * u)), BoxShadow(color: const Color(0x59FFA01E), blurRadius: 20 * u)],
-                      ),
-                    ),
-                  ),
-                  Positioned(left: 0, right: 0, top: 0, height: 7 * u * .38, child: const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xBFFFFFFF), Color(0x00FFFFFF)])))),
-                  Positioned(
-                    left: (((t / 5.5) % 1) * 1.4 - .3) * w,
-                    top: 0,
-                    bottom: 0,
-                    width: w * .22,
-                    child: const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(colors: [Color(0x00FFD778), Color(0xFAFFF6CE), Color(0x00FFD778)]))),
-                  ),
-                ]),
-              ),
-            ),
-          ),
+          left: w * .06,
+          right: w * .06,
+          bottom: -6 * u,
+          height: 14 * u,
+          child: IgnorePointer(child: Opacity(opacity: (c * 2).clamp(0.0, 1.0), child: const DecoratedBox(decoration: BoxDecoration(gradient: RadialGradient(colors: [Color(0x57FF9628), Color(0x1FFF9628), Color(0x00FF9628)], stops: [0, .45, .72]))))),
         ),
         // live bell: same gold chrome button as the Calls page; hidden once the header collapses
         if (c < .4)
@@ -1314,8 +1289,8 @@ class _StarsEmbersPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // stars
     final sx = 1 - .33 * c, sy = 1 - .55 * c;
-    for (var i = 0; i < 16; i++) {
-      final x = (_h(i, 1) - .5) * 2 * 330, y = (_h(i, 2) - .5) * 2 * 62;
+    for (var i = 0; i < 20; i++) {
+      final x = (_h(i, 1) - .5) * 2 * 330, y = -14 + _h(i, 2) * 76;
       final sz = (5 + _h(i, 3) * 6) * k;
       final dur = 2 + _h(i, 4) * 2.6, dl = _h(i, 5) * 4;
       final a = (math.sin(2 * math.pi * (t + dl) / dur - math.pi / 2) + 1) / 2; // 0..1 blink

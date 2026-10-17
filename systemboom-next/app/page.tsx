@@ -36,11 +36,11 @@ function Sparks() {
 
 
 const HH_PLANETS = [
-  { n: 'mercury', rx: 232, ry: 38, d: 30, rx1: 140, ry1: 13, d1: 17, T: 9, ph: 0.0 },
-  { n: 'venus', rx: 232, ry: 38, d: 34, rx1: 140, ry1: 13, d1: 19, T: 9, ph: 0.5 },
-  { n: 'moon', rx: 284, ry: 48, d: 36, rx1: 180, ry1: 16, d1: 20, T: 15, ph: 0.2 },
-  { n: 'jupiter', rx: 336, ry: 58, d: 46, rx1: 225, ry1: 19, d1: 22, T: 24, ph: 0.0 },
-  { n: 'saturn', rx: 336, ry: 58, d: 50, rx1: 225, ry1: 19, d1: 24, T: 24, ph: 0.5 },
+  { n: 'mercury', rx: 232, ry: 38, d: 30, rx1: 140, ry1: 13, d1: 17, T: 20, ph: 0.0 },
+  { n: 'venus', rx: 232, ry: 38, d: 34, rx1: 140, ry1: 13, d1: 19, T: 20, ph: 0.5 },
+  { n: 'moon', rx: 284, ry: 48, d: 36, rx1: 180, ry1: 16, d1: 20, T: 33, ph: 0.2 },
+  { n: 'jupiter', rx: 336, ry: 58, d: 46, rx1: 225, ry1: 19, d1: 22, T: 53, ph: 0.0 },
+  { n: 'saturn', rx: 336, ry: 58, d: 50, rx1: 225, ry1: 19, d1: 24, T: 53, ph: 0.5 },
 ];
 
 const HH_EMBERS = [
@@ -65,9 +65,9 @@ const HH_EMBERS = [
 ];
 
 /** Deterministic twinkling stars scattered over the plate (no randomness at render time, so SSR matches). */
-const HH_STARS = Array.from({ length: 16 }, (_, i) => {
+const HH_STARS = Array.from({ length: 20 }, (_, i) => {
   const r = (n: number) => { const s = Math.sin(i * 57.3 + n * 12.9) * 10000; return s - Math.floor(s); };
-  return { x: (r(1) - 0.5) * 2 * 330, y: (r(2) - 0.5) * 2 * 62, s: 5 + r(3) * 6, dur: 2 + r(4) * 2.6, dl: -r(5) * 4 };
+  return { x: (r(1) - 0.5) * 2 * 330, y: -14 + r(2) * 76, s: 5 + r(3) * 6, dur: 2 + r(4) * 2.6, dl: -r(5) * 4 };
 });
 
 /** Full-bleed, shorter hero header. It stays pinned and shrinks (c: 0 -> 1) over the first ~95 units of scrolling. */
@@ -124,7 +124,7 @@ function HomeHeader() {
           </div>
         </Art>
       </div>
-      <i className="hh-rim" aria-hidden />
+      <i className="hh-fade" aria-hidden />
     </div>
   );
 }
