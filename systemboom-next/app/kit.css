@@ -1020,3 +1020,11 @@ button.lr:active { transform: scale(.985); }
 /* the plate, embers and stars fade away slowly over the last part of the scroll (the planets stay) */
 .hh-plate, .hh-stars { opacity: clamp(0, calc(1 - (var(--c, 0) - .35) * 1.55), 1); }
 .hh-em { opacity: calc(var(--o, 1) * clamp(0, calc(1 - (var(--c, 0) - .35) * 1.55), 1)); }
+
+/* profile ring: segmented glass plates with lit cyan segments; still at rest, alive on hover / press */
+.pring { width: 100%; height: 100%; display: block; overflow: visible; filter: drop-shadow(0 calc(5 * var(--k)) calc(6 * var(--k)) rgba(0,0,0,.6)); }
+.pring-wrap:hover .pr-lit, .pring-wrap:active .pr-lit { animation: prbreathe 1.6s ease-in-out infinite; }
+.pring-wrap:hover .pr-dot, .pring-wrap:active .pr-dot { animation: prtw 1.4s ease-in-out infinite; }
+@keyframes prbreathe { 0%, 100% { opacity: .8; } 50% { opacity: 1; filter: brightness(1.3); } }
+@keyframes prtw { 0%, 100% { opacity: 1; } 50% { opacity: .2; } }
+@media (prefers-reduced-motion: reduce) { .pr-lit, .pr-dot { animation: none !important; } }

@@ -5,7 +5,7 @@ import 'package:flutter/scheduler.dart' show Ticker;
 import 'package:flutter/services.dart';
 
 import 'pages/more_pages.dart' show SplashPage;
-import 'kit.dart' show HoverLoop, RingSweep, nineScale, pushScreen;
+import 'kit.dart' show HoverLoop, nineScale, pushScreen;
 import 'pages/chat_page.dart' show NotificationsLazy;
 import 'orb_menu.dart';
 import 'shell.dart';
@@ -28,7 +28,7 @@ void main() {
 
 /// Art decoded up front (started while the splash plays) so the first screens don't pop images in one by one.
 const kPrecacheImages = [
-      'hdr-home.webp', 'logo-lockup.webp', 'greeting.webp', 'cta.webp', 'card-base-blue.webp', 'card-base-dark.webp',
+      'hdr-home.webp', 'logo-lockup.webp', 'greeting-card.webp', 'profile-photo.webp', 'greeting.webp', 'cta.webp', 'card-base-blue.webp', 'card-base-dark.webp',
       'ico-chat-ref.webp', 'ico-call-ref.webp', 'ico-mk.webp', 'ico-an.webp', 'ico-ds.webp', 'cta-blank-wide.webp', 'ai-nav.webp',
       'nav-calls.webp', 'hero-header.webp', 'dock.webp', 'hdr-calls.webp', 'brand-colors.webp', 'typography.webp', 'cta-new.webp', 'greeting-new.webp', 'buttons-panel.webp', 'icons-panel.webp', 'icon-key.webp', 'search-bar.webp', 'tabs-base.webp', 'tabs-key.webp', 'carbon-tile.webp', 'profile.webp', 'cf1.webp', 'cf2.webp', 'cf4.webp', 'cf5.webp', 'me.webp', 'chat-bubble.webp', 'chat-bubble-out.webp', 'chat-bar.webp', 'plate-row.webp', 'btn-steel.webp', 'btn-orange.webp', 'info-row.webp', 'info-chip-on.webp', 'info-chip-off.webp', 'notif-card.webp', 'ring63-act.webp', 'ring63-emoji.webp', 'share-ring.webp', 'ring63-red.webp', 'plate-title.webp', 'plate-tab.webp', 'pframe-photo.webp', 'plate-green.webp', 'pill-status.webp', 'photo-deskmat.webp', 'doc-thumb.webp', 'call-bg.webp', 'info-ring.webp', 'info-cta-orange.webp', 'info-cta-red.webp', 'info-label.webp', 'notif-btn.webp', 'dialog-bg.webp', 'celestial/venus.webp', 'celestial/sun.webp', 'celestial/meteors.webp', 'celestial/comet.webp', 'celestial/jupiter.webp', 'celestial/saturn.webp', 'celestial/moon.webp', 'celestial/mercury.webp', 'asheet-frame.webp', 'asheet-row.webp', 'asheet-row-red.webp', 'panel-frame.webp',
 ];
@@ -519,16 +519,27 @@ class _Stage extends StatelessWidget {
   Widget _greeting() {
     return section(21, 411, 865, 206, 1.025, [
       // reference art: steel plate, segmented chrome ring with the profile photo, orange edge glow
-      Positioned.fill(child: Image.asset('assets/images/greeting-new.webp', fit: BoxFit.fill)),
+      Positioned.fill(child: Image.asset('assets/images/greeting-card.webp', fit: BoxFit.fill)),
+      // profile photo inside a segmented glass ring (lit cyan plates like a progress gauge); still at rest, alive on hover / press
       Positioned(
-        left: 70 * u,
-        top: 30 * u,
-        width: 150 * u,
-        height: 150 * u,
-        child: Press(u: u, circle: true, scaleUp: 1.05, shine: false, onTap: () => onTap('Change profile photo'), child: const SizedBox.expand()),
+        left: (143.7 - 100) * u,
+        top: 3 * u,
+        width: 200 * u,
+        height: 200 * u,
+        child: HoverLoop(
+          builder: (context, h, v) => Press(
+            u: u,
+            circle: true,
+            scaleUp: 1.03,
+            shine: false,
+            onTap: () => onTap('Change profile photo'),
+            child: Stack(children: [
+              Positioned.fill(child: CustomPaint(painter: _ProfileRingPainter(h: h, v: v))),
+              Positioned(left: 42 * u, top: 42 * u, width: 116 * u, height: 116 * u, child: ClipOval(child: Image.asset('assets/images/profile-photo.webp', fit: BoxFit.cover, filterQuality: FilterQuality.medium))),
+            ]),
+          ),
+        ),
       ),
-      // light orbiting the profile-photo ring
-      Positioned(left: (143.7 - 92) * u, top: (102 - 92) * u, width: 184 * u, height: 184 * u, child: const RingSweep(inner: .77)),
       Positioned(
         left: 278 * u,
         top: 40 * u,
@@ -1350,4 +1361,72 @@ class _StarsEmbersPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _StarsEmbersPainter old) => old.t != t || old.c != c || old.cx != cx || old.cy != cy || old.k != k;
+}
+
+/// Segmented glass ring round the profile photo: twelve dark plates (five lit cyan like a progress gauge), a fine tick scale and
+/// bright dots in the gaps. [h] (hover amount 0..1) and [v] (loop phase 0..1) make the lit plates breathe and the dots twinkle.
+class _ProfileRingPainter extends CustomPainter {
+  _ProfileRingPainter({required this.h, required this.v});
+  final double h, v;
+  static const _n = 12, _gap = 5.0, _r1 = 66.0, _r2 = 89.0;
+  static const _lit = {6, 7, 8, 9, 10};
+
+  Offset _pt(double r, double deg) {
+    final a = (deg - 90) * math.pi / 180;
+    return Offset(r * math.cos(a), r * math.sin(a));
+  }
+
+  Path _sector(double a0, double a1, double r1, double r2) {
+    final sweep = (a1 - a0) * math.pi / 180;
+    return Path()
+      ..moveTo(_pt(r2, a0).dx, _pt(r2, a0).dy)
+      ..arcTo(Rect.fromCircle(center: Offset.zero, radius: r2), (a0 - 90) * math.pi / 180, sweep, false)
+      ..lineTo(_pt(r1, a1).dx, _pt(r1, a1).dy)
+      ..arcTo(Rect.fromCircle(center: Offset.zero, radius: r1), (a1 - 90) * math.pi / 180, -sweep, false)
+      ..close();
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final sc = size.width / 200;
+    canvas.save();
+    canvas.translate(size.width / 2, size.height / 2);
+    canvas.scale(sc, sc);
+    final all = Rect.fromCircle(center: Offset.zero, radius: _r2);
+    // tick scale
+    for (var i = 0; i < 60; i++) {
+      final long = i % 5 == 0;
+      canvas.drawLine(_pt(long ? 93 : 94.5, i * 6.0), _pt(98, i * 6.0), Paint()..strokeWidth = long ? 1.1 : .6..color = const Color(0x8CC4D6EE));
+    }
+    // well behind the plates
+    canvas.drawCircle(Offset.zero, _r2 + 1.5, Paint()..shader = const RadialGradient(colors: [Color(0xFF0A0F1C), Color(0xFF0A0F1C), Color(0xFF1C2438)], stops: [0, .8, 1]).createShader(Rect.fromCircle(center: Offset.zero, radius: _r2 + 1.5)));
+    // plates
+    const span = 360 / _n;
+    final dark = Paint()..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF46506A), Color(0xFF1A2032)]).createShader(all);
+    final litFill = Paint()..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF8AF6FF), Color(0xFF19B9E6), Color(0xFF0A6F9C)], stops: [0, .55, 1]).createShader(all);
+    for (var i = 0; i < _n; i++) {
+      final path = _sector(i * span + _gap / 2, (i + 1) * span - _gap / 2, _r1, _r2);
+      final lit = _lit.contains(i);
+      final pulse = lit ? 1 - .2 * h * (.5 + .5 * math.sin(2 * math.pi * (v - (i - 6) * .075))) : 1.0;
+      if (lit) {
+        canvas.drawPath(path, Paint()..color = Color.fromRGBO(34, 211, 255, .55 * pulse)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.4));
+      }
+      canvas.drawPath(path, lit ? (litFill..color = Color.fromRGBO(255, 255, 255, pulse)) : dark);
+      canvas.drawPath(path, Paint()..style = PaintingStyle.stroke..strokeWidth = 1..strokeJoin = StrokeJoin.round..color = lit ? const Color(0xD9D2FAFF) : const Color(0x33FFFFFF));
+      final inner = _sector(i * span + _gap / 2 + 1.5, (i + 1) * span - _gap / 2 - 1.5, _r1 + 1.4, _r2 - 1.4);
+      canvas.drawPath(inner, Paint()..style = PaintingStyle.stroke..strokeWidth = .7..color = lit ? const Color(0x59FFFFFF) : const Color(0x14FFFFFF));
+    }
+    // bright dots in the gaps
+    for (var i = 0; i < _n; i++) {
+      final a = 1 - .8 * h * (.5 + .5 * math.sin(2 * math.pi * (v * 1.4 + i * .1)));
+      canvas.drawCircle(_pt(_r2 + 3.2, i * span), 1.5, Paint()..color = Color.fromRGBO(255, 255, 255, a));
+    }
+    // photo well
+    canvas.drawCircle(Offset.zero, 62, Paint()..color = const Color(0xFF0A0F1C));
+    canvas.drawCircle(Offset.zero, 62, Paint()..style = PaintingStyle.stroke..strokeWidth = 1.4..color = const Color(0x9978E1FF));
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _ProfileRingPainter old) => old.h != h || old.v != v;
 }
