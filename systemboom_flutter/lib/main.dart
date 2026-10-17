@@ -1396,25 +1396,30 @@ class _ProfileRingPainter extends CustomPainter {
     // tick scale
     for (var i = 0; i < 60; i++) {
       final long = i % 5 == 0;
-      canvas.drawLine(_pt(long ? 93 : 94.5, i * 6.0), _pt(98, i * 6.0), Paint()..strokeWidth = long ? 1.1 : .6..color = const Color(0x8CC4D6EE));
+      canvas.drawLine(_pt(long ? 93 : 94.5, i * 6.0), _pt(98, i * 6.0), Paint()..strokeWidth = long ? 1.1 : .6..color = const Color(0x8CFFE2AA));
     }
     // well behind the plates
     canvas.drawCircle(Offset.zero, _r2 + 1.5, Paint()..shader = const RadialGradient(colors: [Color(0xFF0A0F1C), Color(0xFF0A0F1C), Color(0xFF1C2438)], stops: [0, .8, 1]).createShader(Rect.fromCircle(center: Offset.zero, radius: _r2 + 1.5)));
     // plates
     const span = 360 / _n;
     final dark = Paint()..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF46506A), Color(0xFF1A2032)]).createShader(all);
-    final litFill = Paint()..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF8AF6FF), Color(0xFF19B9E6), Color(0xFF0A6F9C)], stops: [0, .55, 1]).createShader(all);
+    final litFill = Paint()..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFFFF1BD), Color(0xFFFFC94D), Color(0xFFE39419), Color(0xFF8F5207)], stops: [0, .32, .66, 1]).createShader(all);
     for (var i = 0; i < _n; i++) {
       final path = _sector(i * span + _gap / 2, (i + 1) * span - _gap / 2, _r1, _r2);
       final lit = _lit.contains(i);
       final pulse = lit ? 1 - .2 * h * (.5 + .5 * math.sin(2 * math.pi * (v - (i - 6) * .075))) : 1.0;
+      final a0 = i * span + _gap / 2, a1 = (i + 1) * span - _gap / 2;
       if (lit) {
-        canvas.drawPath(path, Paint()..color = Color.fromRGBO(34, 211, 255, .55 * pulse)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.4));
+        canvas.drawPath(path, Paint()..color = Color.fromRGBO(255, 176, 46, .6 * pulse)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.4));
       }
+      // 3D: a dark under-edge dropped a hair below the plate, then the plate, a bevel line and a glossy sheen
+      canvas.drawPath(path.shift(const Offset(0, 1.4)), Paint()..color = lit ? const Color(0xB35A3203) : const Color(0xB305080F));
       canvas.drawPath(path, lit ? (litFill..color = Color.fromRGBO(255, 255, 255, pulse)) : dark);
-      canvas.drawPath(path, Paint()..style = PaintingStyle.stroke..strokeWidth = 1..strokeJoin = StrokeJoin.round..color = lit ? const Color(0xD9D2FAFF) : const Color(0x33FFFFFF));
-      final inner = _sector(i * span + _gap / 2 + 1.5, (i + 1) * span - _gap / 2 - 1.5, _r1 + 1.4, _r2 - 1.4);
-      canvas.drawPath(inner, Paint()..style = PaintingStyle.stroke..strokeWidth = .7..color = lit ? const Color(0x59FFFFFF) : const Color(0x14FFFFFF));
+      canvas.drawPath(path, Paint()..style = PaintingStyle.stroke..strokeWidth = 1..strokeJoin = StrokeJoin.round..color = lit ? const Color(0xE6FFF4CD) : const Color(0x33FFFFFF));
+      final inner = _sector(a0 + 1.5, a1 - 1.5, _r1 + 1.4, _r2 - 1.4);
+      canvas.drawPath(inner, Paint()..style = PaintingStyle.stroke..strokeWidth = .7..color = lit ? const Color(0x66FFFFFF) : const Color(0x14FFFFFF));
+      final sheen = Paint()..shader = LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color.fromRGBO(255, 255, 255, lit ? .7 : .25), const Color(0x1FFFFFFF), const Color(0x00FFFFFF)], stops: const [0, .5, .52]).createShader(all);
+      canvas.drawPath(_sector(a0 + .8, a1 - .8, _r1, _r2), sheen);
     }
     // bright dots in the gaps
     for (var i = 0; i < _n; i++) {
@@ -1423,7 +1428,7 @@ class _ProfileRingPainter extends CustomPainter {
     }
     // photo well
     canvas.drawCircle(Offset.zero, 62, Paint()..color = const Color(0xFF0A0F1C));
-    canvas.drawCircle(Offset.zero, 62, Paint()..style = PaintingStyle.stroke..strokeWidth = 1.4..color = const Color(0x9978E1FF));
+    canvas.drawCircle(Offset.zero, 62, Paint()..style = PaintingStyle.stroke..strokeWidth = 1.4..color = const Color(0xCCFFD678));
     canvas.restore();
   }
 

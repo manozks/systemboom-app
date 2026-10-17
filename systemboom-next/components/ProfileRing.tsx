@@ -29,9 +29,15 @@ export function ProfileRing({ photo = 'profile-photo' }: { photo?: string }) {
           <stop offset="1" stopColor="#1a2032" />
         </linearGradient>
         <linearGradient id="prLit" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#8af6ff" />
-          <stop offset=".55" stopColor="#19b9e6" />
-          <stop offset="1" stopColor="#0a6f9c" />
+          <stop offset="0" stopColor="#fff1bd" />
+          <stop offset=".32" stopColor="#ffc94d" />
+          <stop offset=".66" stopColor="#e39419" />
+          <stop offset="1" stopColor="#8f5207" />
+        </linearGradient>
+        <linearGradient id="prGloss" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity=".7" />
+          <stop offset=".5" stopColor="#ffffff" stopOpacity=".12" />
+          <stop offset=".52" stopColor="#ffffff" stopOpacity="0" />
         </linearGradient>
         <radialGradient id="prWell" cx=".5" cy=".5" r=".5">
           <stop offset=".8" stopColor="#0a0f1c" />
@@ -45,7 +51,7 @@ export function ProfileRing({ photo = 'profile-photo' }: { photo?: string }) {
       {Array.from({ length: 60 }, (_, i) => {
         const long = i % 5 === 0;
         const [x0, y0] = pt(long ? 93 : 94.5, i * 6), [x1, y1] = pt(98, i * 6);
-        return <line key={i} x1={x0} y1={y0} x2={x1} y2={y1} stroke="rgba(196,214,238,.55)" strokeWidth={long ? 1.1 : .6} />;
+        return <line key={i} x1={x0} y1={y0} x2={x1} y2={y1} stroke="rgba(255,226,170,.55)" strokeWidth={long ? 1.1 : .6} />;
       })}
 
       {/* well behind the plates */}
@@ -57,9 +63,12 @@ export function ProfileRing({ photo = 'profile-photo' }: { photo?: string }) {
         const lit = LIT.has(i);
         return (
           <g key={i} className={lit ? 'pr-lit' : undefined} style={lit ? { animationDelay: `${(i - 6) * 0.12}s` } : undefined}>
-            {lit && <path d={sector(a0, a1)} fill="#22d3ff" opacity=".55" filter="url(#prGlow)" />}
-            <path d={sector(a0, a1)} fill={lit ? 'url(#prLit)' : 'url(#prDark)'} stroke={lit ? 'rgba(210,250,255,.85)' : 'rgba(255,255,255,.2)'} strokeWidth="1" strokeLinejoin="round" />
-            <path d={sector(a0 + 1.5, a1 - 1.5)} fill="none" stroke={lit ? 'rgba(255,255,255,.35)' : 'rgba(255,255,255,.08)'} strokeWidth=".7" strokeLinejoin="round" transform="scale(.97)" />
+            {lit && <path d={sector(a0, a1)} fill="#ffb02e" opacity=".6" filter="url(#prGlow)" />}
+            {/* 3D: a dark under-edge dropped a hair below the plate, then the plate, a bevel line and a glossy sheen */}
+            <path d={sector(a0, a1)} fill={lit ? '#5a3203' : '#05080f'} opacity=".7" transform="translate(0 1.4)" />
+            <path d={sector(a0, a1)} fill={lit ? 'url(#prLit)' : 'url(#prDark)'} stroke={lit ? 'rgba(255,244,205,.9)' : 'rgba(255,255,255,.2)'} strokeWidth="1" strokeLinejoin="round" />
+            <path d={sector(a0 + 1.5, a1 - 1.5)} fill="none" stroke={lit ? 'rgba(255,255,255,.4)' : 'rgba(255,255,255,.08)'} strokeWidth=".7" strokeLinejoin="round" transform="scale(.97)" />
+            <path d={sector(a0 + .8, a1 - .8)} fill="url(#prGloss)" opacity={lit ? 1 : .35} />
           </g>
         );
       })}
@@ -71,7 +80,7 @@ export function ProfileRing({ photo = 'profile-photo' }: { photo?: string }) {
       })}
 
       {/* photo */}
-      <circle r="62" fill="#0a0f1c" stroke="rgba(120,225,255,.6)" strokeWidth="1.4" />
+      <circle r="62" fill="#0a0f1c" stroke="rgba(255,214,120,.8)" strokeWidth="1.4" />
       <image href={img(photo)} x="-58" y="-58" width="116" height="116" clipPath="url(#prClip)" preserveAspectRatio="xMidYMid slice" />
       <circle r="58" fill="none" stroke="rgba(0,0,0,.45)" strokeWidth="2" />
     </svg>
