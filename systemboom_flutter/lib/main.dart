@@ -1216,8 +1216,8 @@ class _RRectRipplePainter extends CustomPainter {
   bool shouldRepaint(_RRectRipplePainter o) => o.t != t || o.h != h;
 }
 
-/// A slowly rotating orrery plate under the planets: a disc seen at a slant (flattened with a vertical scale), with a gold rim,
-/// a light sweep that turns round it and a ring of tick marks that turns the other way.
+/// A slowly rotating orrery plate under the planets: a disc seen at a slant (flattened with a vertical scale). Its outer edge feathers
+/// away so it dissolves into the header card; a light sweep turns round it and a ring of tick marks turns the other way.
 class _PlatePainter extends CustomPainter {
   _PlatePainter({required this.cx, required this.cy, required this.k, required this.c, required this.t});
   final double cx, cy, k, c, t;
@@ -1229,80 +1229,54 @@ class _PlatePainter extends CustomPainter {
     canvas.translate(cx, cy);
     canvas.scale(1, sy);
     final rect = Rect.fromCircle(center: Offset.zero, radius: r);
-    // metallic edge: a second disc dropped below the top one, so the plate has visible thickness
-    final thick = 5 * k / sy;
-    final topDisc = Path()..addOval(rect);
-    final edgeRect = Rect.fromCircle(center: Offset(0, thick), radius: r);
-    // soft glow only outside the top disc, so it doesn't tint the glass
-    canvas.save();
-    canvas.clipPath(Path.combine(PathOperation.difference, Path()..addRect(rect.inflate(r)), topDisc));
-    canvas.drawCircle(Offset(0, thick), r, Paint()..color = const Color(0x52FF9628)..maskFilter = MaskFilter.blur(BlurStyle.normal, 12 * k));
-    canvas.restore();
-    // the edge shows only as the crescent below the top disc
-    canvas.save();
-    canvas.clipPath(Path.combine(PathOperation.difference, Path()..addOval(edgeRect), topDisc));
-    canvas.drawCircle(
-      Offset(0, thick),
-      r,
-      Paint()
-        ..shader = SweepGradient(
-          colors: const [Color(0xFFC9D2DC), Color(0xFF8D9AAB), Color(0xFF4A5563), Color(0xFFB8A27A), Color(0xFFC9D2DC), Color(0xFF6B7686), Color(0xFFC9D2DC)],
-          transform: GradientRotation(math.pi / 9),
-        ).createShader(edgeRect),
-    );
-    canvas.restore();
-    // glass top: faint gold tint with gold bands at the orbit radii, darker toward the lower rim
+    canvas.saveLayer(rect.inflate(2), Paint());
+    // faint glass tint with orange hairlines at the orbit radii
+    final glass = Paint()
+      ..shader = const RadialGradient(
+        center: Alignment(0, -.24),
+        colors: [Color(0x1FFFFFFF), Color(0x0D96B4D7), Color(0x0F5A78A0)],
+        stops: [0, .55, 1],
+      ).createShader(rect);
     final bands = Paint()
       ..shader = const RadialGradient(
-        colors: [Color(0x00FFCD82), Color(0x0DFFCD82), Color(0x1AFFCD82), Color(0x99FFC46E), Color(0x0DFFCD82), Color(0x12FFCD82), Color(0xA6FFC46E), Color(0x0DFFCD82), Color(0x00FFCD82)],
-        stops: [.22, .40, .66, .686, .696, .84, .856, .866, .97],
-      ).createShader(rect);
-    final glass = Paint()
-      ..shader = RadialGradient(
-        center: const Alignment(0, -.28),
-        colors: const [Color(0x1FFFFFFF), Color(0x0D96B4D7), Color(0x1A5A78A0)],
-        stops: const [0, .5, 1],
+        colors: [Color(0x00FFCD82), Color(0x0DFFCD82), Color(0x17FFCD82), Color(0x80FFC46E), Color(0x0DFFCD82), Color(0x0FFFCD82), Color(0x73FFC46E), Color(0x0AFFCD82), Color(0x00FFCD82)],
+        stops: [.20, .38, .64, .686, .70, .82, .856, .875, .98],
       ).createShader(rect);
     canvas.drawCircle(Offset.zero, r, glass);
     canvas.drawCircle(Offset.zero, r, bands);
     // light sweep turning round the plate
     final a1 = 2 * math.pi * (t / 26);
-    final ring = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = r * .72
-      ..shader = SweepGradient(
-        colors: const [Color(0x00FFD68C), Color(0x66FFECC4), Color(0x00FFD68C), Color(0x00FFD68C), Color(0x33FFD08C), Color(0x00FFD68C), Color(0x00FFD68C)],
-        stops: const [0, .33, .46, .69, .83, .96, 1],
-        transform: GradientRotation(a1),
-      ).createShader(rect);
-    canvas.drawCircle(Offset.zero, r * .62, ring);
+    canvas.drawCircle(
+      Offset.zero,
+      r * .62,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = r * .66
+        ..shader = SweepGradient(
+          colors: const [Color(0x00FFECC4), Color(0x61FFECC4), Color(0x00FFECC4), Color(0x00FFECC4), Color(0x33FFBE6E), Color(0x00FFECC4), Color(0x00FFECC4)],
+          stops: const [0, .33, .46, .69, .83, .96, 1],
+          transform: GradientRotation(a1),
+        ).createShader(rect),
+    );
     // tick marks turning the other way
     final a2 = -2 * math.pi * (t / 70);
     final tick = Paint()
-      ..strokeWidth = math.max(1, 1.4 * k)
-      ..color = const Color(0x8CFFE2AA);
+      ..strokeWidth = math.max(1, 1.3 * k)
+      ..color = const Color(0x80FFE2AA);
     for (var i = 0; i < 60; i++) {
       final a = a2 + i * 2 * math.pi / 60;
-      canvas.drawLine(Offset(math.cos(a) * r * .915, math.sin(a) * r * .915), Offset(math.cos(a) * r * .96, math.sin(a) * r * .96), tick);
+      canvas.drawLine(Offset(math.cos(a) * r * .79, math.sin(a) * r * .79), Offset(math.cos(a) * r * .88, math.sin(a) * r * .88), tick);
     }
-    // polished chrome rim
-    canvas.drawCircle(
-      Offset.zero,
-      r * .982,
+    // soft glint
+    final glint = Rect.fromCenter(center: Offset(-r * .4, -r * .62), width: r * .68, height: r * .22);
+    canvas.drawOval(glint, Paint()..shader = const RadialGradient(colors: [Color(0x47FFFFFF), Color(0x00FFFFFF)]).createShader(glint));
+    // feather the outer edge so the plate dissolves into the card
+    canvas.drawRect(
+      rect.inflate(2),
       Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = r * .036
-        ..shader = SweepGradient(
-          colors: const [Color(0xFFE8EEF5), Color(0xFF9AA6B4), Color(0xFFF1DFBF), Color(0xFF5D6772), Color(0xFFE8CF9C), Color(0xFFE8EEF5), Color(0xFF8793A2), Color(0xFFF3E6CC), Color(0xFFE8EEF5)],
-          transform: GradientRotation(math.pi * 10 / 9),
-        ).createShader(rect),
+        ..blendMode = BlendMode.dstIn
+        ..shader = const RadialGradient(colors: [Color(0xFF000000), Color(0xFF000000), Color(0x8C000000), Color(0x00000000)], stops: [0, .66, .84, 1]).createShader(rect),
     );
-    // gloss: a soft sheen over the upper half and a bright glint
-    canvas.save();
-    canvas.clipPath(Path()..addOval(Rect.fromCircle(center: Offset.zero, radius: r * .96)));
-    canvas.drawRect(Rect.fromLTRB(-r, -r, r, 0), Paint()..shader = const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0x2EFFFFFF), Color(0x00FFFFFF)]).createShader(Rect.fromLTRB(-r, -r, r, 0)));
-    final glint = Rect.fromCenter(center: Offset(-r * .4, -r * .66), width: r * .68, height: r * .22);
-    canvas.drawOval(glint, Paint()..shader = const RadialGradient(colors: [Color(0x8CFFFFFF), Color(0x00FFFFFF)]).createShader(glint));
     canvas.restore();
     canvas.restore();
   }
