@@ -43,6 +43,33 @@ const HH_PLANETS = [
   { n: 'saturn', rx: 336, ry: 58, d: 50, rx1: 225, ry1: 19, d1: 24, T: 24, ph: 0.5 },
 ];
 
+const HH_EMBERS = [
+  { rx: 232, ry: 38, rx1: 140, ry1: 13, T: 7, ph: 0.1, d: 5, rev: false, o: 1 },
+  { rx: 232, ry: 38, rx1: 140, ry1: 13, T: 7, ph: 0.1291, d: 3.1, rev: false, o: 0.5 },
+  { rx: 232, ry: 38, rx1: 140, ry1: 13, T: 7, ph: 0.62, d: 4, rev: true, o: 1 },
+  { rx: 232, ry: 38, rx1: 140, ry1: 13, T: 7, ph: 0.5909, d: 2.5, rev: true, o: 0.5 },
+  { rx: 284, ry: 48, rx1: 180, ry1: 16, T: 11, ph: 0.3, d: 5.5, rev: false, o: 1 },
+  { rx: 284, ry: 48, rx1: 180, ry1: 16, T: 11, ph: 0.3185, d: 3.4, rev: false, o: 0.5 },
+  { rx: 284, ry: 48, rx1: 180, ry1: 16, T: 11, ph: 0.7, d: 4.5, rev: true, o: 1 },
+  { rx: 284, ry: 48, rx1: 180, ry1: 16, T: 11, ph: 0.6815, d: 2.8, rev: true, o: 0.5 },
+  { rx: 284, ry: 48, rx1: 180, ry1: 16, T: 11, ph: 0.95, d: 4, rev: false, o: 1 },
+  { rx: 284, ry: 48, rx1: 180, ry1: 16, T: 11, ph: 0.9685, d: 2.5, rev: false, o: 0.5 },
+  { rx: 336, ry: 58, rx1: 225, ry1: 19, T: 17, ph: 0.05, d: 6, rev: false, o: 1 },
+  { rx: 336, ry: 58, rx1: 225, ry1: 19, T: 17, ph: 0.062, d: 3.7, rev: false, o: 0.5 },
+  { rx: 336, ry: 58, rx1: 225, ry1: 19, T: 17, ph: 0.35, d: 4.5, rev: true, o: 1 },
+  { rx: 336, ry: 58, rx1: 225, ry1: 19, T: 17, ph: 0.338, d: 2.8, rev: true, o: 0.5 },
+  { rx: 336, ry: 58, rx1: 225, ry1: 19, T: 17, ph: 0.6, d: 5.5, rev: false, o: 1 },
+  { rx: 336, ry: 58, rx1: 225, ry1: 19, T: 17, ph: 0.612, d: 3.4, rev: false, o: 0.5 },
+  { rx: 336, ry: 58, rx1: 225, ry1: 19, T: 17, ph: 0.85, d: 4, rev: true, o: 1 },
+  { rx: 336, ry: 58, rx1: 225, ry1: 19, T: 17, ph: 0.838, d: 2.5, rev: true, o: 0.5 },
+];
+
+/** Deterministic twinkling stars scattered over the plate (no randomness at render time, so SSR matches). */
+const HH_STARS = Array.from({ length: 16 }, (_, i) => {
+  const r = (n: number) => { const s = Math.sin(i * 57.3 + n * 12.9) * 10000; return s - Math.floor(s); };
+  return { x: (r(1) - 0.5) * 2 * 330, y: (r(2) - 0.5) * 2 * 62, s: 5 + r(3) * 6, dur: 2 + r(4) * 2.6, dl: -r(5) * 4 };
+});
+
 /** Full-bleed, shorter hero header. It stays pinned and shrinks (c: 0 -> 1) over the first ~95 units of scrolling. */
 function HomeHeader() {
   const router = useRouter();
@@ -75,6 +102,14 @@ function HomeHeader() {
           </At>
           <At x={427} y={104} w={0} h={0} className="hh-orbit">
             <div className="hh-plate" aria-hidden><i className="pl-edge" /><i className="pl-base" /><i className="pl-sweep" /><i className="pl-ticks" /><i className="pl-rim" /><i className="pl-gloss" /></div>
+            <div className="hh-stars" aria-hidden>
+              {HH_STARS.map((st, i) => (
+                <i key={i} className="hh-st" style={{ left: K(st.x), top: K(st.y), ['--s' as string]: st.s, ['--dur' as string]: `${st.dur}s`, ['--dl' as string]: `${st.dl}s` }} />
+              ))}
+            </div>
+            {HH_EMBERS.map((e, i) => (
+              <span key={i} className="hh-em" style={{ ['--rx0' as string]: e.rx, ['--ry0' as string]: e.ry, ['--rx1' as string]: e.rx1, ['--ry1' as string]: e.ry1, ['--d' as string]: e.d, ['--T' as string]: `${e.T}s`, ['--ph' as string]: e.ph, ['--o' as string]: e.o, animationDirection: e.rev ? 'alternate-reverse, alternate-reverse' : undefined }} />
+            ))}
             {HH_PLANETS.map((p) => (
               <span key={p.n} className="hh-pl" style={{ ['--rx0' as string]: p.rx, ['--ry0' as string]: p.ry, ['--d0' as string]: p.d, ['--rx1' as string]: p.rx1, ['--ry1' as string]: p.ry1, ['--d1' as string]: p.d1, ['--T' as string]: `${p.T}s`, ['--ph' as string]: p.ph }}>
                 <img src={img(`celestial/${p.n}`)} alt="" draggable={false} />

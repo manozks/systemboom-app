@@ -1004,3 +1004,17 @@ button.lr:active { transform: scale(.985); }
 .pl-gloss { background: radial-gradient(ellipse 34% 11% at 30% 20%, rgba(255,255,255,.28), rgba(255,255,255,0)); -webkit-mask: radial-gradient(circle, #000 70%, transparent 90%); mask: radial-gradient(circle, #000 70%, transparent 90%); }
 @keyframes plspin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .pl-sweep, .pl-ticks { animation: none; } }
+
+/* lava embers running along the orbit paths (with a faint trail) and softly blinking stars over the plate */
+.hh-em { --rx: calc(var(--rx0) + (var(--rx1) - var(--rx0)) * var(--c, 0)); --ry: calc(var(--ry0) + (var(--ry1) - var(--ry0)) * var(--c, 0)); position: absolute; left: calc(-.5 * var(--d) * var(--k)); top: calc(-.5 * var(--d) * var(--k)); width: calc(var(--d) * var(--k)); height: calc(var(--d) * var(--k)); border-radius: 50%; opacity: var(--o, 1); pointer-events: none; will-change: transform, translate;
+  background: radial-gradient(circle, #fff 0 24%, #ffd27a 40%, rgba(255,120,20,.95) 62%, transparent 74%);
+  box-shadow: 0 0 calc(5 * var(--k)) rgba(255,150,40,.95), 0 0 calc(11 * var(--k)) rgba(255,100,10,.5);
+  animation: hh-x calc(var(--T) / 2) cubic-bezier(.37,0,.63,1) infinite alternate, hh-y calc(var(--T) / 2) cubic-bezier(.37,0,.63,1) infinite alternate;
+  animation-delay: calc(var(--ph) * var(--T) * -1), calc(var(--ph) * var(--T) * -1 - var(--T) / 4); }
+.hh-stars { position: absolute; left: 0; top: 0; width: 0; height: 0; transform: scale(calc(1 - .33 * var(--c, 0)), calc(1 - .55 * var(--c, 0))); pointer-events: none; }
+.hh-st { position: absolute; width: calc(var(--s) * var(--k)); height: calc(var(--s) * var(--k)); margin: calc(var(--s) * var(--k) / -2) 0 0 calc(var(--s) * var(--k) / -2); border-radius: 50%; opacity: 0; transform: scale(.3);
+  background: radial-gradient(circle, #fff 0 16%, rgba(255,232,178,.85) 30%, transparent 62%); animation: hh-tw var(--dur) ease-in-out infinite; animation-delay: var(--dl); }
+.hh-st::before, .hh-st::after { content: ''; position: absolute; left: 50%; top: 50%; background: linear-gradient(90deg, transparent, rgba(255,240,205,.95), transparent); width: 340%; height: 6%; transform: translate(-50%, -50%); }
+.hh-st::after { transform: translate(-50%, -50%) rotate(90deg); }
+@keyframes hh-tw { 0%, 100% { opacity: 0; transform: scale(.3); } 50% { opacity: 1; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .hh-em, .hh-st { animation: none; } .hh-st { opacity: .6; transform: scale(.8); } }

@@ -342,7 +342,10 @@ class _Stage extends StatelessWidget {
       // the orbit flattens and shrinks with the header so the planets circle the small logo inside the slim bar
       final cy = 104 * ka + (kCmpH * u / 2 - 104 * ka) * c;
       final out = <Widget>[];
-      if (back) out.add(Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _PlatePainter(cx: cx, cy: cy, k: ka, c: c, t: t)))));
+      if (back) {
+        out.add(Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _PlatePainter(cx: cx, cy: cy, k: ka, c: c, t: t)))));
+        out.add(Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _StarsEmbersPainter(cx: cx, cy: cy, k: ka, c: c, t: t)))));
+      }
       for (final (name, rx0, ry0, d0, rx1, ry1, d1, period, ph) in planets) {
         final rx = (rx0 + (rx1 - rx0) * c) * ka, ry = (ry0 + (ry1 - ry0) * c) * ka, d = (d0 + (d1 - d0) * c) * ka;
         final ang = 2 * math.pi * (t / period + ph);
@@ -1283,4 +1286,67 @@ class _PlatePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _PlatePainter old) => old.t != t || old.c != c || old.cx != cx || old.cy != cy || old.k != k;
+}
+
+/// Lava embers running along the three orbit paths (each with a faint trail) and softly blinking stars scattered over the plate.
+class _StarsEmbersPainter extends CustomPainter {
+  _StarsEmbersPainter({required this.cx, required this.cy, required this.k, required this.c, required this.t});
+  final double cx, cy, k, c, t;
+  // (rx0, ry0, rx1, ry1, period, phase, size, reverse)
+  static const _embers = [
+    (232.0, 38.0, 140.0, 13.0, 7.0, .1, 5.0, false),
+    (232.0, 38.0, 140.0, 13.0, 7.0, .62, 4.0, true),
+    (284.0, 48.0, 180.0, 16.0, 11.0, .3, 5.5, false),
+    (284.0, 48.0, 180.0, 16.0, 11.0, .7, 4.5, true),
+    (284.0, 48.0, 180.0, 16.0, 11.0, .95, 4.0, false),
+    (336.0, 58.0, 225.0, 19.0, 17.0, .05, 6.0, false),
+    (336.0, 58.0, 225.0, 19.0, 17.0, .35, 4.5, true),
+    (336.0, 58.0, 225.0, 19.0, 17.0, .6, 5.5, false),
+    (336.0, 58.0, 225.0, 19.0, 17.0, .85, 4.0, true),
+  ];
+
+  double _h(int i, int n) {
+    final v = math.sin(i * 57.3 + n * 12.9) * 10000;
+    return v - v.floorToDouble();
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // stars
+    final sx = 1 - .33 * c, sy = 1 - .55 * c;
+    for (var i = 0; i < 16; i++) {
+      final x = (_h(i, 1) - .5) * 2 * 330, y = (_h(i, 2) - .5) * 2 * 62;
+      final sz = (5 + _h(i, 3) * 6) * k;
+      final dur = 2 + _h(i, 4) * 2.6, dl = _h(i, 5) * 4;
+      final a = (math.sin(2 * math.pi * (t + dl) / dur - math.pi / 2) + 1) / 2; // 0..1 blink
+      if (a < .02) continue;
+      final p = Offset(cx + x * k * sx, cy + y * k * sy);
+      final r = sz * (.3 + .7 * a) / 2;
+      final rect = Rect.fromCircle(center: p, radius: r * 1.8);
+      canvas.drawCircle(p, r * 1.8, Paint()..shader = RadialGradient(colors: [Color.fromRGBO(255, 255, 255, a), Color.fromRGBO(255, 232, 178, .85 * a), const Color(0x00FFE8B2)], stops: const [.12, .3, 1]).createShader(rect));
+      final line = Paint()
+        ..strokeWidth = math.max(1, r * .22)
+        ..color = Color.fromRGBO(255, 240, 205, .9 * a);
+      canvas.drawLine(Offset(p.dx - r * 1.7, p.dy), Offset(p.dx + r * 1.7, p.dy), line);
+      canvas.drawLine(Offset(p.dx, p.dy - r * 1.7), Offset(p.dx, p.dy + r * 1.7), line);
+    }
+    // embers + trails
+    for (final (rx0, ry0, rx1, ry1, period, ph, d, rev) in _embers) {
+      final rx = (rx0 + (rx1 - rx0) * c) * k, ry = (ry0 + (ry1 - ry0) * c) * k;
+      final dir = rev ? -1 : 1;
+      for (var j = 0; j < 4; j++) {
+        // j = 0 is the head; the others trail behind it along the path
+        final ang = 2 * math.pi * (dir * (t / period) + ph) - dir * j * .075;
+        final depth = math.sin(ang);
+        final o = Offset(cx + rx * math.cos(ang), cy + ry * depth);
+        final rad = d * k * (1 - .17 * j) * (.8 + .3 * (depth + 1) / 2);
+        final alpha = (1 - .27 * j).clamp(0.0, 1.0);
+        final rect = Rect.fromCircle(center: o, radius: rad * 2.2);
+        canvas.drawCircle(o, rad * 2.2, Paint()..shader = RadialGradient(colors: [Color.fromRGBO(255, 255, 255, alpha), Color.fromRGBO(255, 210, 122, .9 * alpha), Color.fromRGBO(255, 110, 20, .55 * alpha), const Color(0x00FF6E14)], stops: const [.1, .3, .6, 1]).createShader(rect));
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _StarsEmbersPainter old) => old.t != t || old.c != c || old.cx != cx || old.cy != cy || old.k != k;
 }
