@@ -1,8 +1,8 @@
 1:"$Sreact.fragment"
 c:I[6225,[],""]
 :HL["/systemboom-app/next/_next/static/css/96b3b7728c2fb3b6.css","style"]
-:HL["/systemboom-app/next/_next/static/css/49da0ec3f3ae5a01.css","style"]
-2:Tbd3,
+:HL["/systemboom-app/next/_next/static/css/3933da44d9798b05.css","style"]
+2:Tc22,
 @font-face{font-family:'Figtree';src:url('/systemboom-app/next/fonts/Figtree.ttf') format('truetype');font-weight:300 900;font-display:swap}
 .stage{background-image:radial-gradient(120% 40% at 50% 0%,rgba(255,122,26,.08),transparent 60%),url('/systemboom-app/next/img/carbon-tile.webp');background-size:auto,calc(18*var(--u)) calc(17*var(--u));background-repeat:no-repeat,repeat}
 .apanel{border-image-source:url('/systemboom-app/next/img/asheet-frame.webp')}
@@ -11,6 +11,7 @@ c:I[6225,[],""]
 .abtn2::before{border-image-source:url('/systemboom-app/next/img/notif-btn.webp')}
 .abadge{background-image:url('/systemboom-app/next/img/ring63-act.webp')}
 .abtn2.red .abadge{background-image:url('/systemboom-app/next/img/ring63-red.webp')}
+.hh-hero{border-image-source:url('/systemboom-app/next/img/hero-nobomb.webp')}
 .thread .bubble{border-image-source:url('/systemboom-app/next/img/chat-bubble.webp')}
 .dialog.pf{border-image-source:url('/systemboom-app/next/img/panel-frame.webp')}
 .rowplate{border-image-source:url('/systemboom-app/next/img/chat-bubble.webp')}
@@ -40,7 +41,7 @@ c:I[6225,[],""]
 .xbtn.danger{--bz:url('/systemboom-app/next/img/info-cta-red.webp')}
 .ringart{background-image:url('/systemboom-app/next/img/share-ring.webp')}
 .thread .bubble.out{border-image-source:url('/systemboom-app/next/img/chat-bubble-out.webp')}
-0:{"P":null,"b":"KBtEApE8r5h9p_s01Aqto","p":"/systemboom-app/next","c":["","order-track",""],"i":false,"f":[[["",{"children":["order-track",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/systemboom-app/next/_next/static/css/96b3b7728c2fb3b6.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/systemboom-app/next/_next/static/css/49da0ec3f3ae5a01.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$L3","$L4","$L5","$L6","$L7"]]}],"$L8"]}]]}],{"children":["order-track","$L9",{"children":["__PAGE__","$La",{},null,false]},null,false]},null,false],"$Lb",false]],"m":"$undefined","G":["$c",[]],"s":false,"S":true}
+0:{"P":null,"b":"1tK13b7aSZUtUT0quTB8e","p":"/systemboom-app/next","c":["","order-track",""],"i":false,"f":[[["",{"children":["order-track",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/systemboom-app/next/_next/static/css/96b3b7728c2fb3b6.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/systemboom-app/next/_next/static/css/3933da44d9798b05.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$L3","$L4","$L5","$L6","$L7"]]}],"$L8"]}]]}],{"children":["order-track","$L9",{"children":["__PAGE__","$La",{},null,false]},null,false]},null,false],"$Lb",false]],"m":"$undefined","G":["$c",[]],"s":false,"S":true}
 d:I[2437,["7049","static/chunks/7049-64b12eb28c02c1ae.js","7177","static/chunks/app/layout-d786e78141460d3d.js"],"ToastProvider"]
 e:I[4542,["7049","static/chunks/7049-64b12eb28c02c1ae.js","7177","static/chunks/app/layout-d786e78141460d3d.js"],"ConnectivityProvider"]
 f:I[7049,["7049","static/chunks/7049-64b12eb28c02c1ae.js","7177","static/chunks/app/layout-d786e78141460d3d.js"],"StoreProvider"]

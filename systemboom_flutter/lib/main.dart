@@ -5,7 +5,7 @@ import 'package:flutter/scheduler.dart' show Ticker;
 import 'package:flutter/services.dart';
 
 import 'pages/more_pages.dart' show SplashPage;
-import 'kit.dart' show HoverLoop, RingSweep, pushScreen;
+import 'kit.dart' show HoverLoop, RingSweep, nineScale, pushScreen;
 import 'pages/chat_page.dart' show NotificationsLazy;
 import 'orb_menu.dart';
 import 'shell.dart';
@@ -57,8 +57,8 @@ class SystemBoomApp extends StatelessWidget {
 const double kStageW = 941;
 const double kStageH = 2097;
 
-/// How far (design units) the stage is pulled up now that the header is shorter: 411 (greeting y) - (header 230 + 8 gap).
-const double _kStageShift = 173;
+/// How far (design units) the stage is pulled up now that the header is shorter: 411 (greeting y) - (header 261 + 8 gap).
+const double _kStageShift = 142;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -317,17 +317,25 @@ class _Stage extends StatelessWidget {
         ],
       ));
 
-  /// Pinned header geometry (design units): the same metal card as the Calls page (854x209 art, full width), which
+  /// Pinned header geometry (design units): the tall hero card (full width, 261 units), which
   /// collapses into a slim bar as the page scrolls.
   static const double kCmpH = 72; // height of the collapsed (slim bar) header, design units
-  static const double shrinkDist = 158.3; // scroll distance (units) over which the header collapses (= its height change)
+  static const double shrinkDist = 189; // scroll distance (units) over which the header collapses (= its height change)
 
   /// Home header card: SYSTEMBOOM logo in the middle, planets orbiting it, notification bell on the right. [c] goes 0 -> 1 while scrolling.
   Widget header(double c) {
     final w = 941 * u;
     final kx = w / 854; // logical px per art unit
     final ka = kx;
-    final h = 209 * kx + (kCmpH * u - 209 * kx) * c; // card height -> slim bar height
+    final hExp = 261 * u;
+    final h = hExp + (kCmpH * u - hExp) * c; // card height -> slim bar height
+    final au = .72 * u; // logical px per hero-art pixel
+    final ov = 12 * au;
+    final slice = Rect.fromLTRB(130 * au, 40 * au, (878 - 130) * au, (362 - 40) * au);
+    // the orbit system sits where the lava coin used to be; it grows to circle the small logo when the header collapses
+    final of = .405 + (1 - .405) * c;
+    final ko = ka * of;
+    final ocy = 195 * u + (kCmpH * u / 2 - 195 * u) * c;
     final cx = w / 2;
     final fade = (1 - 2.4 * c).clamp(0.0, 1.0); // bell + planets go away quickly
     // a small solar system round the logo: each planet runs on its own slanted ellipse and speed; depth = sin(angle)
@@ -340,14 +348,14 @@ class _Stage extends StatelessWidget {
         ('saturn', 336.0, 58.0, 50.0, 225.0, 19.0, 24.0, 53.0, 0.5),
       ];
       // the orbit flattens and shrinks with the header so the planets circle the small logo inside the slim bar
-      final cy = 104 * ka + (kCmpH * u / 2 - 104 * ka) * c;
+      final cy = ocy;
       final out = <Widget>[];
       if (back) {
-        out.add(Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _PlatePainter(cx: cx, cy: cy, k: ka, c: c, t: t)))));
-        out.add(Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _StarsEmbersPainter(cx: cx, cy: cy, k: ka, c: c, t: t)))));
+        out.add(Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _PlatePainter(cx: cx, cy: cy, k: ko, c: c, t: t)))));
+        out.add(Positioned.fill(child: IgnorePointer(child: CustomPaint(painter: _StarsEmbersPainter(cx: cx, cy: cy, k: ko, c: c, t: t)))));
       }
       for (final (name, rx0, ry0, d0, rx1, ry1, d1, period, ph) in planets) {
-        final rx = (rx0 + (rx1 - rx0) * c) * ka, ry = (ry0 + (ry1 - ry0) * c) * ka, d = (d0 + (d1 - d0) * c) * ka;
+        final rx = (rx0 + (rx1 - rx0) * c) * ko, ry = (ry0 + (ry1 - ry0) * c) * ko, d = (d0 + (d1 - d0) * c) * ko;
         final ang = 2 * math.pi * (t / period + ph);
         final depth = math.sin(ang); // > 0: near side (in front of the logo)
         if ((depth <= 0) != back) continue;
@@ -372,7 +380,7 @@ class _Stage extends StatelessWidget {
     }
 
     final logoW = 440 * ka * (1 - .5 * c);
-    final logoCy = 104 * ka + (kCmpH * u / 2 - 104 * ka) * c;
+    final logoCy = 84 * u + (kCmpH * u / 2 - 84 * u) * c;
     return SizedBox(
       height: h,
       child: Stack(clipBehavior: Clip.hardEdge, children: [
@@ -389,7 +397,22 @@ class _Stage extends StatelessWidget {
             ),
           ),
         ),
-        if (c < 1) Positioned(left: 0, top: 0, width: w, height: h, child: Opacity(opacity: (1 - 1.7 * c).clamp(0.0, 1.0), child: Image.asset('assets/images/hdr-home.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium))),
+        // hero card art (9-slice, only the flat metal stretches), flattened and faded as the header collapses
+        if (c < 1)
+          Positioned(
+            left: -ov,
+            right: -ov,
+            top: -6 * au,
+            height: hExp + 6 * au,
+            child: Opacity(
+              opacity: (1 - 1.7 * c).clamp(0.0, 1.0),
+              child: Transform(
+                alignment: Alignment.topCenter,
+                transform: Matrix4.diagonal3Values(1, (h + 6 * au) / (hExp + 6 * au), 1),
+                child: Image.asset('assets/images/hero-nobomb.webp', fit: BoxFit.fill, filterQuality: FilterQuality.medium, scale: nineScale(878, 362, slice.width, slice.height, 1 / au), centerSlice: slice),
+              ),
+            ),
+          ),
         ...orbit(back: true),
         // logo lock-up (transparent bomb + SYSTEMBOOM); shrinks to the top centre
         Positioned(
@@ -411,7 +434,7 @@ class _Stage extends StatelessWidget {
         if (c < .4)
           Positioned(
             left: cx + 343 * kx - 46 * ka,
-            top: 52 * ka,
+            top: 24.8 * ka,
             width: 92 * ka,
             height: 92 * ka,
             child: Opacity(opacity: fade, child: ChromeBtn(u: ka, gold: true, badge: '14', onTap: () => onTap('Notifications'), child: Icon(Icons.notifications_none_rounded, size: 46 * ka, color: const Color(0xFFFFD27A)))),
@@ -1288,9 +1311,9 @@ class _StarsEmbersPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // stars
-    final sx = 1 - .33 * c, sy = 1 - .55 * c;
+    final sx = 1 - .33 * c, sy = 1 - .78 * c;
     for (var i = 0; i < 20; i++) {
-      final x = (_h(i, 1) - .5) * 2 * 330, y = -14 + _h(i, 2) * 76;
+      final x = (_h(i, 1) - .5) * 2 * 330, y = -120 + _h(i, 2) * 182;
       final sz = (5 + _h(i, 3) * 6) * k;
       final dur = 2 + _h(i, 4) * 2.6, dl = _h(i, 5) * 4;
       final a = (math.sin(2 * math.pi * (t + dl) / dur - math.pi / 2) + 1) / 2; // 0..1 blink

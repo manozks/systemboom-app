@@ -955,19 +955,21 @@ button.lr:active { transform: scale(.985); }
 @media (prefers-reduced-motion: reduce) { .hovcta .ring-spin, .horbit, .hripple::before, .hripple::after, .harrow svg { animation: none !important; } }
 
 /* ───────── Home header: the same metal card as the Calls page; the whole card shrinks a little while scrolling (--c = 0..1 set from JS) ───────── */
-.homehdr { position: sticky; top: 0; z-index: 30; height: calc((230.3 - 158.3 * var(--c, 0)) * var(--u)); }
+.homehdr { --au: calc(.72 * var(--u)); position: sticky; top: 0; z-index: 30; height: calc((261 - 189 * var(--c, 0)) * var(--u)); clip-path: inset(-10px 0 -40px 0); }
 /* the header collapses into a slim bar: the card art fades out, a dark glass bar with an orange hairline fades in,
    the logo shrinks to the top centre, and the bell and planets fade away */
 .homehdr::before { content: ''; position: absolute; inset: 0; z-index: -1; opacity: clamp(0, calc(var(--c, 0) * 1.6), 1);
   background: linear-gradient(180deg, rgba(26,31,38,.97) 0%, rgba(11,14,19,.95) 68%, rgba(9,12,16,0) 100%); }
 .homehdr::after { content: ''; position: absolute; inset: 0; z-index: -2; opacity: calc(1 - var(--c, 0)); background: linear-gradient(#070a0e 78%, rgba(7,10,14,0)); }
-.homehdr .artbox > .in > img.bg { transform-origin: 50% 0; transform: scaleY(calc(1 - .76 * var(--c, 0))); opacity: clamp(0, calc(1 - 1.7 * var(--c, 0)), 1); }
+/* the card art is the tall hero plate (9-slice: only the flat metal stretches); it fades and flattens as the header collapses */
+.hh-hero { position: absolute; left: calc(-12 * var(--au)); right: calc(-12 * var(--au)); top: calc(-6 * var(--au)); height: calc(362 * var(--au) + 6 * var(--au)); border: solid transparent; border-width: calc(40 * var(--au)) calc(130 * var(--au)); border-image-slice: 40 130 fill; border-image-width: calc(40 * var(--au)) calc(130 * var(--au)); border-image-repeat: stretch; pointer-events: none;
+  transform-origin: 50% 0; transform: scaleY(calc(1 - .724 * var(--c, 0))); opacity: clamp(0, calc(1 - 1.7 * var(--c, 0)), 1); }
 .hh-in { position: absolute; inset: 0; }
-.hh-logoat { transform: translateY(calc(var(--c, 0) * (36 * var(--u) - 104 * var(--k)))) scale(calc(1 - .5 * var(--c, 0))); will-change: transform; }
+.hh-logoat { transform: translateY(calc(var(--c, 0) * (36 * var(--u) - 76.2 * var(--k)))) scale(calc(1 - .5 * var(--c, 0))); will-change: transform; }
 .hh-bellw { opacity: clamp(0, calc(1 - 2.4 * var(--c, 0)), 1); }
 .homehdr[data-cmp="1"] .hh-bellw { visibility: hidden; }
 /* the planets stay: their orbits flatten and shrink with the header so they circle the small logo inside the slim bar */
-.hh-orbit { transform: translateY(calc(var(--c, 0) * (36 * var(--u) - 104 * var(--k)))); }
+.hh-orbit { transform: translateY(calc(var(--c, 0) * (36 * var(--u) - 177 * var(--k)))) scale(calc(.405 + .595 * var(--c, 0))); }
 .hh-pl { --rx: calc(var(--rx0) + (var(--rx1) - var(--rx0)) * var(--c, 0)); --ry: calc(var(--ry0) + (var(--ry1) - var(--ry0)) * var(--c, 0)); --d: calc(var(--d0) + (var(--d1) - var(--d0)) * var(--c, 0)); }
 /* slim bar: no hard line at the bottom; the bar dissolves into the page and a soft warm glow sits under it */
 .hh-fade { position: absolute; left: 6%; right: 6%; bottom: calc(-6 * var(--u)); height: calc(14 * var(--u)); pointer-events: none; opacity: clamp(0, calc(var(--c, 0) * 2), 1);
@@ -1005,10 +1007,13 @@ button.lr:active { transform: scale(.985); }
   box-shadow: 0 0 calc(5 * var(--k)) rgba(255,150,40,.95), 0 0 calc(11 * var(--k)) rgba(255,100,10,.5);
   animation: hh-x calc(var(--T) / 2) cubic-bezier(.37,0,.63,1) infinite alternate, hh-y calc(var(--T) / 2) cubic-bezier(.37,0,.63,1) infinite alternate;
   animation-delay: calc(var(--ph) * var(--T) * -1), calc(var(--ph) * var(--T) * -1 - var(--T) / 4); }
-.hh-stars { position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 3; transform: scale(calc(1 - .33 * var(--c, 0)), calc(1 - .55 * var(--c, 0))); pointer-events: none; }
+.hh-stars { position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: 3; transform: scale(calc(1 - .33 * var(--c, 0)), calc(1 - .78 * var(--c, 0))); pointer-events: none; }
 .hh-st { position: absolute; width: calc(var(--s) * var(--k)); height: calc(var(--s) * var(--k)); margin: calc(var(--s) * var(--k) / -2) 0 0 calc(var(--s) * var(--k) / -2); border-radius: 50%; opacity: 0; transform: scale(.3);
   background: radial-gradient(circle, #fff 0 16%, rgba(255,232,178,.85) 30%, transparent 62%); animation: hh-tw var(--dur) ease-in-out infinite; animation-delay: var(--dl); }
 .hh-st::before, .hh-st::after { content: ''; position: absolute; left: 50%; top: 50%; background: linear-gradient(90deg, transparent, rgba(255,240,205,.95), transparent); width: 340%; height: 6%; transform: translate(-50%, -50%); }
 .hh-st::after { transform: translate(-50%, -50%) rotate(90deg); }
 @keyframes hh-tw { 0%, 100% { opacity: 0; transform: scale(.3); } 50% { opacity: 1; transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) { .hh-em, .hh-st { animation: none; } .hh-st { opacity: .6; transform: scale(.8); } }
+/* the card box keeps its expanded height while the header collapses: let taps pass through to the content below (only the bell is tappable) */
+.homehdr .artbox { pointer-events: none; }
+.homehdr .hh-bellw { pointer-events: auto; }

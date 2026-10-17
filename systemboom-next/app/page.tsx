@@ -67,7 +67,7 @@ const HH_EMBERS = [
 /** Deterministic twinkling stars scattered over the plate (no randomness at render time, so SSR matches). */
 const HH_STARS = Array.from({ length: 20 }, (_, i) => {
   const r = (n: number) => { const s = Math.sin(i * 57.3 + n * 12.9) * 10000; return s - Math.floor(s); };
-  return { x: (r(1) - 0.5) * 2 * 330, y: -14 + r(2) * 76, s: 5 + r(3) * 6, dur: 2 + r(4) * 2.6, dl: -r(5) * 4 };
+  return { x: (r(1) - 0.5) * 2 * 330, y: -120 + r(2) * 182, s: 5 + r(3) * 6, dur: 2 + r(4) * 2.6, dl: -r(5) * 4 };
 });
 
 /** Full-bleed, shorter hero header. It stays pinned and shrinks (c: 0 -> 1) over the first ~95 units of scrolling. */
@@ -82,7 +82,7 @@ function HomeHeader() {
       raf = 0;
       const u = el.offsetWidth / 941;
       // linear on purpose: the header's bottom edge then tracks the content scrolling up underneath it (no gap)
-      const x = Math.min(1, Math.max(0, window.scrollY / (158.3 * u)));
+      const x = Math.min(1, Math.max(0, window.scrollY / (189 * u)));
       el.style.setProperty('--c', String(x));
       el.dataset.cmp = x > 0.4 ? '1' : '0';
     };
@@ -95,12 +95,13 @@ function HomeHeader() {
   return (
     <div ref={ref} className="homehdr" style={{ ['--c' as string]: 0 }}>
       <div className="hh-scale">
-        <Art w={854} h={209} src="hdr-home">
+        <Art w={854} h={236.9}>
+          <i className="hh-hero" />
           <div className="hh-in">
-          <At x={207} y={104 - 49} w={440} className="hh-logoat" style={{ zIndex: 2 }}>
+          <At x={207} y={27.2} w={440} className="hh-logoat" style={{ zIndex: 2 }}>
             <img className="hh-logo" src={img('logo-lockup')} alt="SYSTEMBOOM" draggable={false} />
           </At>
-          <At x={427} y={104} w={0} h={0} className="hh-orbit">
+          <At x={427} y={177} w={0} h={0} className="hh-orbit">
             <div className="hh-plate" aria-hidden><i className="pl-edge" /><i className="pl-base" /><i className="pl-sweep" /><i className="pl-ticks" /><i className="pl-rim" /><i className="pl-gloss" /></div>
             <div className="hh-stars" aria-hidden>
               {HH_STARS.map((st, i) => (
@@ -116,7 +117,7 @@ function HomeHeader() {
               </span>
             ))}
           </At>
-          <At x={724} y={52} w={92} h={92} className="hh-bellw" style={{ zIndex: 4 }}>
+          <At x={724} y={24.8} w={92} h={92} className="hh-bellw" style={{ zIndex: 4 }}>
             <ChromeBtn label="Notifications" gold badge="14" onClick={() => router.push('/notifications/')}>
               <Bell style={{ width: '54%', height: '54%' }} strokeWidth={1.8} />
             </ChromeBtn>
@@ -142,11 +143,11 @@ export default function Home() {
 
   return (
     <div className="stage">
-      <div style={{ position: 'relative', height: U(2110 - 173), overflow: 'clip' }}>
+      <div style={{ position: 'relative', height: U(2110 - 142), overflow: 'clip' }}>
         <HomeHeader />
 
         {/* everything below sits in design units that started under the old, taller header: pull it up under the new one */}
-        <div style={{ position: 'absolute', left: 0, top: U(-173), width: '100%' }}>
+        <div style={{ position: 'absolute', left: 0, top: U(-142), width: '100%' }}>
         {/* ── greeting ── */}
         <Abs x={21} y={411} w={865} scale={1.025}>
           <Art w={865} h={206} src="greeting-new" style={{ filter: `drop-shadow(0 ${U(8)} ${U(10)} rgba(0,0,0,.65))` }}>
