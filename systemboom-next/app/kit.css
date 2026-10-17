@@ -969,7 +969,7 @@ button.lr:active { transform: scale(.985); }
 .hh-bellw { opacity: clamp(0, calc(1 - 2.4 * var(--c, 0)), 1); }
 .homehdr[data-cmp="1"] .hh-bellw { visibility: hidden; }
 /* the planets stay: their orbits flatten and shrink with the header so they circle the small logo inside the slim bar */
-.hh-orbit { transform: translateY(calc(var(--c, 0) * (36 * var(--u) - 177 * var(--k)))) scale(calc(.405 + .595 * var(--c, 0))); }
+.hh-orbit { transform: translateY(calc(var(--c, 0) * (36 * var(--u) - 152 * var(--k)))); }
 .hh-pl { --rx: calc(var(--rx0) + (var(--rx1) - var(--rx0)) * var(--c, 0)); --ry: calc(var(--ry0) + (var(--ry1) - var(--ry0)) * var(--c, 0)); --d: calc(var(--d0) + (var(--d1) - var(--d0)) * var(--c, 0)); }
 /* slim bar: no hard line at the bottom; the bar dissolves into the page and a soft warm glow sits under it */
 .hh-fade { position: absolute; left: 6%; right: 6%; bottom: calc(-6 * var(--u)); height: calc(14 * var(--u)); pointer-events: none; opacity: clamp(0, calc(var(--c, 0) * 2), 1);

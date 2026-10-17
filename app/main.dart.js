@@ -84855,11 +84855,11 @@ o.push(s.a55())
 o.push(s.a2Y())
 o.push(A.aA(0,A.bF(A.bC(r,new A.a7(r,r,r,r,r,B.X0,B.v),B.F),!0,r)))
 return A.azS(A.aV(B.B,o,B.l,B.z),B.I)},
-amk(a3){var s,r,q,p,o,n,m,l,k,j=null,i=this.d,h=941*i,g=h/854,f=261*i,e=72*i,d=f+(e-f)*a3,c=0.72*i,b=130*c,a=40*c,a0=748*c,a1=322*c,a2=195*i
+amk(a3){var s,r,q,p,o,n,m,l,k,j=null,i=this.d,h=941*i,g=h/854,f=261*i,e=72*i,d=f+(e-f)*a3,c=0.72*i,b=130*c,a=40*c,a0=748*c,a1=322*c,a2=168*i
 e/=2
 s=h/2
 r=B.d.ab(1-2.4*a3,0,1)
-a2=new A.avB(this,a2+(e-a2)*a3,s,g*(0.405+0.595*a3),a3)
+a2=new A.avB(this,a2+(e-a2)*a3,s,g,a3)
 q=440*g*(1-0.5*a3)
 p=84*i
 o=A.aA(0,A.h8(B.Lf,1-a3))

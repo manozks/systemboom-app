@@ -333,9 +333,9 @@ class _Stage extends StatelessWidget {
     final ov = 12 * au;
     final slice = Rect.fromLTRB(130 * au, 40 * au, (878 - 130) * au, (362 - 40) * au);
     // the orbit system sits where the lava coin used to be; it grows to circle the small logo when the header collapses
-    final of = .405 + (1 - .405) * c;
+    final of = 1.0; // full size, as before
     final ko = ka * of;
-    final ocy = 195 * u + (kCmpH * u / 2 - 195 * u) * c;
+    final ocy = 168 * u + (kCmpH * u / 2 - 168 * u) * c;
     final cx = w / 2;
     final fade = (1 - 2.4 * c).clamp(0.0, 1.0); // bell + planets go away quickly
     // a small solar system round the logo: each planet runs on its own slanted ellipse and speed; depth = sin(angle)
