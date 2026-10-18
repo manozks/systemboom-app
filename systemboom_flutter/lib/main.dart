@@ -384,8 +384,7 @@ class _Stage extends StatelessWidget {
 
     final logoW = 440 * ka * (1 - .5 * c);
     final logoCy = 72 * u + (kCmpH * u / 2 - 72 * u) * c;
-    final heroFade = (1 - 2.6 * c).clamp(0.0, 1.0); // spotlight + tagline fade out as the header collapses
-    final tagFade = (1 - 3 * c).clamp(0.0, 1.0);
+    final heroFade = (1 - 2.6 * c).clamp(0.0, 1.0); // the spotlight fades out as the header collapses
     return SizedBox(
       height: h,
       child: Stack(clipBehavior: Clip.hardEdge, children: [
@@ -435,25 +434,6 @@ class _Stage extends StatelessWidget {
           width: logoW,
           child: IgnorePointer(child: Image.asset('assets/images/logo-lockup.webp', fit: BoxFit.fitWidth, filterQuality: FilterQuality.medium)),
         ),
-        // fine tagline under the logo, flanked by gold hairlines
-        if (tagFade > 0)
-          Positioned(
-            left: cx - 220 * ka,
-            top: 118 * ka,
-            width: 440 * ka,
-            child: IgnorePointer(
-              child: Opacity(
-                opacity: tagFade,
-                child: Row(children: [
-                  Expanded(child: Container(height: 1, decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0x00FFC878), Color(0xBFFFCC80)])))),
-                  SizedBox(width: 14 * ka),
-                  Text('CHAT · CALL · MARKET', style: TextStyle(fontSize: (15 * ka).clamp(8.0, 18.0), fontWeight: FontWeight.w700, letterSpacing: (15 * ka).clamp(8.0, 18.0) * .42, color: const Color(0xFFD4DDE8), decoration: TextDecoration.none, shadows: const [Shadow(color: Color(0xCC000000), offset: Offset(0, 1)), Shadow(color: Color(0x59FFAA46), blurRadius: 8)])),
-                  SizedBox(width: 14 * ka),
-                  Expanded(child: Container(height: 1, decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xBFFFCC80), Color(0x00FFC878)])))),
-                ]),
-              ),
-            ),
-          ),
         ...orbit(back: false),
         // soft warm glow under the slim bar (no hard line)
         Positioned(

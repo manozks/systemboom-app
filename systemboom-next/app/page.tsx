@@ -103,11 +103,6 @@ function HomeHeader() {
           <At x={207} y={16.3} w={440} className="hh-logoat" style={{ zIndex: 2 }}>
             <img className="hh-logo" src={img('logo-lockup')} alt="SYSTEMBOOM" draggable={false} />
           </At>
-          <At x={207} y={118} w={440} className="hh-tag">
-            <i />
-            <span>CHAT · CALL · MARKET</span>
-            <i />
-          </At>
           <At x={427} y={172} w={0} h={0} className="hh-orbit">
             <div className="hh-plate" aria-hidden><i className="pl-edge" /><i className="pl-base" /><i className="pl-sweep" /><i className="pl-ticks" /><i className="pl-rim" /><i className="pl-gloss" /></div>
             <div className="hh-stars" aria-hidden>
