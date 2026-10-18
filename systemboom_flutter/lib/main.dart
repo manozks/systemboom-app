@@ -336,7 +336,7 @@ class _Stage extends StatelessWidget {
     final of = .7 + .3 * c; // the orbit system is a little smaller than full size, and grows back round the small logo in the slim bar
     final orbFade = (1 - (c - .35) * 1.55).clamp(0.0, 1.0); // plate, embers and stars fade away slowly over the last part of the scroll
     final ko = ka * of;
-    final ocy = 185 * u + (kCmpH * u / 2 - 185 * u) * c;
+    final ocy = 189.5 * u + (kCmpH * u / 2 - 189.5 * u) * c;
     final cx = w / 2;
     final fade = (1 - 2.4 * c).clamp(0.0, 1.0); // bell + planets go away quickly
     // a small solar system round the logo: each planet runs on its own slanted ellipse and speed; depth = sin(angle)
@@ -383,7 +383,9 @@ class _Stage extends StatelessWidget {
     }
 
     final logoW = 440 * ka * (1 - .5 * c);
-    final logoCy = 84 * u + (kCmpH * u / 2 - 84 * u) * c;
+    final logoCy = 72 * u + (kCmpH * u / 2 - 72 * u) * c;
+    final heroFade = (1 - 2.6 * c).clamp(0.0, 1.0); // spotlight + tagline fade out as the header collapses
+    final tagFade = (1 - 3 * c).clamp(0.0, 1.0);
     return SizedBox(
       height: h,
       child: Stack(clipBehavior: Clip.hardEdge, children: [
@@ -416,6 +418,15 @@ class _Stage extends StatelessWidget {
               ),
             ),
           ),
+        // soft spotlight behind the logo
+        if (heroFade > 0)
+          Positioned(
+            left: cx - 260 * ka,
+            top: 0,
+            width: 520 * ka,
+            height: 170 * ka,
+            child: IgnorePointer(child: Opacity(opacity: heroFade, child: const DecoratedBox(decoration: BoxDecoration(gradient: RadialGradient(center: Alignment(0, -.12), radius: .62, colors: [Color(0x42FFB050), Color(0x17FFA03C), Color(0x00FFA03C)], stops: [0, .52, 1]))))),
+          ),
         ...orbit(back: true),
         // logo lock-up (transparent bomb + SYSTEMBOOM); shrinks to the top centre
         Positioned(
@@ -424,6 +435,25 @@ class _Stage extends StatelessWidget {
           width: logoW,
           child: IgnorePointer(child: Image.asset('assets/images/logo-lockup.webp', fit: BoxFit.fitWidth, filterQuality: FilterQuality.medium)),
         ),
+        // fine tagline under the logo, flanked by gold hairlines
+        if (tagFade > 0)
+          Positioned(
+            left: cx - 220 * ka,
+            top: 118 * ka,
+            width: 440 * ka,
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: tagFade,
+                child: Row(children: [
+                  Expanded(child: Container(height: 1, decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0x00FFC878), Color(0xBFFFCC80)])))),
+                  SizedBox(width: 14 * ka),
+                  Text('CHAT · CALL · MARKET', style: TextStyle(fontSize: (15 * ka).clamp(8.0, 18.0), fontWeight: FontWeight.w700, letterSpacing: (15 * ka).clamp(8.0, 18.0) * .42, color: const Color(0xFFD4DDE8), decoration: TextDecoration.none, shadows: const [Shadow(color: Color(0xCC000000), offset: Offset(0, 1)), Shadow(color: Color(0x59FFAA46), blurRadius: 8)])),
+                  SizedBox(width: 14 * ka),
+                  Expanded(child: Container(height: 1, decoration: const BoxDecoration(gradient: LinearGradient(colors: [Color(0xBFFFCC80), Color(0x00FFC878)])))),
+                ]),
+              ),
+            ),
+          ),
         ...orbit(back: false),
         // soft warm glow under the slim bar (no hard line)
         Positioned(
